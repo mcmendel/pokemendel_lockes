@@ -1,0 +1,114 @@
+.locke-runs-container {
+  width: 100%;
+  max-width: 1200px;
+  margin: 0 auto;
+  padding: 20px;
+  overflow-x: auto;
+  min-height: 60vh;
+  display: flex;
+  flex-direction: column;
+}
+
+.filter-controls {
+  margin-top: 20px;
+  display: flex;
+  justify-content: flex-start;
+  align-items: center;
+  gap: 20px;
+  flex-wrap: wrap;
+}
+
+.search-box {
+  flex: 0 1 300px;
+  display: flex;
+  align-items: center;
+}
+
+.search-box input {
+  width: 100%;
+  padding: 8px 12px;
+  border: 1px solid #ddd;
+  border-radius: 4px;
+  font-size: 0.9em;
+  transition: border-color 0.2s;
+  height: 36px;
+  box-sizing: border-box;
+}
+
+.search-box input:focus {
+  outline: none;
+  border-color: #87CEEB;
+  box-shadow: 0 0 0 2px rgba(135, 206, 235, 0.2);
+}
+
+.filter-checkbox {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  font-size: 0.9em;
+  color: #666;
+  cursor: pointer;
+  height: 36px;
+}
+
+.filter-checkbox input[type="checkbox"] {
+  width: 16px;
+  height: 16px;
+  cursor: pointer;
+  margin: 0;
+}
+
+.locke-runs-table {
+  width: 100%;
+  border-collapse: collapse;
+  background: white;
+  border-radius: 8px;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+  flex: 1;
+}
+
+.locke-runs-table th,
+.locke-runs-table td {
+  padding: 4px 16px;
+  text-align: left;
+  border-bottom: 1px solid #eee;
+}
+
+.locke-runs-table th {
+  background: #f8f9fa;
+  font-weight: 600;
+  color: #333;
+  white-space: nowrap;
+}
+
+.locke-runs-table tr:hover {
+  background-color: #f8f9fa;
+}
+
+.empty-row:hover {
+  background-color: transparent !important;
+}
+
+.more-runs-message {
+  margin-top: 12px;
+  text-align: right;
+  color: #666;
+  font-size: 0.9em;
+}
+
+.status {
+  padding: 2px 8px;
+  border-radius: 12px;
+  font-size: 0.9em;
+  font-weight: 500;
+}
+
+.status.finished {
+  background-color: #e6f4ea;
+  color: #1e7e34;
+}
+
+.status.in-progress {
+  background-color: #fff3cd;
+  color: #856404;
+} 
