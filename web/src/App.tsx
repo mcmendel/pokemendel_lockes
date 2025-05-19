@@ -1,6 +1,7 @@
 import React from 'react';
+import { BrowserRouter as Router, Routes, Route, Navigate } from 'react-router-dom';
 import './App.css';
-import LockeRunsTable from './components/LockeRunsTable';
+import HomePage from './components/HomePage';
 
 // Test data
 const testRuns = [
@@ -91,26 +92,14 @@ const testRuns = [
 
 function App() {
   return (
-    <div className="App">
-      <header className="App-header">
-        <div className="header-content">
-          <img 
-            src="https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/94.png" 
-            alt="Gengar" 
-            className="pokemon-logo"
-          />
-          <h1>LockeManager</h1>
-          <img 
-            src="https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/6.png" 
-            alt="Charizard" 
-            className="pokemon-logo"
-          />
-        </div>
-      </header>
-      <main>
-        <LockeRunsTable runs={testRuns} />
-      </main>
-    </div>
+    <Router>
+      <div className="App">
+        <Routes>
+          <Route path="/" element={<Navigate to="/locke_manager" replace />} />
+          <Route path="/locke_manager" element={<HomePage />} />
+        </Routes>
+      </div>
+    </Router>
   );
 }
 

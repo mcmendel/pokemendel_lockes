@@ -39,7 +39,7 @@ const LockeRunsTable: React.FC<Props> = ({ runs, onDelete, onRowClick }) => {
   const [searchQuery, setSearchQuery] = useState('');
 
   const filteredRuns = runs
-    .filter(run => !showOnlyFinished || run.finished)
+    .filter(run => !showOnlyFinished || !run.finished)
     .filter(run => run.name.toLowerCase().includes(searchQuery.toLowerCase()));
 
   const columns = [
@@ -101,7 +101,7 @@ const LockeRunsTable: React.FC<Props> = ({ runs, onDelete, onRowClick }) => {
               onChange={(e: React.ChangeEvent<HTMLInputElement>) => setShowOnlyFinished(e.target.checked)}
             />
           }
-          label="Show only finished runs"
+          label="Filter finished runs"
         />
       </div>
       <DataGrid 
