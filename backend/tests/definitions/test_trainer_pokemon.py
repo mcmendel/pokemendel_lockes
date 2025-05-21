@@ -1,5 +1,5 @@
 import unittest
-from definitions.trainer_pokemon import TrainerPokemon
+from definitions.trainers.trainer_pokemon import TrainerPokemon
 
 
 class TestTrainerPokemon(unittest.TestCase):

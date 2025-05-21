@@ -1,9 +1,9 @@
 import sys
 print('PYTHONPATH at test runtime:', sys.path)
 import unittest
-from definitions.pokemon import Pokemon
-from definitions.pokemon_metadata import PokemonMetadata
-from definitions.pokemon_status import PokemonStatus
+from definitions.pokemons.pokemon import Pokemon
+from definitions.pokemons.pokemon_metadata import PokemonMetadata
+from definitions.pokemons.pokemon_status import PokemonStatus
 from pokemendel_core.utils.definitions.types import Types
 
 
