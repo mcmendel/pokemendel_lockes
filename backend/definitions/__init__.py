@@ -4,6 +4,7 @@ from .pokemons.pokemon_status import PokemonStatus
 from .trainers.elite_trainer import EliteTrainer
 from .trainers.gym_trainer import GymTrainer
 from .trainers.trainer_pokemon import TrainerPokemon
+from .game.game import Game
 
 __all__ = [
     'Pokemon',
@@ -11,5 +12,6 @@ __all__ = [
     'PokemonStatus',
     'EliteTrainer',
     'GymTrainer',
-    'TrainerPokemon'
+    'TrainerPokemon',
+    'Game'
 ] 
