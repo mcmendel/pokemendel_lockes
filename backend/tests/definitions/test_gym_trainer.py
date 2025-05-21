@@ -1,6 +1,5 @@
 import unittest
-from definitions.trainers.gym_trainer import GymTrainer
-from definitions.trainers.trainer_pokemon import TrainerPokemon
+from definitions import GymTrainer, TrainerPokemon
 from pokemendel_core.utils.definitions.types import Types
 
 

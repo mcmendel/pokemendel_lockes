@@ -1,5 +1,5 @@
 import unittest
-from definitions.pokemons.pokemon_metadata import PokemonMetadata
+from definitions import PokemonMetadata
 from pokemendel_core.utils.definitions.genders import Genders
 
 

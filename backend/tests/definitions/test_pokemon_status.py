@@ -1,5 +1,5 @@
 import unittest
-from definitions.pokemons.pokemon_status import PokemonStatus
+from definitions import PokemonStatus
 
 
 class TestPokemonStatus(unittest.TestCase):
