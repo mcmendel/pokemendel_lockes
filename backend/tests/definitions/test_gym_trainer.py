@@ -13,36 +13,36 @@ class TestGymTrainer(unittest.TestCase):
         
         # Create a GymTrainer instance
         gym_trainer = GymTrainer(
-            name="Lt. Surge",
+            leader="Lt. Surge",
             type=Types.ELECTRIC,
             pokemons=pokemons,
             badge="Thunder Badge",
-            level=3
+            location="Vermillion City"
         )
         
         # Verify that the attributes are set correctly
-        self.assertEqual(gym_trainer.name, "Lt. Surge")
+        self.assertEqual(gym_trainer.leader, "Lt. Surge")
         self.assertEqual(gym_trainer.type, Types.ELECTRIC)
         self.assertEqual(gym_trainer.pokemons, pokemons)
         self.assertEqual(gym_trainer.badge, "Thunder Badge")
-        self.assertEqual(gym_trainer.level, 3)
+        self.assertEqual(gym_trainer.location, "Vermillion City")
 
     def test_gym_trainer_with_empty_pokemon_list(self):
         # Create a GymTrainer instance with no pokemon
         gym_trainer = GymTrainer(
-            name="Brock",
+            leader="Brock",
             type=Types.ROCK,
             pokemons=[],
             badge="Boulder Badge",
-            level=1
+            location="Pewter City"
         )
         
         # Verify that the attributes are set correctly
-        self.assertEqual(gym_trainer.name, "Brock")
+        self.assertEqual(gym_trainer.leader, "Brock")
         self.assertEqual(gym_trainer.type, Types.ROCK)
         self.assertEqual(gym_trainer.pokemons, [])
         self.assertEqual(gym_trainer.badge, "Boulder Badge")
-        self.assertEqual(gym_trainer.level, 1)
+        self.assertEqual(gym_trainer.location, "Pewter City")
 
 
 if __name__ == '__main__':

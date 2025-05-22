@@ -11,11 +11,11 @@ class TestGame(unittest.TestCase):
         self.region = "Kanto"
         self.gyms = [
             GymTrainer(
-                name="Brock",
+                leader="Brock",
                 type=Types.ROCK,
                 pokemons=[],
                 badge="Boulder Badge",
-                level=1
+                location="Pewter City"
             )
         ]
         self.elite4 = [

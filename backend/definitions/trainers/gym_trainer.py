@@ -6,8 +6,8 @@ from .trainer_pokemon import TrainerPokemon
 @dataclass
 class GymTrainer:
     """Represents a gym trainer in the game."""
-    name: str
+    leader: str
     type: Types
     pokemons: List[TrainerPokemon]
     badge: str
-    level: int 
+    location: str 
