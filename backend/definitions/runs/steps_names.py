@@ -1,0 +1,18 @@
+from pokemendel_core.utils.enum_list import EnumList
+
+
+class StepsNames(EnumList):
+    # party
+    ADD_TO_PARTY = "Add to Party"
+    REMOVE_FROM_PARTY = "Remove from Party"
+    SWITCH_PARTY_POKEMONS = "Replace Pokemon with Party"
+
+    # pokemon actions
+    EVOLVE = "Evolve Pokemon"
+    KILL = "Kill Pokemon"
+
+    # pokemon attributes
+    NICKNAME = "Nickname Pokemon"
+
+    # starlocke
+    STARLOCKE_CHOOSE_TYPE = "Choose Type"

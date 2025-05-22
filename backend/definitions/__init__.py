@@ -5,6 +5,11 @@ from .trainers.elite_trainer import EliteTrainer
 from .trainers.gym_trainer import GymTrainer
 from .trainers.trainer_pokemon import TrainerPokemon
 from .game.game import Game
+from .runs.inputs_options import InputOptions
+from .runs.steps_info import StepInfo
+from .runs.steps_names import StepsNames
+from .runs.battles import Battle
+from .runs.encounters import Encounter, EncounterStatus
 
 __all__ = [
     'Pokemon',
@@ -13,5 +18,11 @@ __all__ = [
     'EliteTrainer',
     'GymTrainer',
     'TrainerPokemon',
-    'Game'
+    'Game',
+    'InputOptions',
+    'StepInfo',
+    'StepsNames',
+    'Battle',
+    'Encounter',
+    'EncounterStatus',
 ] 
