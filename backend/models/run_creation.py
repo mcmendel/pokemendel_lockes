@@ -25,6 +25,7 @@ class RunCreation:
         randomized: Optional flag indicating if the game is randomized
         duplicate_clause: Optional flag indicating if duplicate Pokemon are allowed
         extra_info: Additional configuration options as key-value pairs
+        finished: Whether the run creation is complete and ready to begin
     """
     name: str
     locke: Optional[str] = None
@@ -32,6 +33,7 @@ class RunCreation:
     randomized: Optional[bool] = None
     duplicate_clause: Optional[bool] = None
     extra_info: Dict[str, str] = field(default_factory=dict)
+    finished: bool = False
 
     def __post_init__(self):
         """Validate the run creation data after initialization."""
