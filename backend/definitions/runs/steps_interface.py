@@ -11,10 +11,12 @@ The interface ensures that all steps provide consistent methods for:
 """
 
 from abc import ABCMeta, abstractmethod
-from definitions import Pokemon, InputOptions
-from core.run_manager import RunManager
 from typing import Tuple, List, Optional
 from dataclasses import dataclass
+
+from definitions import Pokemon
+from definitions.runs.inputs_options import InputOptions
+from core.run_manager import RunManager
 
 
 @dataclass
@@ -86,4 +88,4 @@ class StepInterface(metaclass=ABCMeta):
             ExecutionReturnValue: Contains a list of Pokemon names that need to be
                                 updated after this step's execution.
         """
-        pass
+        pass 
