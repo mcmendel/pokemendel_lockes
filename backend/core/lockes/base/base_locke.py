@@ -1,0 +1,91 @@
+"""Base class for all Locke challenges that inherits from the abstract Locke class.
+This class implements the abstract _mandatory_steps property and provides a base for all Locke challenges.
+"""
+
+from core.locke import Locke
+from definitions.runs.steps_info import StepInfo
+from definitions.runs.steps_names import StepsNames
+from definitions.runs.steps_interface import StepInterface
+from core.steps import (
+    AddToPartyStep,
+    RemoveFromPartyStep,
+    ReplacePartyPokemon,
+)
+from pokemendel_core.utils.class_property import classproperty
+from typing import List, Dict, ClassVar
+
+class BaseLocke(Locke):
+    """Base class for all Locke challenges.
+    This class implements the abstract _mandatory_steps property and provides a base for all Locke challenges.
+    """
+    # Default rules that apply to all Locke challenges
+    _DEFAULT_RULES: ClassVar[List[str]] = [
+        "Name each pokemon",
+        "Catch 1st encounter",
+        "Fainted pokemon considered dead"
+    ]
+
+    @classproperty
+    def name(cls) -> str:
+        """Get the name of the Locke challenge.
+        Returns:
+            str: The name of the Locke challenge, derived from the class name
+        """
+        return cls.__name__
+
+    @classproperty
+    def min_gen(cls) -> int:
+        """Get the minimum generation of Pokemon games supported by this Locke.
+        Returns:
+            int: The minimum generation number (1-9)
+        """
+        return 1
+
+    @classproperty
+    def rules(cls) -> List[str]:
+        """Get the list of rules for this Locke challenge.
+        This method combines the default rules with any additional rules defined by the subclass.
+        Subclasses can override this method to add their own rules while still including the defaults.
+        Returns:
+            List[str]: A list of rules that must be followed
+        """
+        return cls._DEFAULT_RULES.copy()
+
+    @property
+    def steps(self) -> List[StepInfo]:
+        """Get all steps for this Locke challenge, including mandatory and optional steps.
+        The steps include:
+        - Mandatory steps that must be completed in order (can be empty)
+        - Optional steps (add to party, remove from party, switch party pokemon) that can be done after any mandatory step
+        Returns:
+            List[StepInfo]: A list of all steps with their prerequisites
+        """
+        mandatory_steps = self._mandatory_steps
+        prerequisites = [] if not mandatory_steps else [mandatory_steps[-1].step_name]
+        optional_steps = [
+            StepInfo(StepsNames.ADD_TO_PARTY, prerequisites=prerequisites),
+            StepInfo(StepsNames.REMOVE_FROM_PARTY, prerequisites=prerequisites),
+            StepInfo(StepsNames.SWITCH_PARTY_POKEMONS, prerequisites=prerequisites),
+        ]
+        return mandatory_steps + optional_steps
+
+    @property
+    def _mandatory_steps(self) -> List[StepInfo]:
+        """Get the mandatory steps that must be completed in order.
+        This implementation returns an empty list, allowing subclasses to override it.
+        Returns:
+            List[StepInfo]: A list of steps that must be completed in order
+        """
+        return []
+
+    @classproperty
+    def steps_mapper(cls) -> Dict[StepsNames, StepInterface]:
+        """Get a mapping of step names to their implementations.
+        Returns:
+            Dict[StepsNames, StepInterface]: A dictionary mapping step names to their implementations
+        """
+        return {
+            StepsNames.ADD_TO_PARTY: AddToPartyStep(),
+            StepsNames.REMOVE_FROM_PARTY: RemoveFromPartyStep(),
+            StepsNames.SWITCH_PARTY_POKEMONS: ReplacePartyPokemon(),
+        } 

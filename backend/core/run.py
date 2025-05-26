@@ -4,7 +4,7 @@ This module provides the Run class which represents a complete Pokemon game run,
 including the player's party, box, battles, encounters, and run status.
 """
 
-from dataclasses import dataclass
+from dataclasses import dataclass, field
 from datetime import datetime
 from typing import List, Optional
 

@@ -1,0 +1,67 @@
+"""Abstract base class for implementing different types of Locke challenges.
+Cannot be instantiated directly. Subclasses must implement _mandatory_steps.
+"""
+
+from abc import ABC, abstractmethod
+from definitions.runs.steps_info import StepInfo
+from definitions.runs.steps_names import StepsNames
+from definitions.runs.steps_interface import StepInterface
+from pokemendel_core.utils.class_property import classproperty
+from dataclasses import dataclass
+from typing import List, Dict
+
+@dataclass
+class Locke(ABC):
+    """Abstract base class for implementing different types of Locke challenges.
+    Cannot be instantiated directly. Subclasses must implement _mandatory_steps.
+    """
+    @classproperty
+    @abstractmethod
+    def name(cls) -> str:
+        """Get the name of the Locke challenge.
+        Returns:
+            str: The name of the Locke challenge, derived from the class name
+        """
+        pass
+
+    @classproperty
+    @abstractmethod
+    def min_gen(cls) -> int:
+        """Get the minimum generation of Pokemon games supported by this Locke.
+        Returns:
+            int: The minimum generation number (1-9)
+        """
+        pass
+
+    @classproperty
+    @abstractmethod
+    def rules(cls) -> List[str]:
+        """Get the list of rules for this Locke challenge.
+        Returns:
+            List[str]: A list of rules that must be followed
+        """
+        pass
+
+    @property
+    @abstractmethod
+    def steps(self) -> List[StepInfo]:
+        """Get all steps for this Locke challenge, including mandatory and optional steps.
+        Returns:
+            List[StepInfo]: A list of all steps with their prerequisites
+        """
+        pass
+
+    @property
+    @abstractmethod
+    def _mandatory_steps(self) -> List[StepInfo]:
+        """Abstract property. Must be implemented by subclasses."""
+        pass
+
+    @classproperty
+    @abstractmethod
+    def steps_mapper(cls) -> Dict[StepsNames, StepInterface]:
+        """Get a mapping of step names to their implementations.
+        Returns:
+            Dict[StepsNames, StepInterface]: A dictionary mapping step names to their implementations
+        """
+        pass 
