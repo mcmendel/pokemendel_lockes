@@ -3,24 +3,10 @@ import { DataGrid, GridRenderCellParams } from '@mui/x-data-grid';
 import { FormControlLabel, IconButton, Checkbox } from '@mui/material';
 import DeleteIcon from '@mui/icons-material/Delete';
 import './LockeRunsTable.css';
-
-interface LockeRun {
-  created_at: string;
-  finished: boolean;
-  game: string;
-  id: string;
-  locke: string;
-  name: string;
-  num_badges: number;
-  num_deaths: number;
-  num_pokemons: number;
-  num_restarts: number;
-  randomized: boolean;
-  starter: string;
-}
+import { Run } from '../api/lockeApi';
 
 interface Props {
-  runs: LockeRun[];
+  runs: Run[];
   onDelete?: (runId: string) => void;
   onRowClick?: (runId: string) => void;
 }
@@ -40,7 +26,25 @@ const LockeRunsTable: React.FC<Props> = ({ runs, onDelete, onRowClick }) => {
 
   const filteredRuns = runs
     .filter(run => !showOnlyFinished || !run.finished)
-    .filter(run => run.name.toLowerCase().includes(searchQuery.toLowerCase()));
+    .filter(run => {
+      const runName = run.run_name?.toLowerCase() || '';
+      const query = searchQuery.toLowerCase();
+      return runName.includes(query);
+    })
+    .map(run => ({
+      id: run.run_id, // Required by DataGrid
+      name: run.run_name || 'Unnamed Run',
+      game: run.game_name || 'Unknown Game',
+      locke: run.locke_name || 'Unknown Locke',
+      starter: run.starter || 'Unknown Starter',
+      num_badges: run.num_gyms || 0,
+      num_deaths: run.num_deaths || 0,
+      num_pokemons: run.num_pokemons || 0,
+      num_restarts: run.num_restarts || 0,
+      created_at: run.created_at || new Date().toISOString(),
+      finished: run.finished,
+      randomized: run.randomized,
+    }));
 
   const columns = [
     { field: 'id', headerName: 'ID', width: 70, filterable: false, hide: true },
