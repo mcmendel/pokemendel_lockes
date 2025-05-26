@@ -40,8 +40,8 @@ class Run:
     creation_date: datetime
     party: Party
     box: Box
-    battles: List[Battle]
-    encounters: List[Encounter]
+    battles: List[Battle] = field(default_factory=list)
+    encounters: List[Encounter] = field(default_factory=list)
     starter: Optional[Pokemon] = None
     restarts: int = 0
     finished: bool = False
@@ -60,6 +60,15 @@ class Run:
             battle: The battle to add
         """
         self.battles.append(battle)
+
+
+    def get_pokemon_by_id(self, id: str) -> Pokemon:
+        """Get a Pokemon by its ID.
+        
+        Args:
+            id: The ID of the Pokemon to get
+        """
+        return self.box.get_pokemon_by_id(id)
 
     def add_encounter(self, encounter: Encounter) -> None:
         """Add an encounter to the run.

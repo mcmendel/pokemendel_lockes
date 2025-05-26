@@ -24,7 +24,7 @@ class TestRemoveFromPartyStep(unittest.TestCase):
         self.pokemon = MagicMock(spec=Pokemon)
 
     def test_is_step_relevant_when_can_remove(self):
-        """Test is_step_relevant when Pokemon can be removed from party."""
+        """Test is_step_relevant when Pokemon can be removed."""
         self.party.is_last_pokemon_in_party.return_value = False
         self.party.is_pokemon_in_party.return_value = True
         
@@ -35,7 +35,7 @@ class TestRemoveFromPartyStep(unittest.TestCase):
         self.party.is_pokemon_in_party.assert_called_once_with(self.pokemon)
 
     def test_is_step_relevant_when_last_pokemon(self):
-        """Test is_step_relevant when it's the last Pokemon in party."""
+        """Test is_step_relevant when it's the last Pokemon."""
         self.party.is_last_pokemon_in_party.return_value = True
         self.party.is_pokemon_in_party.return_value = True
         
@@ -56,25 +56,48 @@ class TestRemoveFromPartyStep(unittest.TestCase):
         self.party.is_last_pokemon_in_party.assert_called_once()
         self.party.is_pokemon_in_party.assert_called_once_with(self.pokemon)
 
-    def test_is_step_relevant_method_order(self):
-        """Test that is_last_pokemon_in_party is checked before is_pokemon_in_party."""
-        self.party.is_last_pokemon_in_party.return_value = True
-        self.party.is_pokemon_in_party.return_value = True
-        
-        self.step.is_step_relevant(self.run, self.pokemon)
-        
-        # Verify the order of method calls
-        self.assertEqual(
-            [call[0] for call in self.party.method_calls],
-            ['is_last_pokemon_in_party']
-        )
-
     def test_step_options(self):
         """Test step_options returns correct options."""
         options, choices = self.step.step_options(self.run, self.pokemon)
         
         self.assertEqual(options, InputOptions.NOTHING)
         self.assertEqual(choices, [])
+
+    def test_execute_step_success(self):
+        """Test execute_step successfully removes Pokemon."""
+        result = self.step.execute_step(self.run, self.pokemon, None)
+        
+        self.run.party.remove_pokemon.assert_called_once_with(self.pokemon)
+        self.assertEqual(result.pokemons_to_update, [])
+
+    def test_execute_step_with_value(self):
+        """Test execute_step raises AssertionError when value is provided."""
+        with self.assertRaises(AssertionError) as context:
+            self.step.execute_step(self.run, self.pokemon, "some_value")
+        
+        self.assertEqual(str(context.exception), "Value is not expected when removing pokemon from party")
+        self.run.party.remove_pokemon.assert_not_called()
+
+    def test_execute_step_with_empty_string(self):
+        """Test execute_step raises AssertionError when empty string is provided."""
+        with self.assertRaises(AssertionError) as context:
+            self.step.execute_step(self.run, self.pokemon, "")
+        
+        self.assertEqual(str(context.exception), "Value is not expected when removing pokemon from party")
+        self.run.party.remove_pokemon.assert_not_called()
+
+    def test_is_step_relevant_method_order(self):
+        """Test the order of method calls in is_step_relevant."""
+        self.party.is_last_pokemon_in_party.return_value = False
+        self.party.is_pokemon_in_party.return_value = True
+        
+        self.step.is_step_relevant(self.run, self.pokemon)
+        
+        # Verify method call order
+        calls = self.party.method_calls
+        self.assertEqual(len(calls), 2)
+        self.assertEqual(calls[0][0], 'is_last_pokemon_in_party')
+        self.assertEqual(calls[1][0], 'is_pokemon_in_party')
 
     def test_step_options_immutable(self):
         """Test that step_options returns a new list each time."""
@@ -84,31 +107,8 @@ class TestRemoveFromPartyStep(unittest.TestCase):
         self.assertIsNot(choices1, choices2)
         self.assertEqual(choices1, choices2)
 
-    def test_execute_step_success(self):
-        """Test execute_step successfully removes Pokemon from party."""
-        result = self.step.execute_step(self.run, self.pokemon, None)
-        
-        self.party.remove_pokemon.assert_called_once_with(self.pokemon)
-        self.assertEqual(result.pokemons_to_update, [])
-
-    def test_execute_step_with_value(self):
-        """Test execute_step raises AssertionError when value is provided."""
-        with self.assertRaises(AssertionError) as context:
-            self.step.execute_step(self.run, self.pokemon, "some_value")
-        
-        self.assertEqual(str(context.exception), "Value is not expected when removing pokemon from party")
-        self.party.remove_pokemon.assert_not_called()
-
-    def test_execute_step_with_empty_string(self):
-        """Test execute_step raises AssertionError when empty string is provided."""
-        with self.assertRaises(AssertionError) as context:
-            self.step.execute_step(self.run, self.pokemon, "")
-        
-        self.assertEqual(str(context.exception), "Value is not expected when removing pokemon from party")
-        self.party.remove_pokemon.assert_not_called()
-
     def test_execute_step_return_value_immutable(self):
-        """Test that execute_step returns a new ExecutionReturnValue each time."""
+        """Test that execute_step returns a new ExecutionReturnValue instance each time."""
         result1 = self.step.execute_step(self.run, self.pokemon, None)
         result2 = self.step.execute_step(self.run, self.pokemon, None)
         
