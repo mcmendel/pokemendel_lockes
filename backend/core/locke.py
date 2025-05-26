@@ -1,5 +1,18 @@
 """Abstract base class for implementing different types of Locke challenges.
 Cannot be instantiated directly. Subclasses must implement _mandatory_steps.
+
+A Locke challenge defines:
+- A set of rules that must be followed
+- A sequence of steps that must be completed
+- The minimum generation of Pokemon games it supports
+- Additional information specific to the Locke challenge (extra_info), such as:
+  - 'type' for Monolocke
+  - 'color' for Colorlocke
+  - etc.
+
+Subclasses must implement:
+- _mandatory_steps: A list of steps that must be completed in order
+- Any additional rules or constraints specific to the Locke type
 """
 
 from abc import ABC, abstractmethod
@@ -8,13 +21,15 @@ from definitions.runs.steps_names import StepsNames
 from definitions.runs.steps_interface import StepInterface
 from pokemendel_core.utils.class_property import classproperty
 from dataclasses import dataclass
-from typing import List, Dict
+from typing import List, Dict, Optional, Any
 
 @dataclass
 class Locke(ABC):
     """Abstract base class for implementing different types of Locke challenges.
     Cannot be instantiated directly. Subclasses must implement _mandatory_steps.
     """
+    extra_info: Optional[Dict[str, Any]] = None
+
     @classproperty
     @abstractmethod
     def name(cls) -> str:

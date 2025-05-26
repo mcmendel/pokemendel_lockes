@@ -7,7 +7,6 @@ as a base class for all Locke challenges.
 import unittest
 from core.lockes.base.base_locke import BaseLocke
 from definitions.runs.steps_names import StepsNames
-from definitions.runs.steps_info import StepInfo
 
 class TestBaseLocke(unittest.TestCase):
     """Test cases for the BaseLocke class."""

@@ -16,7 +16,7 @@ from dataclasses import dataclass
 
 from definitions import Pokemon
 from definitions.runs.inputs_options import InputOptions
-from core.run_manager import RunManager
+from core.run import Run
 
 
 @dataclass
@@ -42,11 +42,11 @@ class StepInterface(metaclass=ABCMeta):
     """
 
     @abstractmethod
-    def step_options(self, run: RunManager, pokemon: Pokemon) -> Tuple[InputOptions, List[str]]:
+    def step_options(self, run: Run, pokemon: Pokemon) -> Tuple[InputOptions, List[str]]:
         """Get the available options for this step.
         
         Args:
-            run: The current run manager instance containing game state.
+            run: The current run instance containing game state.
             pokemon: The Pokemon this step is being considered for.
             
         Returns:
@@ -62,11 +62,11 @@ class StepInterface(metaclass=ABCMeta):
         pass
 
     @abstractmethod
-    def is_step_relevant(self, run: RunManager, pokemon: Pokemon) -> bool:
+    def is_step_relevant(self, run: Run, pokemon: Pokemon) -> bool:
         """Determine if this step is relevant to the current game state.
         
         Args:
-            run: The current run manager instance containing game state.
+            run: The current run instance containing game state.
             pokemon: The Pokemon this step is being considered for.
             
         Returns:
@@ -76,11 +76,11 @@ class StepInterface(metaclass=ABCMeta):
         pass
 
     @abstractmethod
-    def execute_step(self, run: RunManager, pokemon: Pokemon, value: Optional[str]) -> ExecutionReturnValue:
+    def execute_step(self, run: Run, pokemon: Pokemon, value: Optional[str]) -> ExecutionReturnValue:
         """Execute this step with the chosen option.
         
         Args:
-            run: The current run manager instance containing game state.
+            run: The current run instance containing game state.
             pokemon: The Pokemon this step is being executed for.
             value: The chosen option for this step. May be None if no choice is needed.
             
