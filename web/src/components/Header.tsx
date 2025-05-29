@@ -1,7 +1,10 @@
 import React from 'react';
+import { useNavigate } from 'react-router-dom';
 import './Header.css';
 
 const Header: React.FC = () => {
+  const navigate = useNavigate();
+
   return (
     <header className="App-header">
       <div className="header-content">
@@ -17,6 +20,13 @@ const Header: React.FC = () => {
           className="pokemon-logo"
         />
       </div>
+      <button 
+        className="home-button"
+        onClick={() => navigate('/locke_manager')}
+        title="Go to Home"
+      >
+        🏠
+      </button>
     </header>
   );
 };
