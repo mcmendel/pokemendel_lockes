@@ -1,10 +1,14 @@
 --find-links /Users/nirmendel/work/local_pypi
-Flask==3.0.2
-python-dotenv==1.0.1
-flask-cors==4.0.0
+Flask==2.0.1
+python-dotenv==0.19.0
+flask-cors==3.0.10
 pokemendel_core==0.2.1
 pymongo==4.6.2
 pytest==8.3.5
 iniconfig==2.1.0
 packaging==25.0
-pluggy==1.6.0 
+pluggy==1.6.0
+requests==2.31.0
+Werkzeug==2.0.3
+beautifulsoup4==4.12.2
+Pillow==10.2.0 

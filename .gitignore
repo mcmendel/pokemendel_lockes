@@ -24,6 +24,7 @@ wheels/
 *.egg-info/
 .installed.cfg
 *.egg
+backend/resources/
 
 # Node.js
 node_modules/
