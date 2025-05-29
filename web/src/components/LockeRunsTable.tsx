@@ -34,7 +34,7 @@ function daysPassed(dateString: string): string {
   }
 }
 
-const LockeRunsTable: React.FC<Props> = ({ runs, onDelete, onRowClick }) => {
+export const LockeRunsTable: React.FC<Props> = ({ runs, onDelete, onRowClick }) => {
   const [showOnlyFinished, setShowOnlyFinished] = useState(true);
   const [searchQuery, setSearchQuery] = useState('');
 
@@ -107,20 +107,28 @@ const LockeRunsTable: React.FC<Props> = ({ runs, onDelete, onRowClick }) => {
         <div className="search-box">
           <input
             type="text"
-            placeholder="Search by name..."
+            placeholder="Search runs..."
             value={searchQuery}
-            onChange={(e: React.ChangeEvent<HTMLInputElement>) => setSearchQuery(e.target.value)}
+            onChange={(e) => setSearchQuery(e.target.value)}
           />
         </div>
-        <FormControlLabel 
-          control={
-            <Checkbox
-              checked={showOnlyFinished}
-              onChange={(e: React.ChangeEvent<HTMLInputElement>) => setShowOnlyFinished(e.target.checked)}
-            />
-          }
-          label="Filter finished runs"
-        />
+        <div className="action-buttons">
+          <button className="action-button new">
+            <span>New</span>
+          </button>
+          <button className="action-button load">
+            <span>Load</span>
+          </button>
+        </div>
+        <div className="filter-checkbox">
+          <input
+            type="checkbox"
+            id="showFinished"
+            checked={showOnlyFinished}
+            onChange={(e) => setShowOnlyFinished(e.target.checked)}
+          />
+          <label htmlFor="showFinished">Show only finished runs</label>
+        </div>
       </div>
       <DataGrid 
         rows={filteredRuns} 

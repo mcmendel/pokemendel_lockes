@@ -1,3 +1,10 @@
+body {
+  background-color: white;
+  margin: 0;
+  padding: 0;
+  min-height: 100vh;
+}
+
 .locke-runs-container {
   width: 100%;
   max-width: 1200px;
@@ -7,15 +14,21 @@
   min-height: 60vh;
   display: flex;
   flex-direction: column;
+  background-color: #e6f0ff;
+  border-radius: 12px;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
 }
 
 .filter-controls {
   margin-top: 20px;
+  margin-bottom: 20px;
   display: flex;
-  justify-content: flex-start;
+  justify-content: space-between;
   align-items: center;
   gap: 20px;
   flex-wrap: wrap;
+  position: relative;
+  z-index: 1;
 }
 
 .search-box {
@@ -61,7 +74,7 @@
 .locke-runs-table {
   width: 100%;
   border-collapse: collapse;
-  background: white;
+  background: #f0f8ff;
   border-radius: 8px;
   box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
   flex: 1;
@@ -71,18 +84,18 @@
 .locke-runs-table td {
   padding: 4px 16px;
   text-align: left;
-  border-bottom: 1px solid #eee;
+  border-bottom: 1px solid #e6f0ff;
 }
 
 .locke-runs-table th {
-  background: #f8f9fa;
+  background: #e6f0ff;
   font-weight: 600;
   color: #333;
   white-space: nowrap;
 }
 
 .locke-runs-table tr:hover {
-  background-color: #f8f9fa;
+  background-color: #e6f0ff;
 }
 
 .empty-row:hover {
@@ -111,4 +124,43 @@
 .status.in-progress {
   background-color: #fff3cd;
   color: #856404;
+}
+
+.action-buttons {
+  display: flex;
+  gap: 12px;
+  margin-bottom: 4px;
+}
+
+.action-button {
+  padding: 8px 16px;
+  border: none;
+  border-radius: 6px;
+  font-size: 0.9em;
+  font-weight: 500;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  height: 36px;
+}
+
+.action-button.new {
+  background-color: #4a90e2;
+  color: white;
+}
+
+.action-button.new:hover {
+  background-color: #357abd;
+}
+
+.action-button.load {
+  background-color: #e6f0ff;
+  color: #4a90e2;
+  border: 1px solid #4a90e2;
+}
+
+.action-button.load:hover {
+  background-color: #d4e4ff;
 } 
