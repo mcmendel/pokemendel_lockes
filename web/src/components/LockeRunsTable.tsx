@@ -11,13 +11,27 @@ interface Props {
   onRowClick?: (runId: string) => void;
 }
 
-function daysPassed(dateString: string): number {
+function daysPassed(dateString: string): string {
   const givenDate = new Date(dateString);
   const currentDate = new Date();
+  
+  // Reset time part to compare only dates
+  givenDate.setHours(0, 0, 0, 0);
+  currentDate.setHours(0, 0, 0, 0);
+  
   const differenceInMilliseconds = currentDate.getTime() - givenDate.getTime();
   const millisecondsInOneDay = 1000 * 60 * 60 * 24;
   const daysPassed = Math.floor(differenceInMilliseconds / millisecondsInOneDay);
-  return daysPassed;
+  
+  if (daysPassed === 0) {
+    return 'Today';
+  } else if (daysPassed === 1) {
+    return 'Yesterday';
+  } else if (daysPassed < 0) {
+    return 'Today'; // Handle future dates
+  } else {
+    return `${daysPassed} days ago`;
+  }
 }
 
 const LockeRunsTable: React.FC<Props> = ({ runs, onDelete, onRowClick }) => {
@@ -75,7 +89,7 @@ const LockeRunsTable: React.FC<Props> = ({ runs, onDelete, onRowClick }) => {
     { field: 'name', headerName: 'Name', width: 170, filterable: false },
     { field: 'created_at', headerName: 'Created At', width: 130, renderCell: (params: GridRenderCellParams) => (
       <strong>
-        {daysPassed(params.value as string)} days ago
+        {daysPassed(params.value as string)}
       </strong>
     )},
     { field: 'game', headerName: 'Game', width: 170, filterable: false },
