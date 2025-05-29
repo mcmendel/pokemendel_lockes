@@ -1,8 +1,11 @@
+"""Flask application for the Locke Manager API."""
+
 from flask import Flask, jsonify, send_file
 from flask_cors import CORS
 from dotenv import load_dotenv
 from apis.main import list_runs_api
 from apis.resources import get_pokemon_info, get_gym_leader_info, get_type_info
+from core.lockes import list_all_lockes
 from functools import wraps
 
 load_dotenv()
@@ -41,6 +44,16 @@ def get_runs():
     """
     runs = list_runs_api()
     return jsonify([run.__dict__ for run in runs])
+
+@locke_route('lockes', methods=['GET'])
+def get_lockes():
+    """Get all available locke types.
+    
+    Returns:
+        List of locke names.
+    """
+    lockes = list_all_lockes()
+    return jsonify(lockes)
 
 @locke_route('resources/pokemon/<pokemon_name>', methods=['GET'])
 def get_pokemon(pokemon_name):
