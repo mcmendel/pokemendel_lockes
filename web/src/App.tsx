@@ -1,14 +1,14 @@
 import React from 'react';
 import { BrowserRouter as Router, Routes, Route, Navigate } from 'react-router-dom';
-import './App.css';
 import HomePage from './components/HomePage';
+import './App.css';
 
 function App() {
   return (
     <Router>
       <Routes>
-        <Route path="/" element={<HomePage />} />
-        <Route path="*" element={<Navigate to="/" replace />} />
+        <Route path="/locke_manager" element={<HomePage />} />
+        <Route path="*" element={<Navigate to="/locke_manager" replace />} />
       </Routes>
     </Router>
   );
