@@ -2,6 +2,7 @@ import React, { useState } from 'react';
 import { DataGrid, GridRenderCellParams } from '@mui/x-data-grid';
 import { FormControlLabel, IconButton, Checkbox } from '@mui/material';
 import DeleteIcon from '@mui/icons-material/Delete';
+import { useNavigate } from 'react-router-dom';
 import './LockeRunsTable.css';
 import { Run } from '../api/lockeApi';
 
@@ -35,6 +36,7 @@ function daysPassed(dateString: string): string {
 }
 
 export const LockeRunsTable: React.FC<Props> = ({ runs, onDelete, onRowClick }) => {
+  const navigate = useNavigate();
   const [showOnlyFinished, setShowOnlyFinished] = useState(true);
   const [searchQuery, setSearchQuery] = useState('');
 
@@ -113,7 +115,7 @@ export const LockeRunsTable: React.FC<Props> = ({ runs, onDelete, onRowClick }) 
           />
         </div>
         <div className="action-buttons">
-          <button className="action-button new">
+          <button className="action-button new" onClick={() => navigate('/locke_manager/new')}>
             <span>New</span>
           </button>
           <button className="action-button load">

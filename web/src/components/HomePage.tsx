@@ -23,28 +23,11 @@ const HomePage: React.FC = () => {
 
   return (
     <div>
-      <header className="App-header">
-        <div className="header-content">
-          <img 
-            src="https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/94.png" 
-            alt="Gengar" 
-            className="pokemon-logo"
-          />
-          <h1>LockeManager</h1>
-          <img 
-            src="https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/6.png" 
-            alt="Charizard" 
-            className="pokemon-logo"
-          />
-        </div>
-      </header>
-      <main>
-        {error ? (
-          <div className="error-message">{error}</div>
-        ) : (
-          <LockeRunsTable runs={runs} />
-        )}
-      </main>
+      {error ? (
+        <div className="error-message">{error}</div>
+      ) : (
+        <LockeRunsTable runs={runs} />
+      )}
     </div>
   );
 };
