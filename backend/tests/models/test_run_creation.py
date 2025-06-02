@@ -1,6 +1,6 @@
 import unittest
 from unittest.mock import patch, MagicMock
-from models.run_creation import RunCreation, save_run_creation, update_run_creation, fetch_or_create_run_creation
+from models.run_creation import RunCreation, save_run_creation, update_run_creation, fetch_or_create_run_creation, fetch_run_creation
 
 
 class TestRunCreation(unittest.TestCase):
@@ -109,10 +109,20 @@ class TestRunCreationDatabaseOperations(unittest.TestCase):
     def test_save_run_creation(self):
         """Test that save_run_creation calls insert_document correctly."""
         save_run_creation(self.test_run)
-        self.mock_insert.assert_called_once()
-        call_args = self.mock_insert.call_args[0]
-        self.assertEqual(call_args[1], "run_creation")
-        self.assertEqual(call_args[2]["name"], "test_run")
+        self.mock_insert.assert_called_once_with(
+            "locke_manager",
+            "run_creation",
+            {
+                "_id": "test_run",
+                "name": "test_run",
+                "locke": None,
+                "game": None,
+                "randomized": None,
+                "duplicate_clause": None,
+                "extra_info": {},
+                "finished": False
+            }
+        )
 
     def test_save_run_creation_error(self):
         """Test that save_run_creation handles errors correctly."""
@@ -124,11 +134,21 @@ class TestRunCreationDatabaseOperations(unittest.TestCase):
     def test_update_run_creation(self):
         """Test that update_run_creation calls update_document_by_id correctly."""
         update_run_creation(self.test_run)
-        self.mock_update.assert_called_once()
-        call_args = self.mock_update.call_args[0]
-        self.assertEqual(call_args[1], "run_creation")
-        self.assertEqual(call_args[2], "test_run")
-        self.assertEqual(call_args[3]["name"], "test_run")
+        self.mock_update.assert_called_once_with(
+            "locke_manager",
+            "run_creation",
+            "test_run",
+            {
+                "_id": "test_run",
+                "name": "test_run",
+                "locke": None,
+                "game": None,
+                "randomized": None,
+                "duplicate_clause": None,
+                "extra_info": {},
+                "finished": False
+            }
+        )
 
     def test_update_run_creation_error(self):
         """Test that update_run_creation handles errors correctly."""
@@ -160,6 +180,49 @@ class TestRunCreationDatabaseOperations(unittest.TestCase):
         with self.assertRaises(Exception) as context:
             fetch_or_create_run_creation("test_run")
         self.assertEqual(str(context.exception), "Failed to fetch or create run creation: Database error")
+
+    def test_fetch_run_creation_success(self):
+        """Test that fetch_run_creation returns a RunCreation instance when found."""
+        self.mock_fetch.return_value = [self.test_run.to_dict()]
+        run = fetch_run_creation("test_run")
+        self.assertEqual(run.name, "test_run")
+        self.mock_fetch.assert_called_once_with(
+            "locke_manager",
+            "run_creation",
+            {"name": "test_run"}
+        )
+
+    def test_fetch_run_creation_not_found(self):
+        """Test that fetch_run_creation returns None when run is not found."""
+        self.mock_fetch.return_value = []
+        run = fetch_run_creation("test_run")
+        self.assertIsNone(run)
+        self.mock_fetch.assert_called_once()
+
+    def test_fetch_run_creation_error(self):
+        """Test that fetch_run_creation handles database errors correctly."""
+        self.mock_fetch.side_effect = Exception("Database error")
+        with self.assertRaises(Exception) as context:
+            fetch_run_creation("test_run")
+        self.assertEqual(str(context.exception), "Failed to fetch run creation: Database error")
+        self.mock_fetch.assert_called_once()
+
+    def test_fetch_run_creation_multiple_results(self):
+        """Test that fetch_run_creation raises AssertionError when multiple runs exist."""
+        self.mock_fetch.return_value = [self.test_run.to_dict(), self.test_run.to_dict()]
+        with self.assertRaises(AssertionError) as context:
+            fetch_run_creation("test_run")
+        self.assertEqual(str(context.exception), "Found 2 runs with name test_run, expected exactly 1")
+        self.mock_fetch.assert_called_once()
+
+    def test_fetch_run_creation_initializes_extra_info(self):
+        """Test that fetch_run_creation initializes extra_info as empty dict if None."""
+        run_dict = self.test_run.to_dict()
+        run_dict["extra_info"] = None
+        self.mock_fetch.return_value = [run_dict]
+        run = fetch_run_creation("test_run")
+        self.assertEqual(run.extra_info, {})
+        self.mock_fetch.assert_called_once()
 
 
 if __name__ == '__main__':

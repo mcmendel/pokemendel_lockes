@@ -138,3 +138,34 @@ def fetch_or_create_run_creation(name: str) -> RunCreation:
         return run_creation
     except Exception as e:
         raise Exception(f"Failed to fetch or create run creation: {str(e)}")
+
+
+def fetch_run_creation(name: str) -> Optional[RunCreation]:
+    """Fetch a run creation from the database.
+    
+    Args:
+        name: Name of the run to fetch
+        
+    Returns:
+        Optional[RunCreation]: RunCreation instance if found, None otherwise
+        
+    Raises:
+        AssertionError: If multiple runs with the same name exist
+        Exception: If database operation fails
+    """
+    try:
+        results = list(fetch_documents_by_query(DB_NAME, _COLLECTIONS_NAME, {'name': name}))
+        if not results:
+            return None
+            
+        assert len(results) == 1, f"Found {len(results)} runs with name {name}, expected exactly 1"
+        
+        run_dict = results[0]
+        if run_dict.get('extra_info') is None:
+            run_dict['extra_info'] = {}
+        run_creation = RunCreation.from_dict(run_dict)
+        return run_creation
+    except AssertionError:
+        raise
+    except Exception as e:
+        raise Exception(f"Failed to fetch run creation: {str(e)}")

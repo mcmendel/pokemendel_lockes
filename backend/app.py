@@ -1,10 +1,12 @@
 """Flask application for the Locke Manager API."""
 
-from flask import Flask, jsonify, send_file
+from flask import Flask, jsonify, send_file, request
 from flask_cors import CORS
 from dotenv import load_dotenv
 from apis.main import list_runs_api
 from apis.resources import get_pokemon_info, get_gym_leader_info, get_type_info
+from apis.run_creation import start_run_creation
+from apis.exceptions import RunCreationError
 from core.lockes import list_all_lockes
 from functools import wraps
 
@@ -124,6 +126,51 @@ def get_type(type_name):
         mimetype='image/jpeg',
         as_attachment=False
     )
+
+@locke_route('run', methods=['PUT'])
+def create_new_run():
+    """Create a new run with the specified parameters.
+    
+    Request body should contain:
+        - run_name: Name of the run
+        - locke_type: Type of locke challenge
+        - duplicate_clause: Whether duplicate Pokemon are allowed
+        - is_randomized: Whether the game is randomized
+            
+    Returns:
+        List of available games that meet the locke's minimum generation requirement
+            
+    Status codes:
+        - 200: Success
+        - 400: Invalid request (e.g. invalid locke type)
+        - 409: Run already exists
+        - 500: Server error
+    """
+    try:
+        data = request.get_json()
+        if not data:
+            return jsonify("No data provided"), 400
+            
+        # Validate required fields
+        required_fields = ['run_name', 'locke_type', 'duplicate_clause', 'is_randomized']
+        missing_fields = [field for field in required_fields if field not in data]
+        if missing_fields:
+            return jsonify(f"Missing required fields: {', '.join(missing_fields)}"), 400
+            
+        # Call the service layer
+        game_names = start_run_creation(
+            run_name=data['run_name'],
+            locke_type=data['locke_type'],
+            duplicate_clause=data['duplicate_clause'],
+            is_randomized=data['is_randomized']
+        )
+            
+        return jsonify(game_names), 200
+        
+    except RunCreationError as e:
+        return jsonify(str(e)), e.status_code
+    except Exception as e:
+        return jsonify(str(e)), 500
 
 if __name__ == '__main__':
     app.run(debug=True, port=5222) 

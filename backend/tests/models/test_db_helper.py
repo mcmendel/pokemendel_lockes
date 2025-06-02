@@ -1,6 +1,5 @@
 import unittest
 from unittest.mock import patch, MagicMock
-from bson import ObjectId
 from pymongo.errors import PyMongoError
 from models.db_helper import (
     insert_documents,
@@ -21,7 +20,7 @@ class TestDBHelper(unittest.TestCase):
             {"name": "test1", "value": 1},
             {"name": "test2", "value": 2}
         ]
-        self.test_id = str(ObjectId())
+        self.test_id = "test_doc_1"
 
     @patch('models.db_helper.db_connector.get_db')
     def test_insert_document(self, mock_get_db):
@@ -30,13 +29,14 @@ class TestDBHelper(unittest.TestCase):
         mock_db = MagicMock()
         mock_db.__getitem__.return_value = mock_collection
         mock_get_db.return_value = mock_db
-        mock_collection.insert_one.return_value.inserted_id = ObjectId()
+        mock_collection.insert_one.return_value.inserted_id = self.test_id
 
         # Test
         result = insert_document(self.test_db_name, self.test_collection, self.test_document)
 
         # Assertions
         self.assertIsInstance(result, str)
+        self.assertEqual(result, self.test_id)
         mock_collection.insert_one.assert_called_once_with(self.test_document)
 
     @patch('models.db_helper.db_connector.get_db')
@@ -46,13 +46,14 @@ class TestDBHelper(unittest.TestCase):
         mock_db = MagicMock()
         mock_db.__getitem__.return_value = mock_collection
         mock_get_db.return_value = mock_db
-        mock_collection.insert_many.return_value.inserted_ids = [ObjectId(), ObjectId()]
+        mock_collection.insert_many.return_value.inserted_ids = ["doc1", "doc2"]
 
         # Test
         result = insert_documents(self.test_db_name, self.test_collection, self.test_documents)
 
         # Assertions
         self.assertEqual(len(result), 2)
+        self.assertEqual(result, ["doc1", "doc2"])
         mock_collection.insert_many.assert_called_once_with(self.test_documents)
 
     @patch('models.db_helper.db_connector.get_db')
@@ -69,7 +70,7 @@ class TestDBHelper(unittest.TestCase):
 
         # Assertions
         self.assertEqual(result, self.test_document)
-        mock_collection.find_one.assert_called_once_with({'_id': ObjectId(self.test_id)})
+        mock_collection.find_one.assert_called_once_with({'_id': self.test_id})
 
     @patch('models.db_helper.db_connector.get_db')
     def test_fetch_document_by_id_not_found(self, mock_get_db):
@@ -119,7 +120,7 @@ class TestDBHelper(unittest.TestCase):
         # Assertions
         self.assertTrue(result)
         mock_collection.update_one.assert_called_once_with(
-            {"_id": ObjectId(self.test_id)},
+            {"_id": self.test_id},
             {"$set": new_data},
             upsert=True
         )

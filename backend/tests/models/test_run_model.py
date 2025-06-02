@@ -226,14 +226,22 @@ class TestRunDatabaseOperations(unittest.TestCase):
         run = fetch_run("test_run_1")
         self.assertEqual(run.run_id, "test_run_1")
         self.assertEqual(run.name, "Test Run")
-        self.mock_fetch.assert_called_once()
+        self.mock_fetch.assert_called_once_with(
+            "locke_manager",
+            "runs",
+            {"_id": "test_run_1"}
+        )
 
     def test_fetch_run_not_found(self):
         """Test that fetch_run returns None when run is not found."""
         self.mock_fetch.return_value = []
         run = fetch_run("test_run_1")
         self.assertIsNone(run)
-        self.mock_fetch.assert_called_once()
+        self.mock_fetch.assert_called_once_with(
+            "locke_manager",
+            "runs",
+            {"_id": "test_run_1"}
+        )
 
     def test_fetch_run_error(self):
         """Test that fetch_run handles errors correctly."""
@@ -269,10 +277,11 @@ class TestRunDatabaseOperations(unittest.TestCase):
     def test_delete_run(self):
         """Test that delete_run calls delete_documents_by_query correctly."""
         delete_run("test_run_1")
-        self.mock_delete.assert_called_once()
-        call_args = self.mock_delete.call_args[0]
-        self.assertEqual(call_args[1], "runs")
-        self.assertEqual(call_args[2], {"_id": "test_run_1"})
+        self.mock_delete.assert_called_once_with(
+            "locke_manager",
+            "runs",
+            {"_id": "test_run_1"}
+        )
 
     def test_delete_run_error(self):
         """Test that delete_run handles errors correctly."""

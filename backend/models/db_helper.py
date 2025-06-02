@@ -105,7 +105,7 @@ def fetch_document_by_id(db_name: str, collection_name: str, doc_id: str) -> Opt
     try:
         db = db_connector.get_db(db_name)
         collection = db[collection_name]
-        result = collection.find_one({'_id': ObjectId(doc_id)})
+        result = collection.find_one({'_id': doc_id})
         if result is None:
             logger.warning(f"Document with id {doc_id} not found in {db_name}.{collection_name}")
         return result
@@ -164,7 +164,7 @@ def update_document_by_id(
         PyMongoError: If there's an error during update
     """
     try:
-        query = {"_id": ObjectId(doc_id)}
+        query = {"_id": doc_id}
         new_values = {"$set": new_data}
         db = db_connector.get_db(db_name)
         collection = db[collection_name]
