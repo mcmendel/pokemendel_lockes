@@ -11,15 +11,12 @@ information is collected before the run can begin.
 
 from dataclasses import dataclass
 from typing import Optional, List, Any
-from models.run_creation import RunCreation, fetch_or_create_run_creation, update_run_creation
+from models.run_creation import RunCreation, update_run_creation
 from pokemendel_core.utils.enum_list import EnumList
 
 
 class InfoKeys(EnumList):
-    LOCKE = 'LOCKE'
     GAME = 'GAME'
-    RANDOMIZE = 'RANDOMIZED'
-    DUPLICATE = 'DUPLICATE'
 
 
 @dataclass
@@ -64,13 +61,13 @@ class RunCreator:
     handle their specific requirements.
     """
     
-    def __init__(self, run_name: str):
-        """Initialize the run creator with a run name.
+    def __init__(self, run_creation: RunCreation):
+        """Initialize the run creator with a RunCreation instance.
         
         Args:
-            run_name: The name of the run to create or load
+            run_creation: The RunCreation instance to manage
         """
-        self.run_creation = fetch_or_create_run_creation(run_name)
+        self.run_creation = run_creation
 
     def get_progress(self) -> RunCreationProgress:
         """Get the current progress of run creation.
@@ -81,17 +78,8 @@ class RunCreator:
         if self.run_creation.finished:
             return RunCreationProgress(run_creation=self.run_creation, has_all_info=True)
         
-        if self.run_creation.locke is None:
-            return RunCreationProgress(run_creation=self.run_creation, missing_key=InfoKeys.LOCKE)
-        
         if self.run_creation.game is None:
             return RunCreationProgress(run_creation=self.run_creation, missing_key=InfoKeys.GAME)
-        
-        if self.run_creation.randomized is None:
-            return RunCreationProgress(run_creation=self.run_creation, missing_key=InfoKeys.RANDOMIZE)
-        
-        if self.run_creation.duplicate_clause is None:
-            return RunCreationProgress(run_creation=self.run_creation, missing_key=InfoKeys.DUPLICATE)
         
         return self._get_creation_missing_extra_info()
     
@@ -102,14 +90,8 @@ class RunCreator:
             key: The field being updated
             value: The new value for the field
         """
-        if key == InfoKeys.LOCKE:
-            self.run_creation.locke = str(value)
-        elif key == InfoKeys.GAME:
+        if key == InfoKeys.GAME:
             self.run_creation.game = str(value)
-        elif key == InfoKeys.RANDOMIZE:
-            self.run_creation.randomized = bool(value)
-        elif key == InfoKeys.DUPLICATE:
-            self.run_creation.duplicate_clause = bool(value)
         
         # Store the raw value in extra_info
         self.run_creation.extra_info[key] = str(value)
