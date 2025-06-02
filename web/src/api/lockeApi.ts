@@ -18,6 +18,19 @@ export interface Run {
     starter: string;
 }
 
+export interface CreateRunRequest {
+    run_name: string;
+    locke_type: string;
+    duplicate_clause: boolean;
+    is_randomized: boolean;
+}
+
+export interface Locke {
+    name: string;
+    description: string;
+    min_gen: number;
+}
+
 // API Client
 const lockeApi = {
     // Get all runs
@@ -27,6 +40,28 @@ const lockeApi = {
             return response.data;
         } catch (error) {
             console.error('Error fetching runs:', error);
+            throw error;
+        }
+    },
+
+    // Create a new run
+    createRun: async (request: CreateRunRequest): Promise<string[]> => {
+        try {
+            const response = await axios.put<string[]>(`${API_BASE_URL}/run`, request);
+            return response.data;
+        } catch (error) {
+            console.error('Error creating run:', error);
+            throw error;
+        }
+    },
+
+    // Get all available locke types
+    getLockes: async (): Promise<string[]> => {
+        try {
+            const response = await axios.get<string[]>(`${API_BASE_URL}/lockes`);
+            return response.data;
+        } catch (error) {
+            console.error('Error fetching locke types:', error);
             throw error;
         }
     },
