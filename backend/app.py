@@ -5,8 +5,8 @@ from flask_cors import CORS
 from dotenv import load_dotenv
 from apis.main import list_runs_api
 from apis.resources import get_pokemon_info, get_gym_leader_info, get_type_info
-from apis.run_creation import start_run_creation
-from apis.exceptions import RunCreationError
+from apis.run_creation import start_run_creation, continue_run_creation
+from apis.exceptions import RunCreationError, RunNotFoundError
 from core.lockes import list_all_lockes
 from functools import wraps
 
@@ -30,10 +30,11 @@ def locke_route(path, *args, **kwargs):
                 result = f(*args, **kwargs)
                 return result
             except Exception as e:
+                status = getattr(e, "status_code", 500)
                 return jsonify({
                     "status": "error",
                     "message": str(e)
-                }), 500
+                }), status
         return app.route(f"/locke_manager/{path}", *args, **kwargs)(wrapped)
     return decorator
 
@@ -146,31 +147,60 @@ def create_new_run():
         - 409: Run already exists
         - 500: Server error
     """
-    try:
-        data = request.get_json()
-        if not data:
-            return jsonify("No data provided"), 400
-            
-        # Validate required fields
-        required_fields = ['run_name', 'locke_type', 'duplicate_clause', 'is_randomized']
-        missing_fields = [field for field in required_fields if field not in data]
-        if missing_fields:
-            return jsonify(f"Missing required fields: {', '.join(missing_fields)}"), 400
-            
-        # Call the service layer
-        game_names = start_run_creation(
-            run_name=data['run_name'],
-            locke_type=data['locke_type'],
-            duplicate_clause=data['duplicate_clause'],
-            is_randomized=data['is_randomized']
-        )
-            
-        return jsonify(game_names), 200
+    data = request.get_json()
+    if not data:
+        return jsonify("No data provided"), 400
+    # Validate required fields
+    required_fields = ['run_name', 'locke_type', 'duplicate_clause', 'is_randomized']
+    missing_fields = [field for field in required_fields if field not in data]
+    if missing_fields:
+        return jsonify(f"Missing required fields: {', '.join(missing_fields)}"), 400
+    # Call the service layer (let exceptions propagate)
+    game_names = start_run_creation(
+        run_name=data['run_name'],
+        locke_type=data['locke_type'],
+        duplicate_clause=data['duplicate_clause'],
+        is_randomized=data['is_randomized']
+    )
+    return jsonify(game_names), 200
+
+@locke_route('run', methods=['POST'])
+def update_run():
+    """Update an existing run with new information.
+    
+    Request body:
+        run_name: Name of the run to update (required)
+        key: The key to update (optional)
+        val: The value to set (optional)
         
-    except RunCreationError as e:
-        return jsonify(str(e)), e.status_code
-    except Exception as e:
-        return jsonify(str(e)), 500
+    Returns:
+        A JSON object containing:
+            - next_key: The next key to update (if not finished)
+            - potential_values: List of potential values for the next key (if not finished)
+            - finished: Whether the run creation is complete
+            
+    Status codes:
+        200: Success
+        400: Invalid request (missing run_name)
+        404: Run not found
+        500: Server error
+    """
+    data = request.get_json()
+    # Validate required fields
+    if not data or 'run_name' not in data:
+        return jsonify({
+            'error': 'Missing required field: run_name'
+        }), 400
+    # Get optional fields with defaults
+    key = data.get('key')
+    val = data.get('val')
+    # Call the service function (let exceptions propagate)
+    response = continue_run_creation(
+        run_name=data['run_name'],
+        key=key,
+        val=val
+    )
+    return jsonify(response), 200
 
 if __name__ == '__main__':
     app.run(debug=True, port=5222) 

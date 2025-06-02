@@ -1,10 +1,47 @@
 """Service for creating new runs."""
 
 from models.run_creation import RunCreation, fetch_run_creation, update_run_creation
-from core.lockes import LOCKE_INSTANCES
-from games import get_games_from_gen
-from .exceptions import RunAlreadyExistsError, InvalidLockeTypeError
+from core.lockes import LOCKE_INSTANCES, get_run_creator_class
+from games import get_games_from_gen, get_game
+from .exceptions import RunAlreadyExistsError, InvalidLockeTypeError, RunNotFoundError, InvalidGameError
+from typing import TypedDict, Optional
 
+# Constants for run creation keys
+GAME_KEY = "GAME"
+STARTER_KEY = "STARTER"
+
+class RunUpdateResponse(TypedDict):
+    next_key: str
+    potential_values: list[str]
+    finished: bool
+
+def _handle_game_update(run: RunCreation, game_name: str) -> RunUpdateResponse:
+    """Handle updating a run with a game.
+    
+    Args:
+        run: The run to update
+        game_name: The name of the game to set
+            
+    Returns:
+        A RunUpdateResponse with the next key and potential values
+            
+    Raises:
+        InvalidGameError: If the game name is invalid
+    """
+    try:
+        # Validate game name
+        game = get_game(game_name)
+        # Update run with game
+        run.game = game.name
+        update_run_creation(run)
+        
+        return {
+            "next_key": STARTER_KEY,
+            "potential_values": [pokemon.name for pokemon in game.starters],
+            "finished": False
+        }
+    except StopIteration:
+        raise InvalidGameError(game_name)
 
 def start_run_creation(run_name: str, locke_type: str, duplicate_clause: bool, is_randomized: bool) -> list[str]:
     """Create a new run with the specified parameters.
@@ -41,11 +78,56 @@ def start_run_creation(run_name: str, locke_type: str, duplicate_clause: bool, i
         locke=locke_type,
         duplicate_clause=duplicate_clause,
         randomized=is_randomized,
-        finished=True
+        finished=False
     )
     
     update_run_creation(run_creation)
     
     # Get available games based on locke's minimum generation
     available_games = get_games_from_gen(locke.min_gen)
-    return [game.name for game in available_games] 
+    return [game.name for game in available_games]
+
+def continue_run_creation(run_name: str, key: Optional[str] = None, val: Optional[str] = None) -> RunUpdateResponse:
+    """Continue the run creation process by updating a specific field.
+    
+    Args:
+        run_name: Name of the run to update
+        key: The key to update (optional)
+        val: The value to set (optional)
+            
+    Returns:
+        A dictionary containing:
+            - next_key: The next key to update (if not finished)
+            - potential_values: List of potential values for the next key (if not finished)
+            - finished: Whether the run creation is complete
+            
+    Raises:
+        RunNotFoundError: If the run doesn't exist
+        InvalidGameError: If the game name is invalid
+        Exception: For any other errors that occur during run update
+    """
+    # Check if run exists
+    existing_run = fetch_run_creation(run_name)
+    if existing_run is None:
+        raise RunNotFoundError(run_name)
+    
+    # Get the appropriate run creator class and create an instance
+    creator_class = get_run_creator_class(existing_run.locke)
+    creator = creator_class(existing_run)
+    
+    # Update the run with the new value if both key and val are provided
+    if key is not None and val is not None:
+        creator.update_progress(key, val)
+    
+    # Get the current progress
+    progress = creator.get_progress()
+    
+    # Return appropriate response based on progress
+    if progress.has_all_info:
+        return {"finished": True}
+    
+    return {
+        "next_key": progress.missing_key,
+        "potential_values": progress.missing_key_options or [],
+        "finished": False
+    } 

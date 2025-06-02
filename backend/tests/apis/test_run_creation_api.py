@@ -104,7 +104,7 @@ class TestStartRunCreation(unittest.TestCase):
         self.assertEqual(run_creation.locke, self.locke_type)
         self.assertEqual(run_creation.duplicate_clause, self.duplicate_clause)
         self.assertEqual(run_creation.randomized, self.is_randomized)
-        self.assertTrue(run_creation.finished)
+        self.assertFalse(run_creation.finished)
 
     def test_start_run_creation_existing_run(self):
         """Test that RunAlreadyExistsError is raised when run already exists."""

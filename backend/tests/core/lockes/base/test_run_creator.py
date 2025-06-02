@@ -40,27 +40,20 @@ class TestRunCreationProgress(unittest.TestCase):
 class TestRunCreator(unittest.TestCase):
     def setUp(self):
         """Set up test fixtures."""
-        self.run_name = "test_run"
-        self.mock_run_creation = RunCreation(name=self.run_name)
+        self.mock_run_creation = RunCreation(name="test_run")
         
-        # Mock the database functions
-        self.fetch_patcher = patch('core.lockes.base.run_creator.fetch_or_create_run_creation')
+        # Mock the database function
         self.update_patcher = patch('core.lockes.base.run_creator.update_run_creation')
-        
-        self.mock_fetch = self.fetch_patcher.start()
         self.mock_update = self.update_patcher.start()
         
-        self.mock_fetch.return_value = self.mock_run_creation
-        self.run_creator = RunCreator(self.run_name)
+        self.run_creator = RunCreator(self.mock_run_creation)
 
     def tearDown(self):
         """Clean up test fixtures."""
-        self.fetch_patcher.stop()
         self.update_patcher.stop()
 
     def test_init(self):
         """Test RunCreator initialization."""
-        self.mock_fetch.assert_called_once_with(self.run_name)
         self.assertEqual(self.run_creator.run_creation, self.mock_run_creation)
 
     def test_get_progress_finished(self):
@@ -71,55 +64,23 @@ class TestRunCreator(unittest.TestCase):
         self.assertTrue(progress.has_all_info)
         self.assertEqual(progress.run_creation, self.mock_run_creation)
 
-    def test_get_progress_missing_locke(self):
-        """Test get_progress when locke is missing."""
-        self.mock_run_creation.finished = False
-        self.mock_run_creation.locke = None
-        progress = self.run_creator.get_progress()
-        
-        self.assertFalse(progress.has_all_info)
-        self.assertEqual(progress.missing_key, InfoKeys.LOCKE)
-
     def test_get_progress_missing_game(self):
         """Test get_progress when game is missing."""
         self.mock_run_creation.finished = False
-        self.mock_run_creation.locke = "test_locke"
         self.mock_run_creation.game = None
         progress = self.run_creator.get_progress()
         
         self.assertFalse(progress.has_all_info)
         self.assertEqual(progress.missing_key, InfoKeys.GAME)
 
-    def test_get_progress_missing_randomized(self):
-        """Test get_progress when randomized is missing."""
+    def test_get_progress_complete(self):
+        """Test get_progress when all required fields are present."""
         self.mock_run_creation.finished = False
-        self.mock_run_creation.locke = "test_locke"
         self.mock_run_creation.game = "test_game"
-        self.mock_run_creation.randomized = None
         progress = self.run_creator.get_progress()
         
-        self.assertFalse(progress.has_all_info)
-        self.assertEqual(progress.missing_key, InfoKeys.RANDOMIZE)
-
-    def test_get_progress_missing_duplicate(self):
-        """Test get_progress when duplicate_clause is missing."""
-        self.mock_run_creation.finished = False
-        self.mock_run_creation.locke = "test_locke"
-        self.mock_run_creation.game = "test_game"
-        self.mock_run_creation.randomized = True
-        self.mock_run_creation.duplicate_clause = None
-        progress = self.run_creator.get_progress()
-        
-        self.assertFalse(progress.has_all_info)
-        self.assertEqual(progress.missing_key, InfoKeys.DUPLICATE)
-
-    def test_update_progress_locke(self):
-        """Test update_progress for locke field."""
-        self.run_creator.update_progress(InfoKeys.LOCKE, "test_locke")
-        
-        self.assertEqual(self.mock_run_creation.locke, "test_locke")
-        self.assertEqual(self.mock_run_creation.extra_info[InfoKeys.LOCKE], "test_locke")
-        self.mock_update.assert_called_once_with(self.mock_run_creation)
+        self.assertTrue(progress.has_all_info)
+        self.assertEqual(progress.run_creation, self.mock_run_creation)
 
     def test_update_progress_game(self):
         """Test update_progress for game field."""
@@ -129,20 +90,11 @@ class TestRunCreator(unittest.TestCase):
         self.assertEqual(self.mock_run_creation.extra_info[InfoKeys.GAME], "test_game")
         self.mock_update.assert_called_once_with(self.mock_run_creation)
 
-    def test_update_progress_randomized(self):
-        """Test update_progress for randomized field."""
-        self.run_creator.update_progress(InfoKeys.RANDOMIZE, "true")
+    def test_update_progress_extra_info(self):
+        """Test update_progress stores any key in extra_info."""
+        self.run_creator.update_progress("CUSTOM_KEY", "custom_value")
         
-        self.assertTrue(self.mock_run_creation.randomized)
-        self.assertEqual(self.mock_run_creation.extra_info[InfoKeys.RANDOMIZE], "true")
-        self.mock_update.assert_called_once_with(self.mock_run_creation)
-
-    def test_update_progress_duplicate(self):
-        """Test update_progress for duplicate_clause field."""
-        self.run_creator.update_progress(InfoKeys.DUPLICATE, "true")
-        
-        self.assertTrue(self.mock_run_creation.duplicate_clause)
-        self.assertEqual(self.mock_run_creation.extra_info[InfoKeys.DUPLICATE], "true")
+        self.assertEqual(self.mock_run_creation.extra_info["CUSTOM_KEY"], "custom_value")
         self.mock_update.assert_called_once_with(self.mock_run_creation)
 
     def test_finish_creation(self):
