@@ -18,11 +18,24 @@ export interface Run {
     starter: string;
 }
 
+export interface RunUpdateResponse {
+    next_key: string;
+    potential_values: string[];
+    finished: boolean;
+    run_id: string | null;
+}
+
 export interface CreateRunRequest {
     run_name: string;
     locke_type: string;
     duplicate_clause: boolean;
     is_randomized: boolean;
+}
+
+export interface ContinueRunRequest {
+    run_name: string;
+    key?: string;
+    val?: string;
 }
 
 export interface Locke {
@@ -62,6 +75,17 @@ const lockeApi = {
             return response.data;
         } catch (error) {
             console.error('Error fetching locke types:', error);
+            throw error;
+        }
+    },
+
+    // Continue run creation
+    continueRunCreation: async (request: ContinueRunRequest): Promise<RunUpdateResponse> => {
+        try {
+            const response = await axios.post<RunUpdateResponse>(`${API_BASE_URL}/run`, request);
+            return response.data;
+        } catch (error) {
+            console.error('Error continuing run creation:', error);
             throw error;
         }
     },

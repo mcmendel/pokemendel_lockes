@@ -16,6 +16,7 @@ from pokemendel_core.utils.enum_list import EnumList
 from core.run import Run
 from core.party import Party
 from core.box import Box
+from games import get_games_from_gen
 from datetime import datetime
 
 
@@ -73,7 +74,7 @@ class RunCreator:
         """
         self.run_creation = run_creation
 
-    def get_progress(self) -> RunCreationProgress:
+    def get_progress(self, locke_min_gen: int) -> RunCreationProgress:
         """Get the current progress of run creation.
         
         Returns:
@@ -83,7 +84,9 @@ class RunCreator:
             return RunCreationProgress(run_creation=self.run_creation, has_all_info=True)
         
         if self.run_creation.game is None:
-            return RunCreationProgress(run_creation=self.run_creation, missing_key=InfoKeys.GAME)
+            return RunCreationProgress(run_creation=self.run_creation, missing_key=InfoKeys.GAME, missing_key_options=[
+                game.name for game in get_games_from_gen(locke_min_gen)
+            ])
         
         return self._get_creation_missing_extra_info()
     

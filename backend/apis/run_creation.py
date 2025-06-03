@@ -123,7 +123,7 @@ def continue_run_creation(run_name: str, key: Optional[str] = None, val: Optiona
         creator.update_progress(key, val)
     
     # Get the current progress
-    progress = creator.get_progress()
+    progress = creator.get_progress(LOCKE_INSTANCES[existing_run.locke].min_gen)
     
     # Return appropriate response based on progress
     if progress.has_all_info:

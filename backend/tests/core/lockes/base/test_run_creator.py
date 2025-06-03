@@ -11,6 +11,7 @@ from models.run_creation import RunCreation
 from datetime import datetime
 from core.party import Party
 from core.box import Box
+from games import get_games_from_gen
 
 
 class TestRunCreationProgress(unittest.TestCase):
@@ -43,17 +44,23 @@ class TestRunCreationProgress(unittest.TestCase):
 class TestRunCreator(unittest.TestCase):
     def setUp(self):
         """Set up test fixtures."""
-        self.mock_run_creation = RunCreation(name="test_run")
+        self.mock_run_creation = RunCreation(name="test_run", locke="nuzlocke")
         
         # Mock the database function
         self.update_patcher = patch('core.lockes.base.run_creator.update_run_creation')
         self.mock_update = self.update_patcher.start()
+        
+        # Mock get_games_from_gen
+        self.games_patcher = patch('core.lockes.base.run_creator.get_games_from_gen')
+        self.mock_games = self.games_patcher.start()
+        self.mock_games.return_value = [MagicMock(name="red"), MagicMock(name="blue")]
         
         self.run_creator = RunCreator(self.mock_run_creation)
 
     def tearDown(self):
         """Clean up test fixtures."""
         self.update_patcher.stop()
+        self.games_patcher.stop()
 
     def test_init(self):
         """Test RunCreator initialization."""
@@ -62,8 +69,7 @@ class TestRunCreator(unittest.TestCase):
     def test_get_progress_finished(self):
         """Test get_progress when run is finished."""
         self.mock_run_creation.finished = True
-        progress = self.run_creator.get_progress()
-        
+        progress = self.run_creator.get_progress(locke_min_gen=1)
         self.assertTrue(progress.has_all_info)
         self.assertEqual(progress.run_creation, self.mock_run_creation)
 
@@ -71,24 +77,26 @@ class TestRunCreator(unittest.TestCase):
         """Test get_progress when game is missing."""
         self.mock_run_creation.finished = False
         self.mock_run_creation.game = None
-        progress = self.run_creator.get_progress()
-        
+        progress = self.run_creator.get_progress(locke_min_gen=1)
         self.assertFalse(progress.has_all_info)
         self.assertEqual(progress.missing_key, InfoKeys.GAME)
+        self.assertEqual(
+            progress.missing_key_options,
+            [self.mock_games.return_value[0].name, self.mock_games.return_value[1].name]
+        )
+        self.mock_games.assert_called_once_with(1)
 
     def test_get_progress_complete(self):
         """Test get_progress when all required fields are present."""
         self.mock_run_creation.finished = False
         self.mock_run_creation.game = "test_game"
-        progress = self.run_creator.get_progress()
-        
+        progress = self.run_creator.get_progress(locke_min_gen=1)
         self.assertTrue(progress.has_all_info)
         self.assertEqual(progress.run_creation, self.mock_run_creation)
 
     def test_update_progress_game(self):
         """Test update_progress for game field."""
         self.run_creator.update_progress(InfoKeys.GAME, "test_game")
-        
         self.assertEqual(self.mock_run_creation.game, "test_game")
         self.assertEqual(self.mock_run_creation.extra_info[InfoKeys.GAME], "test_game")
         self.mock_update.assert_called_once_with(self.mock_run_creation)
@@ -96,7 +104,6 @@ class TestRunCreator(unittest.TestCase):
     def test_update_progress_extra_info(self):
         """Test update_progress stores any key in extra_info."""
         self.run_creator.update_progress("CUSTOM_KEY", "custom_value")
-        
         self.assertEqual(self.mock_run_creation.extra_info["CUSTOM_KEY"], "custom_value")
         self.mock_update.assert_called_once_with(self.mock_run_creation)
 
@@ -133,6 +140,7 @@ class TestRunCreator(unittest.TestCase):
         
         # Test missing locke
         self.mock_run_creation.game = "red"
+        self.run_creator.run_creation.locke = None
         with self.assertRaises(AssertionError) as context:
             self.run_creator.finish_creation()
         self.assertEqual(str(context.exception), "Run creation must have a locke type set")
