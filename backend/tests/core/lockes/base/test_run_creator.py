@@ -8,6 +8,9 @@ import unittest
 from unittest.mock import patch, MagicMock
 from core.lockes.base.run_creator import RunCreator, RunCreationProgress, InfoKeys
 from models.run_creation import RunCreation
+from datetime import datetime
+from core.party import Party
+from core.box import Box
 
 
 class TestRunCreationProgress(unittest.TestCase):
@@ -98,11 +101,68 @@ class TestRunCreator(unittest.TestCase):
         self.mock_update.assert_called_once_with(self.mock_run_creation)
 
     def test_finish_creation(self):
-        """Test finish_creation method."""
-        self.run_creator.finish_creation()
+        """Test finish_creation method returns a Run instance."""
+        # Set up required fields
+        self.mock_run_creation.game = "red"
+        self.mock_run_creation.locke = "nuzlocke"
+        self.mock_run_creation.duplicate_clause = False
+        self.mock_run_creation.randomized = True
         
+        # Call finish_creation
+        run = self.run_creator.finish_creation()
+        
+        # Verify run creation was marked as finished
         self.assertTrue(self.mock_run_creation.finished)
         self.mock_update.assert_called_once_with(self.mock_run_creation)
+        
+        # Verify returned Run instance
+        self.assertEqual(run.id, self.mock_run_creation.name)
+        self.assertEqual(run.run_name, self.mock_run_creation.name)
+        self.assertIsInstance(run.creation_date, datetime)
+        self.assertIsInstance(run.party, Party)
+        self.assertEqual(len(run.party.pokemons), 0)
+        self.assertIsInstance(run.box, Box)
+        self.assertEqual(len(run.box.pokemons), 0)
+
+    def test_finish_creation_missing_required_fields(self):
+        """Test finish_creation raises AssertionError when required fields are missing."""
+        # Test missing game
+        with self.assertRaises(AssertionError) as context:
+            self.run_creator.finish_creation()
+        self.assertEqual(str(context.exception), "Run creation must have a game set")
+        
+        # Test missing locke
+        self.mock_run_creation.game = "red"
+        with self.assertRaises(AssertionError) as context:
+            self.run_creator.finish_creation()
+        self.assertEqual(str(context.exception), "Run creation must have a locke type set")
+
+    def test_create_run(self):
+        """Test _create_run method creates a Run instance with correct data."""
+        # Set up required fields
+        self.mock_run_creation.finished = True
+        self.mock_run_creation.game = "red"
+        self.mock_run_creation.locke = "nuzlocke"
+        self.mock_run_creation.duplicate_clause = False
+        self.mock_run_creation.randomized = True
+        
+        # Call _create_run
+        run = self.run_creator._create_run()
+        
+        # Verify Run instance
+        self.assertEqual(run.id, self.mock_run_creation.name)
+        self.assertEqual(run.run_name, self.mock_run_creation.name)
+        self.assertIsInstance(run.creation_date, datetime)
+        self.assertIsInstance(run.party, Party)
+        self.assertEqual(len(run.party.pokemons), 0)
+        self.assertIsInstance(run.box, Box)
+        self.assertEqual(len(run.box.pokemons), 0)
+
+    def test_create_run_unfinished(self):
+        """Test _create_run raises AssertionError when run creation is not finished."""
+        with self.assertRaises(AssertionError) as context:
+            self.run_creator._create_run()
+        self.assertEqual(str(context.exception), "Cannot create run from unfinished run creation")
 
     def test_get_creation_missing_extra_info(self):
         """Test _get_creation_missing_extra_info method."""

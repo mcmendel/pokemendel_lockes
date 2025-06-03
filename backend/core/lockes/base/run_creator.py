@@ -13,6 +13,10 @@ from dataclasses import dataclass
 from typing import Optional, List, Any
 from models.run_creation import RunCreation, update_run_creation
 from pokemendel_core.utils.enum_list import EnumList
+from core.run import Run
+from core.party import Party
+from core.box import Box
+from datetime import datetime
 
 
 class InfoKeys(EnumList):
@@ -98,10 +102,53 @@ class RunCreator:
         
         update_run_creation(self.run_creation)
 
-    def finish_creation(self) -> None:
-        """Mark the run creation as complete."""
+    def finish_creation(self) -> Run:
+        """Mark the run creation as complete and return a Run instance.
+        
+        This method:
+        1. Marks the run creation as finished
+        2. Updates the run creation in the database
+        3. Creates and returns a Run instance for the run
+        
+        Returns:
+            Run: A new Run instance ready to be managed
+            
+        Raises:
+            AssertionError: If the run creation is not finished or missing required data
+            StopIteration: If the game name is invalid
+        """
         self.run_creation.finished = True
         update_run_creation(self.run_creation)
+        return self._create_run()
+
+    def _create_run(self) -> Run:
+        """Create a Run instance from the RunCreation.
+        
+        This method creates a Run with:
+        - ID and name from the run creation
+        - Current timestamp as creation date
+        - Empty party and box
+        
+        Returns:
+            Run: A new Run instance ready to be managed
+            
+        Raises:
+            AssertionError: If the run creation is not finished or missing required data
+            StopIteration: If the game name is invalid
+        """
+        # Verify run creation is complete
+        assert self.run_creation.finished, "Cannot create run from unfinished run creation"
+        assert self.run_creation.game is not None, "Run creation must have a game set"
+        assert self.run_creation.locke is not None, "Run creation must have a locke type set"
+        
+        # Create a new run with empty party and box
+        return Run(
+            id=self.run_creation.name,
+            run_name=self.run_creation.name,
+            creation_date=datetime.now(),
+            party=Party(pokemons=[]),
+            box=Box(pokemons=[])
+        )
 
     def _get_creation_missing_extra_info(self) -> RunCreationProgress:
         """Get any additional information needed for run creation.
