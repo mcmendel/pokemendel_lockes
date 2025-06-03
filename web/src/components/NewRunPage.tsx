@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
-import lockeApi from '../api/lockeApi';
+import lockeApi, { RunUpdateResponse } from '../api/lockeApi';
 import './NewRunPage.css';
 
 const NewRunPage: React.FC = () => {
@@ -70,8 +70,31 @@ const NewRunPage: React.FC = () => {
       // TODO: Handle available games selection
       console.log('Available games:', availableGames);
       navigate('/locke_manager');
-    } catch (err) {
-      setError(err instanceof Error ? err.message : 'Failed to create run');
+    } catch (err: unknown) {
+      const error = err as { response?: { status?: number } };
+      if (error.response?.status === 409) {
+        // Run already exists, try to continue its creation
+        try {
+          const response: RunUpdateResponse = await lockeApi.continueRunCreation({
+            run_name: runName.trim()
+          });
+          
+          if (response.finished) {
+            // Run creation is complete
+            navigate('/locke_manager');
+          } else {
+            // TODO: Show UI for next step (response.next_key) with potential values (response.potential_values)
+            console.log('Next step:', response.next_key);
+            console.log('Available options:', response.potential_values);
+            // For now, just navigate back
+            navigate('/locke_manager');
+          }
+        } catch (continueErr) {
+          setError(continueErr instanceof Error ? continueErr.message : 'Failed to continue run creation');
+        }
+      } else {
+        setError(err instanceof Error ? err.message : 'Failed to create run');
+      }
     }
   };
 
@@ -168,7 +191,7 @@ const NewRunPage: React.FC = () => {
             </label>
           </div>
         </div>
-        <button type="submit" disabled={isLoading}>Create Run</button>
+        <button type="submit" disabled={isLoading}>Start Run Creation</button>
       </form>
     </div>
   );

@@ -191,7 +191,7 @@ class TestContinueRunCreation(unittest.TestCase):
     def setUp(self):
         """Set up test fixtures."""
         self.run_name = "test_run"
-        self.locke_type = "nuzlocke"
+        self.locke_type = "BaseLocke"
         self.game_name = "red"
         
         # Create a mock run creation
