@@ -63,7 +63,8 @@ class TestRunApi(unittest.TestCase):
         mock_continue.return_value = {
             'next_key': 'hello',
             'potential_values': [],
-            'finished': False
+            'finished': False,
+            'run_id': None
         }
         data = {'run_name': 'TestRun', 'key': 'GAME', 'val': 'Red'}
         resp = self.client.post(self.url, json=data)
@@ -71,7 +72,28 @@ class TestRunApi(unittest.TestCase):
         self.assertEqual(resp.get_json(), {
             'next_key': 'hello',
             'potential_values': [],
-            'finished': False
+            'finished': False,
+            'run_id': None
+        })
+        mock_continue.assert_called_once()
+
+    @patch('app.continue_run_creation')
+    def test_update_run_finished(self, mock_continue):
+        """Test update_run when run creation is complete."""
+        mock_continue.return_value = {
+            'next_key': None,
+            'potential_values': [],
+            'finished': True,
+            'run_id': 'TestRun'
+        }
+        data = {'run_name': 'TestRun', 'key': 'STARTER', 'val': 'Bulbasaur'}
+        resp = self.client.post(self.url, json=data)
+        self.assertEqual(resp.status_code, 200)
+        self.assertEqual(resp.get_json(), {
+            'next_key': None,
+            'potential_values': [],
+            'finished': True,
+            'run_id': 'TestRun'
         })
         mock_continue.assert_called_once()
 

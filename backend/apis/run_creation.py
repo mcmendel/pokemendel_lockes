@@ -1,6 +1,7 @@
 """Service for creating new runs."""
 
 from models.run_creation import RunCreation, fetch_run_creation, update_run_creation
+from models.run import Run as DBRun, save_run
 from core.lockes import LOCKE_INSTANCES, get_run_creator_class
 from games import get_games_from_gen, get_game
 from .exceptions import RunAlreadyExistsError, InvalidLockeTypeError, RunNotFoundError, InvalidGameError
@@ -14,6 +15,7 @@ class RunUpdateResponse(TypedDict):
     next_key: str
     potential_values: list[str]
     finished: bool
+    run_id: Optional[str]
 
 def _handle_game_update(run: RunCreation, game_name: str) -> RunUpdateResponse:
     """Handle updating a run with a game.
@@ -100,6 +102,7 @@ def continue_run_creation(run_name: str, key: Optional[str] = None, val: Optiona
             - next_key: The next key to update (if not finished)
             - potential_values: List of potential values for the next key (if not finished)
             - finished: Whether the run creation is complete
+            - run_id: The ID of the created run (only when finished is True)
             
     Raises:
         RunNotFoundError: If the run doesn't exist
@@ -124,10 +127,47 @@ def continue_run_creation(run_name: str, key: Optional[str] = None, val: Optiona
     
     # Return appropriate response based on progress
     if progress.has_all_info:
-        return {"finished": True}
+        # Create the run and get its ID
+        core_run = creator.finish_creation()
+        
+        # Get the game instance to get its generation
+        try:
+            game = get_game(existing_run.game)
+        except StopIteration:
+            raise InvalidGameError(existing_run.game)
+        
+        # Convert core Run to database Run
+        db_run = DBRun(
+            run_id=core_run.id,
+            created_date=core_run.creation_date,
+            name=core_run.run_name,
+            locke=existing_run.locke,
+            game=existing_run.game,
+            gen=game.gen,
+            randomized=existing_run.randomized or False,
+            party=[pokemon.metadata.id for pokemon in core_run.party.pokemons],
+            box=[pokemon.metadata.id for pokemon in core_run.box.pokemons],
+            battles=[],  # Empty array as battles are added during run progress
+            encounters=[],  # Empty array as encounters are added during run progress
+            locke_extra_info=existing_run.extra_info,
+            restarts=core_run.restarts,
+            duplicate_clause=existing_run.duplicate_clause or False,
+            finished=core_run.finished,
+            starter=str(core_run.starter) if core_run.starter else None
+        )
+        
+        # Save the run to the database
+        save_run(db_run)
+        return {
+            "finished": True,
+            "run_id": db_run.run_id,
+            "next_key": None,
+            "potential_values": []
+        }
     
     return {
         "next_key": progress.missing_key,
         "potential_values": progress.missing_key_options or [],
-        "finished": False
+        "finished": False,
+        "run_id": existing_run.name  # Include run_id even when not finished
     } 
