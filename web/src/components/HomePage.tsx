@@ -2,10 +2,13 @@ import React, { useEffect, useState } from 'react';
 import LockeRunsTable from './LockeRunsTable';
 import lockeApi from '../api/lockeApi';
 import { Run } from '../api/lockeApi';
+import { useNavigate } from 'react-router-dom';
+import './HomePage.css';
 
 const HomePage: React.FC = () => {
   const [runs, setRuns] = useState<Run[]>([]);
   const [error, setError] = useState<string | null>(null);
+  const navigate = useNavigate();
 
   useEffect(() => {
     const fetchRuns = async () => {
@@ -21,12 +24,19 @@ const HomePage: React.FC = () => {
     fetchRuns();
   }, []);
 
+  const handleRowDoubleClick = (runId: string) => {
+    navigate(`/locke_manager/run/${runId}`);
+  };
+
   return (
-    <div>
+    <div className="home-container">
       {error ? (
         <div className="error-message">{error}</div>
       ) : (
-        <LockeRunsTable runs={runs} />
+        <LockeRunsTable 
+          runs={runs} 
+          onRowDoubleClick={handleRowDoubleClick}
+        />
       )}
     </div>
   );

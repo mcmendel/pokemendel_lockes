@@ -3,6 +3,28 @@ import { useNavigate, useParams } from 'react-router-dom';
 import lockeApi, { RunUpdateResponse } from '../api/lockeApi';
 import './RunConfiguration.css';
 
+interface SuccessPopupProps {
+  runId: string;
+  onClose: () => void;
+}
+
+const SuccessPopup: React.FC<SuccessPopupProps> = ({ runId, onClose }) => {
+  return (
+    <div className="run-configuration-popup-overlay">
+      <div className="run-configuration-popup">
+        <h2>Success!</h2>
+        <p>Run created successfully</p>
+        <button 
+          className="run-configuration-popup-button"
+          onClick={onClose}
+        >
+          OK
+        </button>
+      </div>
+    </div>
+  );
+};
+
 const RunConfiguration: React.FC = () => {
   const navigate = useNavigate();
   const { runName } = useParams<{ runName: string }>();
@@ -11,6 +33,8 @@ const RunConfiguration: React.FC = () => {
   const [potentialValues, setPotentialValues] = useState<string[]>([]);
   const [selectedValue, setSelectedValue] = useState<string | null>(null);
   const [isLoading, setIsLoading] = useState(true);
+  const [showSuccess, setShowSuccess] = useState(false);
+  const [createdRunId, setCreatedRunId] = useState<string | null>(null);
 
   useEffect(() => {
     const continueCreation = async () => {
@@ -56,7 +80,8 @@ const RunConfiguration: React.FC = () => {
       });
       
       if (response.finished) {
-        navigate('/locke_manager');
+        setCreatedRunId(response.run_id);
+        setShowSuccess(true);
       } else {
         setNextKey(response.next_key);
         setPotentialValues(response.potential_values);
@@ -73,6 +98,13 @@ const RunConfiguration: React.FC = () => {
     setSelectedValue(potentialValues[randomIndex]);
   };
 
+  const handleSuccessClose = () => {
+    setShowSuccess(false);
+    if (createdRunId) {
+      navigate(`/locke_manager/run/${createdRunId}`);
+    }
+  };
+
   if (isLoading) {
     return (
       <div className="run-configuration-container">
@@ -83,6 +115,9 @@ const RunConfiguration: React.FC = () => {
 
   return (
     <div className="run-configuration-container">
+      {showSuccess && createdRunId && (
+        <SuccessPopup runId={createdRunId} onClose={handleSuccessClose} />
+      )}
       <h1 className="run-configuration-title">Configure Run:</h1>
       <h1 className="run-configuration-name">{runName}</h1>
       {error && <div className="run-configuration-error">{error}</div>}
