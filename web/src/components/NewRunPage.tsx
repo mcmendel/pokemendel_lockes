@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
-import lockeApi, { RunUpdateResponse } from '../api/lockeApi';
+import lockeApi from '../api/lockeApi';
 import './NewRunPage.css';
 
 const NewRunPage: React.FC = () => {
@@ -60,38 +60,20 @@ const NewRunPage: React.FC = () => {
     }
 
     try {
-      const availableGames = await lockeApi.createRun({
+      await lockeApi.createRun({
         run_name: runName.trim(),
         locke_type: lockeType,
         duplicate_clause: duplicateClause,
         is_randomized: isRandomized
       });
 
-      // TODO: Handle available games selection
-      console.log('Available games:', availableGames);
-      navigate('/locke_manager');
+      // Navigate to the continue creation page
+      navigate(`/new/${runName.trim()}`);
     } catch (err: unknown) {
       const error = err as { response?: { status?: number } };
       if (error.response?.status === 409) {
-        // Run already exists, try to continue its creation
-        try {
-          const response: RunUpdateResponse = await lockeApi.continueRunCreation({
-            run_name: runName.trim()
-          });
-          
-          if (response.finished) {
-            // Run creation is complete
-            navigate('/locke_manager');
-          } else {
-            // TODO: Show UI for next step (response.next_key) with potential values (response.potential_values)
-            console.log('Next step:', response.next_key);
-            console.log('Available options:', response.potential_values);
-            // For now, just navigate back
-            navigate('/locke_manager');
-          }
-        } catch (continueErr) {
-          setError(continueErr instanceof Error ? continueErr.message : 'Failed to continue run creation');
-        }
+        // Run already exists, navigate to continue creation
+        navigate(`/new/${runName.trim()}`);
       } else {
         setError(err instanceof Error ? err.message : 'Failed to create run');
       }
