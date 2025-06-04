@@ -10,6 +10,7 @@ interface Props {
   runs: Run[];
   onDelete?: (runId: string) => void;
   onRowClick?: (runId: string) => void;
+  onRowDoubleClick?: (runId: string) => void;
 }
 
 function daysPassed(dateString: string): string {
@@ -35,7 +36,7 @@ function daysPassed(dateString: string): string {
   }
 }
 
-export const LockeRunsTable: React.FC<Props> = ({ runs, onDelete, onRowClick }) => {
+export const LockeRunsTable: React.FC<Props> = ({ runs, onDelete, onRowClick, onRowDoubleClick }) => {
   const navigate = useNavigate();
   const [showOnlyFinished, setShowOnlyFinished] = useState(true);
   const [searchQuery, setSearchQuery] = useState('');
@@ -146,6 +147,7 @@ export const LockeRunsTable: React.FC<Props> = ({ runs, onDelete, onRowClick }) 
           },
         }}
         onRowClick={(params) => onRowClick?.(params.id as string)}
+        onRowDoubleClick={(params) => onRowDoubleClick?.(params.id as string)}
         className="locke-runs-table"
       />
     </div>

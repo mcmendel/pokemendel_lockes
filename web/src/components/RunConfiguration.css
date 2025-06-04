@@ -224,4 +224,73 @@
 
 .run-configuration-refresh-button:hover svg {
   transform: rotate(180deg);
+}
+
+.run-configuration-popup-overlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background-color: rgba(0, 0, 0, 0.5);
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  z-index: 1000;
+}
+
+.run-configuration-popup {
+  background-color: white;
+  padding: 2rem;
+  border-radius: 12px;
+  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+  text-align: center;
+  min-width: 300px;
+  animation: popup-appear 0.3s ease-out;
+}
+
+@keyframes popup-appear {
+  from {
+    opacity: 0;
+    transform: scale(0.9);
+  }
+  to {
+    opacity: 1;
+    transform: scale(1);
+  }
+}
+
+.run-configuration-popup h2 {
+  color: #2c3e50;
+  margin: 0 0 1rem 0;
+  font-size: 1.8em;
+}
+
+.run-configuration-popup p {
+  color: #4a90e2;
+  margin: 0 0 1.5rem 0;
+  font-size: 1.2em;
+}
+
+.run-configuration-popup-button {
+  background-color: #4a90e2;
+  color: white;
+  border: none;
+  padding: 0.75rem 2rem;
+  border-radius: 8px;
+  font-size: 1.1rem;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+
+.run-configuration-popup-button:hover {
+  background-color: #357abd;
+  transform: translateY(-1px);
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+}
+
+.run-configuration-popup-button:active {
+  transform: translateY(0);
+  box-shadow: none;
 } 
