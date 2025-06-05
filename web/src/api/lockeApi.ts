@@ -91,6 +91,15 @@ const lockeApi = {
     },
 
     // Add more API methods here as needed
+
+    async getRun(runId: string): Promise<{ id: string, run_name: string }> {
+        const response = await fetch(`${API_BASE_URL}/run/${runId}`, { method: "GET" });
+        if (!response.ok) {
+            throw new Error("Failed to fetch run");
+        }
+        const data = await response.json();
+        return { id: data.id, run_name: data.run_name };
+    }
 };
 
 export default lockeApi; 
