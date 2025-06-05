@@ -21,6 +21,7 @@ Pokemon: TypeAlias = PokemonDef
 # Database constants
 DB_NAME = "locke_manager"
 _COLLECTIONS_NAME = "pokemons"
+_COLLECTIONS_NAME_SAVE = "pokemons_save"
 
 def _create_pokemon_document(run_id: str, pokemon: Pokemon) -> Dict:
     """Flatten (or merge) metadata (using asdict) and overwrite (or add) "name", "gen", "types" (and "status") from the Pokémon instance.
@@ -63,16 +64,17 @@ def save_pokemon(pokemon: Pokemon, run_id: str) -> None:
     (This function is used by save_pokemon.)"""
     try:
         pokemon_dict = _create_pokemon_document(run_id, pokemon)
-        insert_document(DB_NAME, _COLLECTIONS_NAME, pokemon_dict)
+        for collection_name in [_COLLECTIONS_NAME, _COLLECTIONS_NAME_SAVE]:
+            insert_document(DB_NAME, collection_name, pokemon_dict)
     except Exception as e:
         raise Exception(f"Failed to save Pokemon: {str(e)}")
 
-def update_pokemon(pokemon: Pokemon, run_id: str) -> None:
+def update_pokemon(pokemon: Pokemon, run_id: str, collection_name: str = _COLLECTIONS_NAME) -> None:
     """Update an existing Pokemon (using _create_pokemon_document) in the database.
     (This function is used by update_pokemon.)"""
     try:
         pokemon_dict = _create_pokemon_document(run_id, pokemon)
-        update_document_by_id(DB_NAME, _COLLECTIONS_NAME, pokemon.metadata.id, pokemon_dict)
+        update_document_by_id(DB_NAME, collection_name, pokemon.metadata.id, pokemon_dict)
     except Exception as e:
         raise Exception(f"Failed to update Pokemon: {str(e)}")
 
@@ -101,4 +103,9 @@ def delete_run_pokemons(run_id: str) -> None:
     try:
         delete_documents_by_query(DB_NAME, _COLLECTIONS_NAME, {'run_id': run_id})
     except Exception as e:
-        raise Exception(f"Failed to delete Pokemon for run {run_id}: {str(e)}") 
+        raise Exception(f"Failed to delete Pokemon for run {run_id}: {str(e)}")
+
+def backup_pokemons(run_id: str):
+    run_pokemons = list_pokemon_by_run(run_id)
+    for pokemon in run_pokemons:
+        update_pokemon(pokemon, run_id, _COLLECTIONS_NAME_SAVE)
