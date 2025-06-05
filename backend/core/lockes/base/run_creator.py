@@ -18,6 +18,7 @@ from core.party import Party
 from core.box import Box
 from games import get_games_from_gen
 from datetime import datetime
+from uuid import uuid4
 
 
 class InfoKeys(EnumList):
@@ -82,7 +83,7 @@ class RunCreator:
         """
         if self.run_creation.finished:
             return RunCreationProgress(run_creation=self.run_creation, has_all_info=True)
-        
+
         if self.run_creation.game is None:
             return RunCreationProgress(run_creation=self.run_creation, missing_key=InfoKeys.GAME, missing_key_options=[
                 game.name for game in get_games_from_gen(locke_min_gen)
@@ -146,7 +147,7 @@ class RunCreator:
         
         # Create a new run with empty party and box
         return Run(
-            id=self.run_creation.name,
+            id=uuid4().hex,
             run_name=self.run_creation.name,
             creation_date=datetime.now(),
             party=Party(pokemons=[]),
