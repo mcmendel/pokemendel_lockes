@@ -52,8 +52,8 @@ def _db_dict_to_pokemon(data: dict) -> Pokemon:
             return getattr(Types, t.upper())
     return Pokemon(
         name=data["name"],
-        gen=data["gen"],
-        types=[to_type_enum(t) for t in data["types"]],
+        gen=data.get("gen", 1),
+        types=[to_type_enum(t) for t in data.get("types", [])],
         metadata=metadata,
         status=data["status"]
     )
