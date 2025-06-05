@@ -6,7 +6,6 @@ from dotenv import load_dotenv
 from apis.main import list_runs_api
 from apis.resources import get_pokemon_info, get_gym_leader_info, get_type_info
 from apis.run_creation import start_run_creation, continue_run_creation
-from apis.exceptions import RunCreationError, RunNotFoundError
 from apis.run import get_run_api
 from core.lockes import list_all_lockes
 from functools import wraps
@@ -46,7 +45,9 @@ def get_runs():
     Returns:
         List of runs in the ListRuns response format.
     """
+    print("Listing runs")
     runs = list_runs_api()
+    print("Found %s runs" % len(runs))
     return jsonify([run.__dict__ for run in runs])
 
 @locke_route('lockes', methods=['GET'])
@@ -56,11 +57,13 @@ def get_lockes():
     Returns:
         List of locke names.
     """
+    print("Listing lockes")
     lockes = list_all_lockes()
+    print("Found %s lockes: %s" % (len(lockes), lockes))
     return jsonify(lockes)
 
 @locke_route('resources/pokemon/<pokemon_name>', methods=['GET'])
-def get_pokemon(pokemon_name):
+def get_pokemon_resource(pokemon_name):
     """Get Pokemon image by name.
     
     Args:
@@ -83,7 +86,7 @@ def get_pokemon(pokemon_name):
     )
 
 @locke_route('resources/game/<game_name>/gyms/<gym_name>', methods=['GET'])
-def get_gym_leader(game_name, gym_name):
+def get_gym_leader_resource(game_name, gym_name):
     """Get gym leader image by game and gym name.
     
     Args:
@@ -107,7 +110,7 @@ def get_gym_leader(game_name, gym_name):
     )
 
 @locke_route('resources/types/<type_name>', methods=['GET'])
-def get_type(type_name):
+def get_type_resource(type_name):
     """Get Pokemon type image by name.
     
     Args:
@@ -130,7 +133,7 @@ def get_type(type_name):
     )
 
 @locke_route('run', methods=['PUT'])
-def create_new_run():
+def create_new_run_api():
     """Create a new run with the specified parameters.
     
     Request body should contain:
@@ -148,6 +151,7 @@ def create_new_run():
         - 409: Run already exists
         - 500: Server error
     """
+    print("Creating new run")
     data = request.get_json()
     if not data:
         return jsonify("No data provided"), 400
@@ -156,6 +160,7 @@ def create_new_run():
     missing_fields = [field for field in required_fields if field not in data]
     if missing_fields:
         return jsonify(f"Missing required fields: {', '.join(missing_fields)}"), 400
+    print("Start run creation for run %s" % data['run_name'])
     # Call the service layer (let exceptions propagate)
     game_names = start_run_creation(
         run_name=data['run_name'],
@@ -163,10 +168,11 @@ def create_new_run():
         duplicate_clause=data['duplicate_clause'],
         is_randomized=data['is_randomized']
     )
+    print("Run creation for run %s had started. Next step is choose from games %s" % (data['run_name'], game_names))
     return jsonify(game_names), 200
 
 @locke_route('run', methods=['POST'])
-def update_run():
+def continue_run_creation_api():
     """Update an existing run with new information.
     
     Request body:
@@ -195,12 +201,17 @@ def update_run():
     # Get optional fields with defaults
     key = data.get('key')
     val = data.get('val')
+    print("Continue run creation for run %s with key %s and value %s" % (data['run_name'], key, val))
     # Call the service function (let exceptions propagate)
     response = continue_run_creation(
         run_name=data['run_name'],
         key=key,
         val=val
     )
+    if response['finished']:
+        print("Finished creating run %s with id %s" % (data['run_name'], response['run_id']))
+    else:
+        print("Creating run %s in progress. Next key to be filled: %s" % (data['run_name'], response['next_key']))
     return jsonify(response), 200
 
 @locke_route('run/<run_id>', methods=['GET'])
@@ -222,4 +233,4 @@ def get_run(run_id):
     return jsonify(run_data)
 
 if __name__ == '__main__':
-    app.run(debug=True, port=5222) 
+    app.run(debug=True, port=5222)
