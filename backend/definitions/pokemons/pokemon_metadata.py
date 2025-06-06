@@ -10,7 +10,7 @@ class PokemonMetadata:
     caught_index: Optional[int] = None
     starlocke_type: Optional[Types] = None
     gender: Optional[Genders] = None
-    paired_partner: Optional[str] = None
+    paired: Optional[str] = None
 
     def __post_init__(self):
         """Validate that id and nickname are not empty or whitespace-only."""

@@ -1,30 +1,38 @@
-.run-container {
-  width: 100%;
-  max-width: 1200px;
-  margin: 0 auto;
+.pokemendel-run-container {
   padding: 20px;
-  background-color: #f9f9f9;
-  border-radius: 8px;
-  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+  height: 100%;
 }
 
-.run-title {
-  text-align: center;
-  color: #333;
-  font-size: 2em;
-  margin-bottom: 1rem;
-  font-weight: bold;
-  text-shadow: 1px 1px 2px rgba(0, 0, 0, 0.1);
+.pokemendel-run-container .run-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 20px;
 }
 
-.run-id {
-  text-align: center;
-  color: #4a90e2;
-  font-size: 1.5em;
-  padding: 1rem;
-  background-color: white;
-  border-radius: 8px;
-  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.05);
-  border: 2px solid #e0e0e0;
-  margin: 1rem 0;
+.pokemendel-run-container .run-title {
+  margin: 0;
+  font-size: 24px;
+}
+
+.pokemendel-run-container .run-actions {
+  display: flex;
+  gap: 16px;
+}
+
+.pokemendel-run-container .run-action-icon {
+  cursor: pointer;
+  padding: 8px;
+  border-radius: 4px;
+  transition: background-color 0.2s;
+}
+
+.pokemendel-run-container .run-action-icon:hover {
+  background-color: rgba(0, 0, 0, 0.04);
+}
+
+.pokemendel-run-container .run-id,
+.pokemendel-run-container .run-name {
+  margin: 8px 0;
+  font-size: 16px;
 } 
