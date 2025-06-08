@@ -136,7 +136,7 @@ def update_run(run: Run, collection_name: str = _COLLECTIONS_NAME) -> None:
         raise Exception(f"Failed to update run: {str(e)}")
 
 
-def fetch_run(run_id: str) -> Optional[Run]:
+def fetch_run(run_id: str, collection_name: str = _COLLECTIONS_NAME) -> Optional[Run]:
     """Fetch a run from the database.
     
     Args:
@@ -149,7 +149,7 @@ def fetch_run(run_id: str) -> Optional[Run]:
         Exception: If database operation fails
     """
     try:
-        results = list(fetch_documents_by_query(DB_NAME, _COLLECTIONS_NAME, {'_id': run_id}))
+        results = list(fetch_documents_by_query(DB_NAME, collection_name, {'_id': run_id}))
         if not results:
             return None
         return Run.from_dict(results[0])

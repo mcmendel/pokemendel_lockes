@@ -89,14 +89,14 @@ def fetch_pokemon(pokemon_id: str) -> Optional[Pokemon]:
     except Exception as e:
         raise Exception(f"Failed to fetch Pokemon: {str(e)}")
 
-def list_pokemon_by_run(run_id: str) -> List[Pokemon]:
+def list_pokemon_by_run(run_id: str, collection_name: str = _COLLECTIONS_NAME) -> List[Pokemon]:
     """List all Pokemon (using _db_dict_to_pokemon) for a specific run.
     (This function is used by list_pokemon_by_run.)"""
     try:
-        results = list(fetch_documents_by_query(DB_NAME, _COLLECTIONS_NAME, {'run_id': run_id}))
+        results = list(fetch_documents_by_query(DB_NAME, collection_name, {'run_id': run_id}))
         return [_db_dict_to_pokemon(data) for data in results]
     except Exception as e:
-        raise Exception(f"Failed to list Pokemon for run: {str(e)}")
+        raise Exception(f"Failed to list Pokemon for run {run_id} from collection {collection_name}: {str(e)}")
 
 def delete_run_pokemons(run_id: str) -> None:
     """Delete all Pokemon associated with a run (using delete_documents_by_query)."""
@@ -105,7 +105,15 @@ def delete_run_pokemons(run_id: str) -> None:
     except Exception as e:
         raise Exception(f"Failed to delete Pokemon for run {run_id}: {str(e)}")
 
+
 def backup_pokemons(run_id: str):
     run_pokemons = list_pokemon_by_run(run_id)
     for pokemon in run_pokemons:
         update_pokemon(pokemon, run_id, _COLLECTIONS_NAME_SAVE)
+
+
+def restore_pokemons(run_id: str):
+    run_pokemons = list_pokemon_by_run(run_id, _COLLECTIONS_NAME_SAVE)
+    delete_run_pokemons(run_id)
+    for pokemon in run_pokemons:
+        save_pokemon(pokemon, run_id)
