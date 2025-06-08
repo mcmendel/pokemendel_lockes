@@ -114,3 +114,22 @@ def load_run(run_id) -> Dict:
     update_run_db(db_run_to_load, _COLLECTIONS_SAVE_NAME)
     return asdict(_convert_db_run_to_core_run(db_run_to_load, run_id))
 
+
+def finish_run(run_id: str) -> Dict:
+    print("Run %s had finished" % run_id)
+    db_run = fetch_run(run_id)
+    assert not db_run.finished, "Run %s is already finished" % run_id
+    try:
+        game = get_game(db_run.game)
+    except Exception:
+        raise InvalidGameError(db_run.game)
+    expected_num_battles = len(game.gyms) + len(game.elite4)
+    assert len(db_run.battles) == expected_num_battles, (
+            "Run %s did not finish all battles. "
+            "It has total %s battles, but only %s was battles" % (run_id, expected_num_battles, len(db_run.battles))
+    )
+    db_run.finished = True
+    update_run_db(db_run)
+    save_run(run_id)
+    return asdict(_convert_db_run_to_core_run(db_run, run_id))
+

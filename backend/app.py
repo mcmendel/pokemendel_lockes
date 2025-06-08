@@ -235,7 +235,7 @@ def get_run(run_id):
 
 @locke_route('run/<run_id>/save', methods=['POST'])
 def save_run_api(run_id):
-    """Get a run by its ID.
+    """Save run by its ID.
 
     Args:
         run_id: The ID of the run to fetch
@@ -254,7 +254,7 @@ def save_run_api(run_id):
 
 @locke_route('run/<run_id>/load', methods=['POST'])
 def load_run_api(run_id):
-    """Get a run by its ID.
+    """Load run by its ID.
 
     Args:
         run_id: The ID of the run to fetch
@@ -269,6 +269,26 @@ def load_run_api(run_id):
     """
     run_data = load_run(run_id)
     return jsonify(run_data)
+
+
+@locke_route('run/<run_id>/finish', methods=['POST'])
+def finish_run_api(run_id):
+    """Finish run.
+
+    Args:
+        run_id: The ID of the run to fetch
+
+    Returns:
+        The run data as JSON
+
+    Status codes:
+        200: Success
+        404: Run not found
+        500: Server error
+    """
+    run_data = load_run(run_id)
+    return jsonify(run_data)
+
 
 if __name__ == '__main__':
     app.run(debug=True, port=5222)
