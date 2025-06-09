@@ -210,7 +210,7 @@ def continue_run_creation_api():
         val=val
     )
     if response['finished']:
-        print("Finished creating run %s with id %s" % (data['run_name'], response['run_id']))
+        print("Finished creating run %s with id %s" % (data['run_name'], response['id']))
     else:
         print("Creating run %s in progress. Next key to be filled: %s" % (data['run_name'], response['next_key']))
     return jsonify(response), 200
