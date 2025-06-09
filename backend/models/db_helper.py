@@ -1,6 +1,5 @@
 from . import db_connector
-from typing import List, Dict, Generator, Set, Optional, Any
-from bson import ObjectId
+from typing import List, Dict, Generator, Set, Optional
 from pymongo.errors import PyMongoError
 import logging
 
