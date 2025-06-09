@@ -8,6 +8,7 @@ from .db_helper import insert_document, fetch_documents_by_query, update_documen
 
 
 _COLLECTIONS_NAME = "runs"
+_COLLECTIONS_SAVE_NAME = "runs_save"
 
 
 @dataclass
@@ -102,34 +103,40 @@ def save_run(run: Run) -> None:
     
     Args:
         run: Run instance to save
+        collection_name: collection to save in [default: runs]
+            valid options: [runs, runs_save]
         
     Raises:
         Exception: If database operation fails
     """
     try:
         run_dict = run.to_dict()
-        insert_document(DB_NAME, _COLLECTIONS_NAME, run_dict)
+        for collection_name in [_COLLECTIONS_NAME, _COLLECTIONS_SAVE_NAME]:
+            insert_document(DB_NAME, collection_name, run_dict)
     except Exception as e:
         raise Exception(f"Failed to save run: {str(e)}")
 
 
-def update_run(run: Run) -> None:
+def update_run(run: Run, collection_name: str = _COLLECTIONS_NAME) -> None:
     """Update an existing run in the database.
     
     Args:
         run: Run instance to update
+        collection_name: collection to save in [default: runs]
+            valid options: [runs, runs_save]
         
     Raises:
         Exception: If database operation fails
     """
     try:
         run_dict = run.to_dict()
-        update_document_by_id(DB_NAME, _COLLECTIONS_NAME, run.run_id, run_dict)
+        assert collection_name in [_COLLECTIONS_NAME, _COLLECTIONS_SAVE_NAME], "Invalid collection name given"
+        update_document_by_id(DB_NAME, collection_name, run.run_id, run_dict)
     except Exception as e:
         raise Exception(f"Failed to update run: {str(e)}")
 
 
-def fetch_run(run_id: str) -> Optional[Run]:
+def fetch_run(run_id: str, collection_name: str = _COLLECTIONS_NAME) -> Optional[Run]:
     """Fetch a run from the database.
     
     Args:
@@ -142,7 +149,7 @@ def fetch_run(run_id: str) -> Optional[Run]:
         Exception: If database operation fails
     """
     try:
-        results = list(fetch_documents_by_query(DB_NAME, _COLLECTIONS_NAME, {'_id': run_id}))
+        results = list(fetch_documents_by_query(DB_NAME, collection_name, {'_id': run_id}))
         if not results:
             return None
         return Run.from_dict(results[0])

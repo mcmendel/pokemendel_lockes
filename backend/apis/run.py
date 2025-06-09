@@ -1,5 +1,5 @@
-from models.run import fetch_run
-from models.pokemon import list_pokemon_by_run
+from models.run import fetch_run, update_run as update_run_db, _COLLECTIONS_SAVE_NAME, Run as DbRun
+from models.pokemon import list_pokemon_by_run, backup_pokemons, restore_pokemons
 from core.run import Run as CoreRun
 from core.party import Party
 from core.box import Box
@@ -7,6 +7,7 @@ from definitions.runs.battles import Battle
 from definitions.runs.encounters import Encounter, EncounterStatus
 from dataclasses import asdict
 from games import get_game
+from typing import Set, Dict
 from apis.exceptions import RunNotFoundError, InvalidGameError
 
 def _get_run_encounters(db_run, all_pokemons, game):
@@ -56,6 +57,13 @@ def get_run_api(run_id):
         InvalidGameError: If the game (for the run) does not exist
     """
     db_run = fetch_run(run_id)
+
+    # Fetch all pokemons for this run
+    return asdict(_convert_db_run_to_core_run(db_run, run_id))
+
+
+def _convert_db_run_to_core_run(db_run: DbRun, run_id: str) -> CoreRun:
+
     if not db_run:
         raise RunNotFoundError(run_id)
     try:
@@ -63,7 +71,6 @@ def get_run_api(run_id):
     except Exception:
         raise InvalidGameError(db_run.game)
 
-    # Fetch all pokemons for this run
     all_pokemons = {p.metadata.id: p for p in list_pokemon_by_run(run_id)}
     # Build party and box
     party_pokemons = [all_pokemons[pid] for pid in db_run.party if pid in all_pokemons]
@@ -88,4 +95,41 @@ def get_run_api(run_id):
         restarts=db_run.restarts,
         finished=db_run.finished
     )
-    return asdict(core_run) 
+    return core_run
+
+
+def save_run(run_id) -> None:
+    print("Saving run %s" % run_id)
+    db_run = fetch_run(run_id)
+    update_run_db(db_run, _COLLECTIONS_SAVE_NAME)
+    backup_pokemons(run_id)
+
+
+def load_run(run_id) -> Dict:
+    print("Loading run %s" % run_id)
+    db_run_to_load = fetch_run(run_id, _COLLECTIONS_SAVE_NAME)
+    restore_pokemons(run_id)
+    db_run_to_load.restarts += 1
+    update_run_db(db_run_to_load)
+    update_run_db(db_run_to_load, _COLLECTIONS_SAVE_NAME)
+    return asdict(_convert_db_run_to_core_run(db_run_to_load, run_id))
+
+
+def finish_run(run_id: str) -> Dict:
+    print("Run %s had finished" % run_id)
+    db_run = fetch_run(run_id)
+    assert not db_run.finished, "Run %s is already finished" % run_id
+    try:
+        game = get_game(db_run.game)
+    except Exception:
+        raise InvalidGameError(db_run.game)
+    expected_num_battles = len(game.gyms) + len(game.elite4)
+    assert len(db_run.battles) == expected_num_battles, (
+            "Run %s did not finish all battles. "
+            "It has total %s battles, but only %s was battles" % (run_id, expected_num_battles, len(db_run.battles))
+    )
+    db_run.finished = True
+    update_run_db(db_run)
+    save_run(run_id)
+    return asdict(_convert_db_run_to_core_run(db_run, run_id))
+

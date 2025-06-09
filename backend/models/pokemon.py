@@ -21,6 +21,7 @@ Pokemon: TypeAlias = PokemonDef
 # Database constants
 DB_NAME = "locke_manager"
 _COLLECTIONS_NAME = "pokemons"
+_COLLECTIONS_NAME_SAVE = "pokemons_save"
 
 def _create_pokemon_document(run_id: str, pokemon: Pokemon) -> Dict:
     """Flatten (or merge) metadata (using asdict) and overwrite (or add) "name", "gen", "types" (and "status") from the Pokémon instance.
@@ -58,21 +59,23 @@ def _db_dict_to_pokemon(data: dict) -> Pokemon:
         status=data["status"]
     )
 
-def save_pokemon(pokemon: Pokemon, run_id: str) -> None:
+def save_pokemon(pokemon: Pokemon, run_id: str, collections: List[str] = None) -> None:
     """Save a Pokemon (using _create_pokemon_document) to the database.
     (This function is used by save_pokemon.)"""
     try:
+        collections = collections or [_COLLECTIONS_NAME, _COLLECTIONS_NAME_SAVE]
         pokemon_dict = _create_pokemon_document(run_id, pokemon)
-        insert_document(DB_NAME, _COLLECTIONS_NAME, pokemon_dict)
+        for collection_name in collections:
+            insert_document(DB_NAME, collection_name, pokemon_dict)
     except Exception as e:
         raise Exception(f"Failed to save Pokemon: {str(e)}")
 
-def update_pokemon(pokemon: Pokemon, run_id: str) -> None:
+def update_pokemon(pokemon: Pokemon, run_id: str, collection_name: str = _COLLECTIONS_NAME) -> None:
     """Update an existing Pokemon (using _create_pokemon_document) in the database.
     (This function is used by update_pokemon.)"""
     try:
         pokemon_dict = _create_pokemon_document(run_id, pokemon)
-        update_document_by_id(DB_NAME, _COLLECTIONS_NAME, pokemon.metadata.id, pokemon_dict)
+        update_document_by_id(DB_NAME, collection_name, pokemon.metadata.id, pokemon_dict)
     except Exception as e:
         raise Exception(f"Failed to update Pokemon: {str(e)}")
 
@@ -87,18 +90,32 @@ def fetch_pokemon(pokemon_id: str) -> Optional[Pokemon]:
     except Exception as e:
         raise Exception(f"Failed to fetch Pokemon: {str(e)}")
 
-def list_pokemon_by_run(run_id: str) -> List[Pokemon]:
+def list_pokemon_by_run(run_id: str, collection_name: str = _COLLECTIONS_NAME) -> List[Pokemon]:
     """List all Pokemon (using _db_dict_to_pokemon) for a specific run.
     (This function is used by list_pokemon_by_run.)"""
     try:
-        results = list(fetch_documents_by_query(DB_NAME, _COLLECTIONS_NAME, {'run_id': run_id}))
+        results = list(fetch_documents_by_query(DB_NAME, collection_name, {'run_id': run_id}))
         return [_db_dict_to_pokemon(data) for data in results]
     except Exception as e:
-        raise Exception(f"Failed to list Pokemon for run: {str(e)}")
+        raise Exception(f"Failed to list Pokemon for run {run_id} from collection {collection_name}: {str(e)}")
 
-def delete_run_pokemons(run_id: str) -> None:
+def delete_run_pokemons(run_id: str, collection_name: str = _COLLECTIONS_NAME) -> None:
     """Delete all Pokemon associated with a run (using delete_documents_by_query)."""
     try:
-        delete_documents_by_query(DB_NAME, _COLLECTIONS_NAME, {'run_id': run_id})
+        delete_documents_by_query(DB_NAME, collection_name, {'run_id': run_id})
     except Exception as e:
-        raise Exception(f"Failed to delete Pokemon for run {run_id}: {str(e)}") 
+        raise Exception(f"Failed to delete Pokemon for run {run_id}: {str(e)}")
+
+
+def backup_pokemons(run_id: str):
+    run_pokemons = list_pokemon_by_run(run_id)
+    delete_run_pokemons(run_id, _COLLECTIONS_NAME_SAVE)
+    for pokemon in run_pokemons:
+        save_pokemon(pokemon, run_id, [_COLLECTIONS_NAME_SAVE])
+
+
+def restore_pokemons(run_id: str):
+    run_pokemons = list_pokemon_by_run(run_id, _COLLECTIONS_NAME_SAVE)
+    delete_run_pokemons(run_id, _COLLECTIONS_NAME)
+    for pokemon in run_pokemons:
+        save_pokemon(pokemon, run_id, [_COLLECTIONS_NAME])

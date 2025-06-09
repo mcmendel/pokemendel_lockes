@@ -6,7 +6,7 @@ from dotenv import load_dotenv
 from apis.main import list_runs_api
 from apis.resources import get_pokemon_info, get_gym_leader_info, get_type_info
 from apis.run_creation import start_run_creation, continue_run_creation
-from apis.run import get_run_api
+from apis.run import get_run_api, save_run, load_run, finish_run
 from core.lockes import list_all_lockes
 from functools import wraps
 
@@ -31,6 +31,7 @@ def locke_route(path, *args, **kwargs):
                 return result
             except Exception as e:
                 status = getattr(e, "status_code", 500)
+                print(f"ERROR: {e}")
                 return jsonify({
                     "status": "error",
                     "message": str(e)
@@ -231,6 +232,64 @@ def get_run(run_id):
     """
     run_data = get_run_api(run_id)
     return jsonify(run_data)
+
+
+@locke_route('run/<run_id>/save', methods=['POST'])
+def save_run_api(run_id):
+    """Save run by its ID.
+
+    Args:
+        run_id: The ID of the run to fetch
+
+    Returns:
+        The run data as JSON
+
+    Status codes:
+        200: Success
+        404: Run not found
+        500: Server error
+    """
+    save_run(run_id)
+    return jsonify({'status': 'success'})
+
+
+@locke_route('run/<run_id>/load', methods=['POST'])
+def load_run_api(run_id):
+    """Load run by its ID.
+
+    Args:
+        run_id: The ID of the run to fetch
+
+    Returns:
+        The run data as JSON
+
+    Status codes:
+        200: Success
+        404: Run not found
+        500: Server error
+    """
+    run_data = load_run(run_id)
+    return jsonify(run_data)
+
+
+@locke_route('run/<run_id>/finish', methods=['POST'])
+def finish_run_api(run_id):
+    """Finish run.
+
+    Args:
+        run_id: The ID of the run to fetch
+
+    Returns:
+        The run data as JSON
+
+    Status codes:
+        200: Success
+        404: Run not found
+        500: Server error
+    """
+    run_data = finish_run(run_id)
+    return jsonify(run_data)
+
 
 if __name__ == '__main__':
     app.run(debug=True, port=5222)

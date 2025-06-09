@@ -1,12 +1,12 @@
 import React, { useEffect, useState } from 'react';
 import LockeRunsTable from './LockeRunsTable';
 import lockeApi from '../api/lockeApi';
-import { Run } from '../api/lockeApi';
+import { ListRun } from '../api/lockeApi';
 import { useNavigate } from 'react-router-dom';
 import './HomePage.css';
 
 const HomePage: React.FC = () => {
-  const [runs, setRuns] = useState<Run[]>([]);
+  const [runs, setRuns] = useState<ListRun[]>([]);
   const [error, setError] = useState<string | null>(null);
   const navigate = useNavigate();
 
