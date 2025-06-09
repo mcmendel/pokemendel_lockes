@@ -6,7 +6,7 @@ from dotenv import load_dotenv
 from apis.main import list_runs_api
 from apis.resources import get_pokemon_info, get_gym_leader_info, get_type_info
 from apis.run_creation import start_run_creation, continue_run_creation
-from apis.run import get_run_api, save_run, load_run
+from apis.run import get_run_api, save_run, load_run, finish_run
 from core.lockes import list_all_lockes
 from functools import wraps
 
@@ -31,6 +31,7 @@ def locke_route(path, *args, **kwargs):
                 return result
             except Exception as e:
                 status = getattr(e, "status_code", 500)
+                print(f"ERROR: {e}")
                 return jsonify({
                     "status": "error",
                     "message": str(e)
@@ -286,7 +287,7 @@ def finish_run_api(run_id):
         404: Run not found
         500: Server error
     """
-    run_data = load_run(run_id)
+    run_data = finish_run(run_id)
     return jsonify(run_data)
 
 

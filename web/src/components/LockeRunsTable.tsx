@@ -4,10 +4,10 @@ import { FormControlLabel, IconButton, Checkbox } from '@mui/material';
 import DeleteIcon from '@mui/icons-material/Delete';
 import { useNavigate } from 'react-router-dom';
 import './LockeRunsTable.css';
-import { Run } from '../api/lockeApi';
+import { ListRun } from '../api/lockeApi';
 
 interface Props {
-  runs: Run[];
+  runs: ListRun[];
   onDelete?: (runId: string) => void;
   onRowClick?: (runId: string) => void;
   onRowDoubleClick?: (runId: string) => void;

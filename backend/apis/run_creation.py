@@ -15,7 +15,7 @@ class RunUpdateResponse(TypedDict):
     next_key: str
     potential_values: list[str]
     finished: bool
-    run_id: Optional[str]
+    id: Optional[str]
 
 def _handle_game_update(run: RunCreation, game_name: str) -> RunUpdateResponse:
     """Handle updating a run with a game.
@@ -102,7 +102,7 @@ def continue_run_creation(run_name: str, key: Optional[str] = None, val: Optiona
             - next_key: The next key to update (if not finished)
             - potential_values: List of potential values for the next key (if not finished)
             - finished: Whether the run creation is complete
-            - run_id: The ID of the created run (only when finished is True)
+            - id: The ID of the created run (only when finished is True)
             
     Raises:
         RunNotFoundError: If the run doesn't exist
@@ -160,7 +160,7 @@ def continue_run_creation(run_name: str, key: Optional[str] = None, val: Optiona
         save_run(db_run)
         return {
             "finished": True,
-            "run_id": db_run.run_id,
+            "id": db_run.run_id,
             "next_key": None,
             "potential_values": []
         }
@@ -169,5 +169,5 @@ def continue_run_creation(run_name: str, key: Optional[str] = None, val: Optiona
         "next_key": progress.missing_key,
         "potential_values": progress.missing_key_options or [],
         "finished": False,
-        "run_id": existing_run.name  # Include run_id even when not finished
+        "id": existing_run.name  # Include id even when not finished
     } 

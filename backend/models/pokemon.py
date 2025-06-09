@@ -59,12 +59,13 @@ def _db_dict_to_pokemon(data: dict) -> Pokemon:
         status=data["status"]
     )
 
-def save_pokemon(pokemon: Pokemon, run_id: str) -> None:
+def save_pokemon(pokemon: Pokemon, run_id: str, collections: List[str] = None) -> None:
     """Save a Pokemon (using _create_pokemon_document) to the database.
     (This function is used by save_pokemon.)"""
     try:
+        collections = collections or [_COLLECTIONS_NAME, _COLLECTIONS_NAME_SAVE]
         pokemon_dict = _create_pokemon_document(run_id, pokemon)
-        for collection_name in [_COLLECTIONS_NAME, _COLLECTIONS_NAME_SAVE]:
+        for collection_name in collections:
             insert_document(DB_NAME, collection_name, pokemon_dict)
     except Exception as e:
         raise Exception(f"Failed to save Pokemon: {str(e)}")
@@ -98,22 +99,23 @@ def list_pokemon_by_run(run_id: str, collection_name: str = _COLLECTIONS_NAME) -
     except Exception as e:
         raise Exception(f"Failed to list Pokemon for run {run_id} from collection {collection_name}: {str(e)}")
 
-def delete_run_pokemons(run_id: str) -> None:
+def delete_run_pokemons(run_id: str, collection_name: str = _COLLECTIONS_NAME) -> None:
     """Delete all Pokemon associated with a run (using delete_documents_by_query)."""
     try:
-        delete_documents_by_query(DB_NAME, _COLLECTIONS_NAME, {'run_id': run_id})
+        delete_documents_by_query(DB_NAME, collection_name, {'run_id': run_id})
     except Exception as e:
         raise Exception(f"Failed to delete Pokemon for run {run_id}: {str(e)}")
 
 
 def backup_pokemons(run_id: str):
     run_pokemons = list_pokemon_by_run(run_id)
+    delete_run_pokemons(run_id, _COLLECTIONS_NAME_SAVE)
     for pokemon in run_pokemons:
-        update_pokemon(pokemon, run_id, _COLLECTIONS_NAME_SAVE)
+        save_pokemon(pokemon, run_id, [_COLLECTIONS_NAME_SAVE])
 
 
 def restore_pokemons(run_id: str):
     run_pokemons = list_pokemon_by_run(run_id, _COLLECTIONS_NAME_SAVE)
-    delete_run_pokemons(run_id)
+    delete_run_pokemons(run_id, _COLLECTIONS_NAME)
     for pokemon in run_pokemons:
-        save_pokemon(pokemon, run_id)
+        save_pokemon(pokemon, run_id, [_COLLECTIONS_NAME])

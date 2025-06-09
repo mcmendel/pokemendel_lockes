@@ -80,7 +80,7 @@ const RunConfiguration: React.FC = () => {
       });
       
       if (response.finished) {
-        setCreatedRunId(response.run_id);
+        setCreatedRunId(response.id);
         setShowSuccess(true);
       } else {
         setNextKey(response.next_key);

@@ -16,5 +16,3 @@ class PokemonMetadata:
         """Validate that id and nickname are not empty or whitespace-only."""
         if not self.id or not self.id.strip():
             raise ValueError("id cannot be empty")
-        if not self.nickname or not self.nickname.strip():
-            raise ValueError("nickname cannot be empty")
