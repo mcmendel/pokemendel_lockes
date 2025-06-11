@@ -30,7 +30,7 @@ export interface Run {
     num_pokemons: number;
     num_restarts: number;
     randomized: boolean;
-    starter: string;
+    starter: string | null;
 }
 
 export interface RunUpdateResponse {
@@ -158,6 +158,24 @@ const lockeApi = {
         }
 
         return response.json();
+    },
+
+    async getStarterOptions(runId: string): Promise<string[]> {
+        try {
+            const response = await fetch(`${API_BASE_URL}/run/${runId}/starter_options`);
+            if (!response.ok) {
+                throw new Error(`HTTP error! status: ${response.status}`);
+            }
+            const data = await response.json();
+            return data;
+        } catch (error) {
+            console.error('Error fetching starter options:', error);
+            throw error;
+        }
+    },
+
+    getPokemonImageUrl(pokemonName: string): string {
+        return `${API_BASE_URL}/resources/pokemon/${pokemonName.toLowerCase()}.png`;
     }
 };
 

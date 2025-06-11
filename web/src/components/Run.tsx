@@ -11,6 +11,7 @@ import './Run.css';
 function RunComponent() {
   const { runId } = useParams<{ runId: string }>();
   const [run, setRun] = useState<Run | null>(null);
+  const [starterOptions, setStarterOptions] = useState<string[]>([]);
   const [error, setError] = useState<string | null>(null);
   const [snackbar, setSnackbar] = useState<{ open: boolean; message: string; severity: 'success' | 'error' }>({
     open: false,
@@ -23,11 +24,17 @@ function RunComponent() {
     
     (async () => {
       try {
-        const data = await lockeApi.getRun(runId);
-        console.log('Run data:', data);
-        setRun(data);
+        const [runData, options] = await Promise.all([
+          lockeApi.getRun(runId),
+          lockeApi.getStarterOptions(runId)
+        ]);
+        console.log('Run data:', runData);
+        console.log('Starter options:', options);
+        setRun(runData);
+        setStarterOptions(options);
       } catch (e) {
-        setError("Failed to fetch run.");
+        console.error('Error fetching data:', e);
+        setError("Failed to fetch run data.");
       }
     })();
   }, [runId]);
@@ -114,6 +121,7 @@ function RunComponent() {
   return (
     <div className="pokemendel-run-container">
       <div className="run-header">
+        <div className="run-title">{run.run_name}</div>
         <div className="run-actions">
           <Tooltip title="Save" placement="top">
             <span className="run-action-icon" onClick={() => handleIconClick("Save")}>
@@ -133,8 +141,34 @@ function RunComponent() {
         </div>
       </div>
       <div className="run-info">
-        <div className="run-name">Run Name: {run.run_name}</div>
-        <div className="run-id">Run ID: {run.id}</div>
+        {!run.starter ? (
+          <>
+            <div className="status-message">No starter selected yet</div>
+            {starterOptions.length > 0 ? (
+              <div className="starter-options">
+                {starterOptions.map((pokemon) => (
+                  <div key={pokemon} className="starter-option">
+                    <img 
+                      src={lockeApi.getPokemonImageUrl(pokemon)}
+                      alt={pokemon}
+                      className="starter-image"
+                      onError={(e) => {
+                        // Fallback to placeholder if image fails to load
+                        const target = e.target as HTMLImageElement;
+                        target.src = `https://placehold.co/120x120/1976d2/ffffff?text=${pokemon}`;
+                      }}
+                    />
+                    <div className="starter-name">{pokemon}</div>
+                  </div>
+                ))}
+              </div>
+            ) : (
+              <div>Loading starter options...</div>
+            )}
+          </>
+        ) : (
+          <div className="run-id">Run ID: {run.id}</div>
+        )}
       </div>
 
       <Snackbar 

@@ -5,9 +5,15 @@
 
 .run-header {
   display: flex;
-  justify-content: flex-end;
+  justify-content: space-between;
   align-items: center;
   margin-bottom: 20px;
+}
+
+.run-title {
+  font-size: 24px;
+  font-weight: bold;
+  color: #1976d2;
 }
 
 .run-actions {
@@ -36,8 +42,58 @@
   border-radius: 8px;
 }
 
-.run-name {
+.run-status {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  text-align: center;
+  margin-bottom: 20px;
+}
+
+.status-message {
+  font-size: 20px;
   font-weight: bold;
+  color: #666;
+  text-align: center;
+  margin-bottom: 24px;
+}
+
+.status-description {
+  font-size: 16px;
+  color: #888;
+  font-style: italic;
+}
+
+.starter-options {
+  display: flex;
+  justify-content: center;
+  gap: 32px;
+}
+
+.starter-option {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 8px;
+  cursor: pointer;
+  padding: 12px;
+  border-radius: 8px;
+  transition: background-color 0.2s;
+}
+
+.starter-option:hover {
+  background-color: rgba(0, 0, 0, 0.04);
+}
+
+.starter-image {
+  width: 120px;
+  height: 120px;
+  object-fit: contain;
+}
+
+.starter-name {
+  font-size: 16px;
+  font-weight: 500;
   color: #1976d2;
 }
 
