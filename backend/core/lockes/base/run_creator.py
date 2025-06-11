@@ -10,13 +10,17 @@ information is collected before the run can begin.
 """
 
 from dataclasses import dataclass
-from typing import Optional, List, Any
+from typing import Optional, List, Any, Set
 from models.run_creation import RunCreation, update_run_creation
+from models.run_pokemons_options import RunPokemonsOptions, save_run_options
 from pokemendel_core.utils.enum_list import EnumList
+from pokemendel_core.utils.evolutions import iterate_gen_evolution_lines
+from pokemendel_core.data import list_gen_pokemons, fetch_pokemon
+from core.lockes.base.base_locke import BaseLocke
 from core.run import Run
 from core.party import Party
 from core.box import Box
-from games import get_games_from_gen
+from games import get_games_from_gen, get_game
 from datetime import datetime
 from uuid import uuid4
 
@@ -106,7 +110,7 @@ class RunCreator:
         
         update_run_creation(self.run_creation)
 
-    def finish_creation(self) -> Run:
+    def finish_creation(self, locke: BaseLocke) -> Run:
         """Mark the run creation as complete and return a Run instance.
         
         This method:
@@ -123,9 +127,9 @@ class RunCreator:
         """
         self.run_creation.finished = True
         update_run_creation(self.run_creation)
-        return self._create_run()
+        return self._create_run(locke)
 
-    def _create_run(self) -> Run:
+    def _create_run(self, locke: BaseLocke) -> Run:
         """Create a Run instance from the RunCreation.
         
         This method creates a Run with:
@@ -144,15 +148,44 @@ class RunCreator:
         assert self.run_creation.finished, "Cannot create run from unfinished run creation"
         assert self.run_creation.game is not None, "Run creation must have a game set"
         assert self.run_creation.locke is not None, "Run creation must have a locke type set"
+        run_id = uuid4().hex
+        print("Creating run id %s for locke %s" % (run_id, locke.name))
+        self._populate_run_optional_pokemons(run_id=run_id, locke=locke)
         
         # Create a new run with empty party and box
         return Run(
-            id=uuid4().hex,
+            id=run_id,
             run_name=self.run_creation.name,
             creation_date=datetime.now(),
             party=Party(pokemons=[]),
             box=Box(pokemons=[])
         )
+
+    def _populate_run_optional_pokemons(self, run_id: str, locke: BaseLocke):
+        game = get_game(self.run_creation.game)
+        gen_pokemons = list_gen_pokemons(game.gen)
+        print("Creating run with potential %s pokemons" % len(gen_pokemons))
+        stored_pokemons = set()
+        for evolution_line in iterate_gen_evolution_lines(game.gen, reversed=True):
+            self._populate_evolution_line_if_relevant(
+                run_id, game.gen, evolution_line, locke, stored_pokemons
+            )
+
+    def _populate_evolution_line_if_relevant(self, run_id: str, gen: int, evolution_line: List[str], locke: BaseLocke, stored_pokemons: Set[str]):
+        relevant_pokemons = False
+        for pokemon_name in evolution_line:
+            pokemon = fetch_pokemon(pokemon_name, gen)
+            if relevant_pokemons or locke.is_pokemon_relevant(pokemon):
+                if pokemon_name in stored_pokemons:
+                    continue
+                stored_pokemons.add(pokemon_name)
+                run_options = RunPokemonsOptions(
+                    run_id=run_id,
+                    pokemon_name=pokemon_name,
+                    base_pokemon=evolution_line[-1]
+                )
+                save_run_options(run_options)
+                relevant_pokemons = True
 
     def _get_creation_missing_extra_info(self) -> RunCreationProgress:
         """Get any additional information needed for run creation.

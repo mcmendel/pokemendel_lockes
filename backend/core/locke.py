@@ -20,6 +20,7 @@ from definitions.runs.steps_info import StepInfo
 from definitions.runs.steps_names import StepsNames
 from definitions.runs.steps_interface import StepInterface
 from pokemendel_core.utils.class_property import classproperty
+from pokemendel_core.models.pokemon import Pokemon
 from dataclasses import dataclass
 from typing import List, Dict, Optional, Any
 
@@ -79,4 +80,7 @@ class Locke(ABC):
         Returns:
             Dict[StepsNames, StepInterface]: A dictionary mapping step names to their implementations
         """
-        pass 
+        pass
+
+    def is_pokemon_relevant(self, pokemon: Pokemon) -> bool:
+        return True
