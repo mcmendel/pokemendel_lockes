@@ -7,6 +7,7 @@ from tests.e2e.helpers import (
     continue_locke_creation_finished,
     get_run,
     save_run,
+    get_starter_options,
     assert_run,
     assert_saved_run,
     assert_run_potential_pokemons,
@@ -30,7 +31,8 @@ def test_base_gen1(client_fixture):
     run = get_run(client_fixture, run_id)
     assert_run(run, run_id, 0, 0, 0, 0, None)
     assert_saved_run(run_id, 0, 0, 0, 0, None)
-
+    starter_options = get_starter_options(client_fixture, run_id)
+    assert starter_options == ['Bulbasaur', 'Charmander', 'Squirtle']
 
     print("TEST Finished")
 

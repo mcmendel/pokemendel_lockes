@@ -6,7 +6,8 @@ from dotenv import load_dotenv
 from apis.main import list_runs_api
 from apis.resources import get_pokemon_info, get_gym_leader_info, get_type_info
 from apis.run_creation import start_run_creation, continue_run_creation
-from apis.run import get_run_api, save_run, load_run, finish_run
+from apis.run_admin import get_run_api, save_run, load_run, finish_run
+from apis.run import get_starter_options
 from core.lockes import list_all_lockes
 from functools import wraps
 
@@ -289,6 +290,12 @@ def finish_run_api(run_id):
     """
     run_data = finish_run(run_id)
     return jsonify(run_data)
+
+
+@locke_route('run/<run_id>/starter_options', methods=['GET'])
+def get_starter_options_api(run_id):
+    encounter_options = get_starter_options(run_id)
+    return jsonify(encounter_options)
 
 
 if __name__ == '__main__':

@@ -75,6 +75,13 @@ def get_run(client, run_id):
     return run
 
 
+def get_starter_options(client, run_id):
+    response = client.get('/locke_manager/run/' + run_id + '/starter_options')
+    assert response.status_code == 200
+    run = response.get_json()
+    return run
+
+
 def save_run(client, run_id):
     response = client.post('/locke_manager/run/' + run_id + '/save')
     assert response.status_code == 200
