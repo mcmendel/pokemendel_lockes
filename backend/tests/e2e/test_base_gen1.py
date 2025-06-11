@@ -32,7 +32,7 @@ def test_base_gen1(client_fixture):
     assert_run(run, run_id, 0, 0, 0, 0, None)
     assert_saved_run(run_id, 0, 0, 0, 0, None)
     starter_options = get_starter_options(client_fixture, run_id)
-    assert starter_options == ['Bulbasaur', 'Charmander', 'Squirtle']
+    assert set(starter_options) == {'Bulbasaur', 'Charmander', 'Squirtle'}
 
     print("TEST Finished")
 

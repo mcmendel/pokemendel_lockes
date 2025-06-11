@@ -294,8 +294,8 @@ def finish_run_api(run_id):
 
 @locke_route('run/<run_id>/starter_options', methods=['GET'])
 def get_starter_options_api(run_id):
-    encounter_options = get_starter_options(run_id)
-    return jsonify(encounter_options)
+    starter_options = get_starter_options(run_id)
+    return jsonify(starter_options)
 
 
 if __name__ == '__main__':

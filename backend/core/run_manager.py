@@ -3,6 +3,7 @@ from dataclasses import dataclass
 from core.locke import Locke
 from core.run import Run
 from games import Game
+from typing import List
 
 @dataclass
 class RunManager:
@@ -12,7 +13,7 @@ class RunManager:
     duplicate_clause: bool
     randomized: bool
 
-    def get_starter_options(self):
+    def get_starter_options(self) -> List[str]:
         print("Getting starter options")
         assert not self.run.starter, "Can't ask for starters if run's starter already applied"
         run_options = list_runs_options(self.run.id)
