@@ -123,12 +123,13 @@ def continue_run_creation(run_name: str, key: Optional[str] = None, val: Optiona
         creator.update_progress(key, val)
     
     # Get the current progress
-    progress = creator.get_progress(LOCKE_INSTANCES[existing_run.locke].min_gen)
+    locke = LOCKE_INSTANCES[existing_run.locke]
+    progress = creator.get_progress(locke.min_gen)
     
     # Return appropriate response based on progress
     if progress.has_all_info:
         # Create the run and get its ID
-        core_run = creator.finish_creation()
+        core_run = creator.finish_creation(locke)
         
         # Get the game instance to get its generation
         try:

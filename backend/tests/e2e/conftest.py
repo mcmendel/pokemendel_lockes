@@ -37,7 +37,6 @@ def patch_db_collections(monkeypatch):
             def __getitem__(self, collection_name):
                 # Prefix the collection name with 'e2e_'
                 prefixed_name = f"e2e_{collection_name}"
-                print(f"Accessing collection: {prefixed_name}")  # Debug print
                 return self._db[prefixed_name]
 
             def __getattr__(self, name):

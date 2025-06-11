@@ -8,7 +8,8 @@ from tests.e2e.helpers import (
     get_run,
     save_run,
     assert_run,
-    assert_saved_run
+    assert_saved_run,
+    assert_run_potential_pokemons,
 )
 import pytest
 
@@ -25,6 +26,7 @@ def test_base_gen1(client_fixture):
     start_locke_creation(client_fixture, TEST_LOCKE, TEST_GAME, False, False)
     continue_locke_creation_not_finished(client_fixture, None, None, 'GAME', TEST_GAME)
     run_id = continue_locke_creation_finished(client_fixture, 'GAME', TEST_GAME)
+    assert_run_potential_pokemons(run_id, 151)
     run = get_run(client_fixture, run_id)
     assert_run(run, run_id, 0, 0, 0, 0, None)
     assert_saved_run(run_id, 0, 0, 0, 0, None)

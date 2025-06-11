@@ -116,3 +116,6 @@ def assert_saved_run(run_id, party_size, box_size, won_battles, num_encounters, 
     assert db_run['finished'] == finished
 
 
+def assert_run_potential_pokemons(run_id: str, expected_num_pokemons: int):
+    db_runs = list(fetch_documents_by_query("locke_manager", "runs_pokemons_options", {"run_id": run_id}))
+    assert len(db_runs) == expected_num_pokemons
