@@ -65,7 +65,6 @@ class Run:
         """
         self.battles.append(battle)
 
-
     def get_pokemon_by_id(self, id: str) -> Pokemon:
         """Get a Pokemon by its ID.
         
@@ -121,6 +120,27 @@ class Run:
     def restart(self) -> None:
         """Increment the restart counter."""
         self.restarts += 1
+
+    def to_db_run(self, gen: int, locke_name: str, game_name: str, is_randomize: bool, duplicate_clause: bool, extra_info: dict) -> DbRun:
+        db_run = DbRun(
+            run_id=self.id,
+            created_date=self.creation_date,
+            name=self.run_name,
+            locke=locke_name,
+            game=game_name,
+            gen=gen,
+            randomized=is_randomize,
+            party=[pokemon.metadata.id for pokemon in self.party.pokemons],
+            box=[pokemon.metadata.id for pokemon in self.box.pokemons],
+            battles=[],  # Empty array as battles are added during run progress
+            encounters=[],  # Empty array as encounters are added during run progress
+            locke_extra_info=extra_info,
+            restarts=self.restarts,
+            duplicate_clause=duplicate_clause,
+            finished=self.finished,
+            starter=self.starter.metadata.id if self.starter else None
+        )
+        return db_run
 
 
 def _get_run_encounters(db_run, all_pokemons, game):

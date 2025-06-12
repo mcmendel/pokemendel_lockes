@@ -23,6 +23,7 @@ from pokemendel_core.utils.class_property import classproperty
 from pokemendel_core.models.pokemon import Pokemon
 from dataclasses import dataclass
 from typing import List, Dict, Optional, Any
+from core.run import Run
 
 @dataclass
 class Locke(ABC):
@@ -84,3 +85,7 @@ class Locke(ABC):
 
     def is_pokemon_relevant(self, pokemon: Pokemon) -> bool:
         return True
+
+    @abstractmethod
+    def catch_pokemon(self, pokemon: Pokemon, run: Run):
+        pass

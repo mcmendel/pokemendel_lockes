@@ -2,7 +2,7 @@
 This class implements the abstract _mandatory_steps property and provides a base for all Locke challenges.
 """
 
-from core.locke import Locke
+from core.locke import Locke, Pokemon
 from definitions.runs.steps_info import StepInfo
 from definitions.runs.steps_names import StepsNames
 from definitions.runs.steps_interface import StepInterface
@@ -11,6 +11,7 @@ from core.steps import (
     RemoveFromPartyStep,
     ReplacePartyPokemon,
 )
+from core.run import Run
 from pokemendel_core.utils.class_property import classproperty
 from typing import List, Dict, ClassVar
 
@@ -88,4 +89,9 @@ class BaseLocke(Locke):
             StepsNames.ADD_TO_PARTY: AddToPartyStep(),
             StepsNames.REMOVE_FROM_PARTY: RemoveFromPartyStep(),
             StepsNames.SWITCH_PARTY_POKEMONS: ReplacePartyPokemon(),
-        } 
+        }
+
+    def catch_pokemon(self, pokemon: Pokemon, run: Run):
+        run.box.add_pokemon(pokemon)
+        if not run.party.is_party_full():
+            run.party.add_pokemon(pokemon)

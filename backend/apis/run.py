@@ -1,4 +1,4 @@
-from typing import List
+from typing import List, Dict
 from models.run import fetch_run
 from games import get_game
 from core.lockes import LOCKE_INSTANCES
@@ -28,3 +28,8 @@ def get_starter_options(run_id: str) -> List[str]:
     num_items = min([len(starter_options), 3])
     preferred_starter_options = random.sample(list(starter_options), num_items)
     return preferred_starter_options
+
+
+def choose_starter(run_id: str, pokemon_name: str) -> Dict:
+    run_manager = _get_run_manager(run_id)
+    return run_manager.choose_starter(pokemon_name)

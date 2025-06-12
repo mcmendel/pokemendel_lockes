@@ -8,6 +8,7 @@ from tests.e2e.helpers import (
     get_run,
     save_run,
     get_starter_options,
+    choose_starter,
     assert_run,
     assert_saved_run,
     assert_run_potential_pokemons,
@@ -33,6 +34,20 @@ def test_base_gen1(client_fixture):
     assert_saved_run(run_id, 0, 0, 0, 0, None)
     starter_options = get_starter_options(client_fixture, run_id)
     assert set(starter_options) == {'Bulbasaur', 'Charmander', 'Squirtle'}
+    choose_starter(client_fixture, run_id, starter_options[0])
+
+    run = get_run(client_fixture, run_id)
+    assert run['starter']
+    assert len(run['party']['pokemons']) == 1
+    assert len(run['box']['pokemons']) == 1
+    for new_pokemon in [
+        run['starter'],
+        run['party']['pokemons'][0],
+        run['box']['pokemons'][0]
+    ]:
+        assert new_pokemon['name'] == starter_options[0]
+        assert new_pokemon['metadata']['id']
+        assert not new_pokemon['metadata']['nickname']
 
     print("TEST Finished")
 

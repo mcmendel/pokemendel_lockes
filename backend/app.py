@@ -7,7 +7,7 @@ from apis.main import list_runs_api
 from apis.resources import get_pokemon_info, get_gym_leader_info, get_type_info
 from apis.run_creation import start_run_creation, continue_run_creation
 from apis.run_admin import get_run_api, save_run, load_run, finish_run
-from apis.run import get_starter_options
+from apis.run import get_starter_options, choose_starter
 from core.lockes import list_all_lockes
 from functools import wraps
 
@@ -296,6 +296,18 @@ def finish_run_api(run_id):
 def get_starter_options_api(run_id):
     starter_options = get_starter_options(run_id)
     return jsonify(starter_options)
+
+
+@locke_route('run/<run_id>/starter', methods=['PUT'])
+def choose_starter_api(run_id):
+    data = request.get_json()
+    # Validate required fields
+    if not data or 'pokemon_name' not in data:
+        return jsonify({
+            'error': 'Missing required field: pokemon_name'
+        }), 400
+    choose_starter(run_id, data['pokemon_name'])
+    return jsonify({'status': 'success'})
 
 
 if __name__ == '__main__':
