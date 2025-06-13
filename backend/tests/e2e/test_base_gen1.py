@@ -7,6 +7,8 @@ from tests.e2e.helpers import (
     continue_locke_creation_finished,
     get_run,
     save_run,
+    get_starter_options,
+    choose_starter,
     assert_run,
     assert_saved_run,
     assert_run_potential_pokemons,
@@ -27,10 +29,33 @@ def test_base_gen1(client_fixture):
     continue_locke_creation_not_finished(client_fixture, None, None, 'GAME', TEST_GAME)
     run_id = continue_locke_creation_finished(client_fixture, 'GAME', TEST_GAME)
     assert_run_potential_pokemons(run_id, 151)
-    run = get_run(client_fixture, run_id)
-    assert_run(run, run_id, 0, 0, 0, 0, None)
+    run_response = get_run(client_fixture, run_id)
+    assert_run(
+        run_response=run_response,
+        id=run_id,
+        party_size=0,
+        box_size=0,
+        won_gyms=0,
+        won_elites=0,
+        num_encounters=0,
+        starter=None
+    )
     assert_saved_run(run_id, 0, 0, 0, 0, None)
+    starter_options = get_starter_options(client_fixture, run_id)
+    assert set(starter_options) == {'Bulbasaur', 'Charmander', 'Squirtle'}
+    choose_starter(client_fixture, run_id, starter_options[0])
 
+    run_response = get_run(client_fixture, run_id)
+    run = run_response['run']
+    assert run['starter']
+    assert len(run['party']) == 1
+    assert len(run['box']) == 1
+    assert run['starter'] == run['party'][0] == run['box'][0]
+    assert run['starter'] in run_response['pokemons']
+    new_pokemon = run_response['pokemons'][run['starter']]
+    assert new_pokemon['name'] == starter_options[0]
+    assert new_pokemon['metadata']['id']
+    assert not new_pokemon['metadata']['nickname']
 
     print("TEST Finished")
 

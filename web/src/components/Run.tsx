@@ -1,17 +1,28 @@
 import React, { useEffect, useState } from "react";
 import { useParams } from "react-router-dom";
-import lockeApi from "../api/lockeApi";
-import type { Run } from "../api/lockeApi";
+import lockeApi, { RunResponse, Pokemon, StatusResponse } from "../api/lockeApi";
 import SaveIcon from '@mui/icons-material/Save';
 import UploadIcon from '@mui/icons-material/Upload';
 import FlagIcon from '@mui/icons-material/Flag';
-import { Tooltip, Snackbar, Alert } from '@mui/material';
+import { 
+    Tooltip, 
+    Snackbar, 
+    Alert, 
+    Dialog,
+    DialogTitle,
+    DialogContent,
+    DialogActions,
+    Button
+} from '@mui/material';
 import './Run.css';
 
 function RunComponent() {
   const { runId } = useParams<{ runId: string }>();
-  const [run, setRun] = useState<Run | null>(null);
+  const [runData, setRunData] = useState<RunResponse | null>(null);
+  const [starterOptions, setStarterOptions] = useState<string[]>([]);
   const [error, setError] = useState<string | null>(null);
+  const [selectedStarter, setSelectedStarter] = useState<string | null>(null);
+  const [isDialogOpen, setIsDialogOpen] = useState(false);
   const [snackbar, setSnackbar] = useState<{ open: boolean; message: string; severity: 'success' | 'error' }>({
     open: false,
     message: '',
@@ -23,14 +34,26 @@ function RunComponent() {
     
     (async () => {
       try {
-        const data = await lockeApi.getRun(runId);
-        console.log('Run data:', data);
-        setRun(data);
+        const [runResponse, options] = await Promise.all([
+          lockeApi.getRun(runId),
+          lockeApi.getStarterOptions(runId)
+        ]);
+        console.log('Run response:', runResponse);
+        console.log('Starter options:', options);
+        setRunData(runResponse);
+        setStarterOptions(options);
       } catch (e) {
-        setError("Failed to fetch run.");
+        console.error('Error fetching data:', e);
+        setError("Failed to fetch run data.");
       }
     })();
   }, [runId]);
+
+  // Helper function to get Pokémon name from ID
+  const getPokemonName = (pokemonId: string | null): string => {
+    if (!pokemonId || !runData) return '';
+    return runData.pokemons[pokemonId]?.name || pokemonId;
+  };
 
   const handleSave = async () => {
     if (!runId) return;
@@ -58,7 +81,7 @@ function RunComponent() {
     
     try {
       const loadedRun = await lockeApi.loadRun(runId);
-      setRun(loadedRun);
+      setRunData(loadedRun);
       setSnackbar({
         open: true,
         message: 'Run loaded successfully!',
@@ -86,7 +109,7 @@ function RunComponent() {
           break;
         case 'Finish':
           const updatedRun = await lockeApi.finishRun(runId);
-          setRun(updatedRun);
+          setRunData(updatedRun);
           setSnackbar({
             open: true,
             message: 'Run marked as finished!',
@@ -107,13 +130,52 @@ function RunComponent() {
     setSnackbar(prev => ({ ...prev, open: false }));
   };
 
+  const handleStarterClick = (pokemon: string) => {
+    setSelectedStarter(pokemon);
+    setIsDialogOpen(true);
+  };
+
+  const handleDialogClose = () => {
+    setIsDialogOpen(false);
+    setSelectedStarter(null);
+  };
+
+  const handleConfirmStarter = async () => {
+    if (!runId || !selectedStarter) return;
+
+    try {
+      const response = await lockeApi.setStarter(runId, selectedStarter);
+      if (response.status === 'success') {
+        // Fetch updated run data
+        const updatedRun = await lockeApi.getRun(runId);
+        setRunData(updatedRun);
+        setSnackbar({
+          open: true,
+          message: `Successfully chose ${selectedStarter} as your starter!`,
+          severity: 'success'
+        });
+      }
+    } catch (e) {
+      setSnackbar({
+        open: true,
+        message: `Failed to set starter: ${e instanceof Error ? e.message : 'Unknown error'}`,
+        severity: 'error'
+      });
+    } finally {
+      handleDialogClose();
+    }
+  };
+
   if (!runId) return <p>Error: No run ID provided</p>;
   if (error) return <p>Error: {error}</p>;
-  if (!run) return <p>Loading…</p>;
+  if (!runData) return <p>Loading…</p>;
+
+  const { run, pokemons } = runData;
 
   return (
     <div className="pokemendel-run-container">
       <div className="run-header">
+        <div className="run-title">{run.run_name}</div>
         <div className="run-actions">
           <Tooltip title="Save" placement="top">
             <span className="run-action-icon" onClick={() => handleIconClick("Save")}>
@@ -133,9 +195,61 @@ function RunComponent() {
         </div>
       </div>
       <div className="run-info">
-        <div className="run-name">Run Name: {run.run_name}</div>
-        <div className="run-id">Run ID: {run.id}</div>
+        {!run.starter ? (
+          <>
+            <div className="status-message">No starter selected yet</div>
+            {starterOptions.length > 0 ? (
+              <div className="starter-options">
+                {starterOptions.map((pokemon) => (
+                  <div 
+                    key={pokemon} 
+                    className="starter-option"
+                    onClick={() => handleStarterClick(pokemon)}
+                  >
+                    <img 
+                      src={lockeApi.getPokemonImageUrl(pokemon)}
+                      alt={pokemon}
+                      className="starter-image"
+                      onError={(e) => {
+                        const target = e.target as HTMLImageElement;
+                        target.src = `https://placehold.co/120x120/1976d2/ffffff?text=${pokemon}`;
+                      }}
+                    />
+                    <div className="starter-name">{pokemon}</div>
+                  </div>
+                ))}
+              </div>
+            ) : (
+              <div>Loading starter options...</div>
+            )}
+          </>
+        ) : (
+          <div className="run-id">Run ID: {run.id}</div>
+        )}
       </div>
+
+      <Dialog
+        open={isDialogOpen}
+        onClose={handleDialogClose}
+        aria-labelledby="starter-dialog-title"
+      >
+        <DialogTitle id="starter-dialog-title">
+          Choose Starter
+        </DialogTitle>
+        <DialogContent>
+          {selectedStarter && (
+            <p>Choose {selectedStarter} as your starter?</p>
+          )}
+        </DialogContent>
+        <DialogActions>
+          <Button onClick={handleDialogClose} color="primary">
+            No
+          </Button>
+          <Button onClick={handleConfirmStarter} color="primary" variant="contained">
+            Yes
+          </Button>
+        </DialogActions>
+      </Dialog>
 
       <Snackbar 
         open={snackbar.open} 

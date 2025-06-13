@@ -75,21 +75,37 @@ def get_run(client, run_id):
     return run
 
 
+def get_starter_options(client, run_id):
+    response = client.get('/locke_manager/run/' + run_id + '/starter_options')
+    assert response.status_code == 200
+    run = response.get_json()
+    return run
+
+def choose_starter(client, run_id: str, pokemon_name: str):
+    response = client.put("/locke_manager/run/" + run_id + "/starter", json={
+        'pokemon_name': pokemon_name
+    })
+    assert response.status_code == 200
+
+
 def save_run(client, run_id):
     response = client.post('/locke_manager/run/' + run_id + '/save')
     assert response.status_code == 200
     saved_run = get_run(client, run_id)
 
 
-def assert_run(run, id, party_size, box_size, won_battles, num_encounters, starter, num_restarts=0, finished=False):
+def assert_run(run_response, id, party_size, box_size, won_gyms, won_elites, num_encounters, starter, num_restarts=0, finished=False):
+    run = run_response['run']
     assert run['id'] == id
     assert run['run_name'] == 'TestRun'
-    assert len(run['party']['pokemons']) == party_size
-    assert len(run['box']['pokemons']) == box_size
-    assert len(run['battles']) == won_battles
+    assert len(run['party']) == party_size
+    assert len(run['box']) == box_size
+    assert len(run['gyms']) == won_gyms
+    assert len(run['elite4']) == won_elites
     assert len([encounter for encounter in run['encounters'] if encounter['pokemon']]) == num_encounters
     if starter:
-        assert run['starter']['name'] == starter
+        assert run['starter'] in run_response['pokemons']
+        assert run_response['pokemons'][run['starter']]['name'] == starter
     else:
         assert not run['starter']
 

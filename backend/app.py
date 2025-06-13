@@ -6,7 +6,8 @@ from dotenv import load_dotenv
 from apis.main import list_runs_api
 from apis.resources import get_pokemon_info, get_gym_leader_info, get_type_info
 from apis.run_creation import start_run_creation, continue_run_creation
-from apis.run import get_run_api, save_run, load_run, finish_run
+from apis.run_admin import get_run_api, save_run, load_run, finish_run
+from apis.run import get_starter_options, choose_starter
 from core.lockes import list_all_lockes
 from functools import wraps
 
@@ -231,7 +232,7 @@ def get_run(run_id):
         500: Server error
     """
     run_data = get_run_api(run_id)
-    return jsonify(run_data)
+    return jsonify(run_data.to_dict())
 
 
 @locke_route('run/<run_id>/save', methods=['POST'])
@@ -269,7 +270,7 @@ def load_run_api(run_id):
         500: Server error
     """
     run_data = load_run(run_id)
-    return jsonify(run_data)
+    return jsonify(run_data.to_dict())
 
 
 @locke_route('run/<run_id>/finish', methods=['POST'])
@@ -288,7 +289,25 @@ def finish_run_api(run_id):
         500: Server error
     """
     run_data = finish_run(run_id)
-    return jsonify(run_data)
+    return jsonify(run_data.to_dict())
+
+
+@locke_route('run/<run_id>/starter_options', methods=['GET'])
+def get_starter_options_api(run_id):
+    starter_options = get_starter_options(run_id)
+    return jsonify(starter_options)
+
+
+@locke_route('run/<run_id>/starter', methods=['PUT'])
+def choose_starter_api(run_id):
+    data = request.get_json()
+    # Validate required fields
+    if not data or 'pokemon_name' not in data:
+        return jsonify({
+            'error': 'Missing required field: pokemon_name'
+        }), 400
+    choose_starter(run_id, data['pokemon_name'])
+    return jsonify({'status': 'success'})
 
 
 if __name__ == '__main__':

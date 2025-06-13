@@ -47,7 +47,7 @@ class RunPokemonsOptions:
         """
         return cls(
             run_id=data["run_id"],
-            pokemon_name=data["_id"],
+            pokemon_name=data["pokemon_name"],
             base_pokemon=data["base_pokemon"],
         )
 
@@ -70,7 +70,7 @@ def save_run_options(run: RunPokemonsOptions) -> None:
         raise Exception(f"Failed to save run: {str(e)}")
 
 
-def list_runs_options(run_id: str) -> List[RunPokemonsOptions]:
+def list_runs_options(run_id: str, query: Optional[Dict] = None) -> List[RunPokemonsOptions]:
     """List all RunPokemonsOptions from the database, optionally filtered by run_id.
 
     Args:
@@ -83,7 +83,10 @@ def list_runs_options(run_id: str) -> List[RunPokemonsOptions]:
         Exception: If database operation fails
     """
     try:
-        results = list(fetch_documents_by_query(DB_NAME, _COLLECTIONS_NAME, {'run_id': run_id}))
+        fetch_query = {'run_id': run_id}
+        query = query or {}
+        fetch_query.update(query)
+        results = list(fetch_documents_by_query(DB_NAME, _COLLECTIONS_NAME, fetch_query))
         return [RunPokemonsOptions.from_dict(result) for result in results]
     except Exception as e:
         raise Exception(f"Failed to list runs: {str(e)}")

@@ -18,19 +18,40 @@ export interface ListRun {
     starter: string;
 }
 
+export interface BattleResponse {
+    leader: string;
+    won: boolean;
+}
+
+export interface EncounterResponse {
+    route: string;
+    pokemon: string | null;
+    status: string;
+}
+
 export interface Run {
     id: string;
     run_name: string;
-    created_at: string;
+    creation_date: string;
+    party: string[];
+    box: string[];
+    gyms: BattleResponse[];
+    elite4: BattleResponse[];
+    encounters: EncounterResponse[];
+    starter: string | null;
+    restarts: number;
     finished: boolean;
-    game_name: string;
-    locke_name: string;
-    num_deaths: number;
-    num_gyms: number;
-    num_pokemons: number;
-    num_restarts: number;
-    randomized: boolean;
-    starter: string;
+}
+
+export interface Pokemon {
+    id: string;
+    name: string;
+    // Add other Pokémon properties as needed
+}
+
+export interface RunResponse {
+    run: Run;
+    pokemons: Record<string, Pokemon>;
 }
 
 export interface RunUpdateResponse {
@@ -57,6 +78,10 @@ export interface Locke {
     name: string;
     description: string;
     min_gen: number;
+}
+
+export interface StatusResponse {
+    status: string;
 }
 
 // API Client
@@ -107,12 +132,14 @@ const lockeApi = {
 
     // Add more API methods here as needed
 
-    async getRun(runId: string): Promise<Run> {
+    async getRun(runId: string): Promise<RunResponse> {
         const response = await fetch(`${API_BASE_URL}/run/${runId}`, { method: "GET" });
         if (!response.ok) {
             throw new Error("Failed to fetch run");
         }
-        return response.json();
+        const data: RunResponse = await response.json();
+        console.log('Run response:', data);
+        return data;
     },
 
     async saveRun(runId: string): Promise<{ status: string }> {
@@ -130,7 +157,7 @@ const lockeApi = {
         return response.json();
     },
 
-    async loadRun(runId: string): Promise<Run> {
+    async loadRun(runId: string): Promise<RunResponse> {
         const response = await fetch(`${API_BASE_URL}/run/${runId}/load`, {
             method: 'POST',
             headers: {
@@ -142,10 +169,12 @@ const lockeApi = {
             throw new Error(`Failed to load run: ${response.statusText}`);
         }
 
-        return response.json();
+        const data: RunResponse = await response.json();
+        console.log('Load run response:', data);
+        return data;
     },
 
-    async finishRun(runId: string): Promise<Run> {
+    async finishRun(runId: string): Promise<RunResponse> {
         const response = await fetch(`${API_BASE_URL}/run/${runId}/finish`, {
             method: 'POST',
             headers: {
@@ -157,8 +186,46 @@ const lockeApi = {
             throw new Error(`Failed to finish run: ${response.statusText}`);
         }
 
-        return response.json();
-    }
+        const data: RunResponse = await response.json();
+        console.log('Finish run response:', data);
+        return data;
+    },
+
+    async getStarterOptions(runId: string): Promise<string[]> {
+        try {
+            const response = await fetch(`${API_BASE_URL}/run/${runId}/starter_options`);
+            if (!response.ok) {
+                throw new Error(`HTTP error! status: ${response.status}`);
+            }
+            const data = await response.json();
+            return data;
+        } catch (error) {
+            console.error('Error fetching starter options:', error);
+            throw error;
+        }
+    },
+
+    getPokemonImageUrl(pokemonName: string): string {
+        return `${API_BASE_URL}/resources/pokemon/${pokemonName.toLowerCase()}.png`;
+    },
+
+    async setStarter(runId: string, pokemonName: string): Promise<StatusResponse> {
+        const response = await fetch(`${API_BASE_URL}/run/${runId}/starter`, {
+            method: 'PUT',
+            headers: {
+                'Content-Type': 'application/json',
+            },
+            body: JSON.stringify({ pokemon_name: pokemonName })
+        });
+
+        if (!response.ok) {
+            throw new Error(`Failed to set starter: ${response.statusText}`);
+        }
+
+        const data: StatusResponse = await response.json();
+        console.log('Set starter response:', data);
+        return data;
+    },
 };
 
 export default lockeApi; 
