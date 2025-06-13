@@ -1,10 +1,19 @@
 import React, { useEffect, useState } from "react";
 import { useParams } from "react-router-dom";
-import lockeApi, { RunResponse, Pokemon } from "../api/lockeApi";
+import lockeApi, { RunResponse, Pokemon, StatusResponse } from "../api/lockeApi";
 import SaveIcon from '@mui/icons-material/Save';
 import UploadIcon from '@mui/icons-material/Upload';
 import FlagIcon from '@mui/icons-material/Flag';
-import { Tooltip, Snackbar, Alert } from '@mui/material';
+import { 
+    Tooltip, 
+    Snackbar, 
+    Alert, 
+    Dialog,
+    DialogTitle,
+    DialogContent,
+    DialogActions,
+    Button
+} from '@mui/material';
 import './Run.css';
 
 function RunComponent() {
@@ -12,6 +21,8 @@ function RunComponent() {
   const [runData, setRunData] = useState<RunResponse | null>(null);
   const [starterOptions, setStarterOptions] = useState<string[]>([]);
   const [error, setError] = useState<string | null>(null);
+  const [selectedStarter, setSelectedStarter] = useState<string | null>(null);
+  const [isDialogOpen, setIsDialogOpen] = useState(false);
   const [snackbar, setSnackbar] = useState<{ open: boolean; message: string; severity: 'success' | 'error' }>({
     open: false,
     message: '',
@@ -119,6 +130,42 @@ function RunComponent() {
     setSnackbar(prev => ({ ...prev, open: false }));
   };
 
+  const handleStarterClick = (pokemon: string) => {
+    setSelectedStarter(pokemon);
+    setIsDialogOpen(true);
+  };
+
+  const handleDialogClose = () => {
+    setIsDialogOpen(false);
+    setSelectedStarter(null);
+  };
+
+  const handleConfirmStarter = async () => {
+    if (!runId || !selectedStarter) return;
+
+    try {
+      const response = await lockeApi.setStarter(runId, selectedStarter);
+      if (response.status === 'success') {
+        // Fetch updated run data
+        const updatedRun = await lockeApi.getRun(runId);
+        setRunData(updatedRun);
+        setSnackbar({
+          open: true,
+          message: `Successfully chose ${selectedStarter} as your starter!`,
+          severity: 'success'
+        });
+      }
+    } catch (e) {
+      setSnackbar({
+        open: true,
+        message: `Failed to set starter: ${e instanceof Error ? e.message : 'Unknown error'}`,
+        severity: 'error'
+      });
+    } finally {
+      handleDialogClose();
+    }
+  };
+
   if (!runId) return <p>Error: No run ID provided</p>;
   if (error) return <p>Error: {error}</p>;
   if (!runData) return <p>Loading…</p>;
@@ -154,13 +201,16 @@ function RunComponent() {
             {starterOptions.length > 0 ? (
               <div className="starter-options">
                 {starterOptions.map((pokemon) => (
-                  <div key={pokemon} className="starter-option">
+                  <div 
+                    key={pokemon} 
+                    className="starter-option"
+                    onClick={() => handleStarterClick(pokemon)}
+                  >
                     <img 
                       src={lockeApi.getPokemonImageUrl(pokemon)}
                       alt={pokemon}
                       className="starter-image"
                       onError={(e) => {
-                        // Fallback to placeholder if image fails to load
                         const target = e.target as HTMLImageElement;
                         target.src = `https://placehold.co/120x120/1976d2/ffffff?text=${pokemon}`;
                       }}
@@ -177,6 +227,29 @@ function RunComponent() {
           <div className="run-id">Run ID: {run.id}</div>
         )}
       </div>
+
+      <Dialog
+        open={isDialogOpen}
+        onClose={handleDialogClose}
+        aria-labelledby="starter-dialog-title"
+      >
+        <DialogTitle id="starter-dialog-title">
+          Choose Starter
+        </DialogTitle>
+        <DialogContent>
+          {selectedStarter && (
+            <p>Choose {selectedStarter} as your starter?</p>
+          )}
+        </DialogContent>
+        <DialogActions>
+          <Button onClick={handleDialogClose} color="primary">
+            No
+          </Button>
+          <Button onClick={handleConfirmStarter} color="primary" variant="contained">
+            Yes
+          </Button>
+        </DialogActions>
+      </Dialog>
 
       <Snackbar 
         open={snackbar.open} 

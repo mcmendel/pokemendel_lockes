@@ -80,6 +80,10 @@ export interface Locke {
     min_gen: number;
 }
 
+export interface StatusResponse {
+    status: string;
+}
+
 // API Client
 const lockeApi = {
     // Get all runs
@@ -203,7 +207,25 @@ const lockeApi = {
 
     getPokemonImageUrl(pokemonName: string): string {
         return `${API_BASE_URL}/resources/pokemon/${pokemonName.toLowerCase()}.png`;
-    }
+    },
+
+    async setStarter(runId: string, pokemonName: string): Promise<StatusResponse> {
+        const response = await fetch(`${API_BASE_URL}/run/${runId}/starter`, {
+            method: 'PUT',
+            headers: {
+                'Content-Type': 'application/json',
+            },
+            body: JSON.stringify({ pokemon_name: pokemonName })
+        });
+
+        if (!response.ok) {
+            throw new Error(`Failed to set starter: ${response.statusText}`);
+        }
+
+        const data: StatusResponse = await response.json();
+        console.log('Set starter response:', data);
+        return data;
+    },
 };
 
 export default lockeApi; 

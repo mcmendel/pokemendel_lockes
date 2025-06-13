@@ -78,23 +78,36 @@
   cursor: pointer;
   padding: 12px;
   border-radius: 8px;
-  transition: background-color 0.2s;
+  transition: all 0.2s ease;
+  border: 2px solid transparent;
 }
 
 .starter-option:hover {
-  background-color: rgba(0, 0, 0, 0.04);
+  background-color: rgba(25, 118, 210, 0.04);
+  border-color: #1976d2;
+  transform: scale(1.05);
+}
+
+.starter-option:active {
+  transform: scale(0.95);
 }
 
 .starter-image {
   width: 120px;
   height: 120px;
   object-fit: contain;
+  transition: transform 0.2s ease;
 }
 
 .starter-name {
   font-size: 16px;
   font-weight: 500;
   color: #1976d2;
+  transition: color 0.2s ease;
+}
+
+.starter-option:hover .starter-name {
+  color: #1565c0;
 }
 
 .run-id {
