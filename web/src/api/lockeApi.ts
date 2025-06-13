@@ -18,19 +18,40 @@ export interface ListRun {
     starter: string;
 }
 
+export interface BattleResponse {
+    leader: string;
+    won: boolean;
+}
+
+export interface EncounterResponse {
+    route: string;
+    pokemon: string | null;
+    status: string;
+}
+
 export interface Run {
     id: string;
     run_name: string;
-    created_at: string;
-    finished: boolean;
-    game_name: string;
-    locke_name: string;
-    num_deaths: number;
-    num_gyms: number;
-    num_pokemons: number;
-    num_restarts: number;
-    randomized: boolean;
+    creation_date: string;
+    party: string[];
+    box: string[];
+    gyms: BattleResponse[];
+    elite4: BattleResponse[];
+    encounters: EncounterResponse[];
     starter: string | null;
+    restarts: number;
+    finished: boolean;
+}
+
+export interface Pokemon {
+    id: string;
+    name: string;
+    // Add other Pokémon properties as needed
+}
+
+export interface RunResponse {
+    run: Run;
+    pokemons: Record<string, Pokemon>;
 }
 
 export interface RunUpdateResponse {
@@ -107,12 +128,14 @@ const lockeApi = {
 
     // Add more API methods here as needed
 
-    async getRun(runId: string): Promise<Run> {
+    async getRun(runId: string): Promise<RunResponse> {
         const response = await fetch(`${API_BASE_URL}/run/${runId}`, { method: "GET" });
         if (!response.ok) {
             throw new Error("Failed to fetch run");
         }
-        return response.json();
+        const data: RunResponse = await response.json();
+        console.log('Run response:', data);
+        return data;
     },
 
     async saveRun(runId: string): Promise<{ status: string }> {
@@ -130,7 +153,7 @@ const lockeApi = {
         return response.json();
     },
 
-    async loadRun(runId: string): Promise<Run> {
+    async loadRun(runId: string): Promise<RunResponse> {
         const response = await fetch(`${API_BASE_URL}/run/${runId}/load`, {
             method: 'POST',
             headers: {
@@ -142,10 +165,12 @@ const lockeApi = {
             throw new Error(`Failed to load run: ${response.statusText}`);
         }
 
-        return response.json();
+        const data: RunResponse = await response.json();
+        console.log('Load run response:', data);
+        return data;
     },
 
-    async finishRun(runId: string): Promise<Run> {
+    async finishRun(runId: string): Promise<RunResponse> {
         const response = await fetch(`${API_BASE_URL}/run/${runId}/finish`, {
             method: 'POST',
             headers: {
@@ -157,7 +182,9 @@ const lockeApi = {
             throw new Error(`Failed to finish run: ${response.statusText}`);
         }
 
-        return response.json();
+        const data: RunResponse = await response.json();
+        console.log('Finish run response:', data);
+        return data;
     },
 
     async getStarterOptions(runId: string): Promise<string[]> {

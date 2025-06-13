@@ -1,7 +1,6 @@
 import React, { useEffect, useState } from "react";
 import { useParams } from "react-router-dom";
-import lockeApi from "../api/lockeApi";
-import type { Run } from "../api/lockeApi";
+import lockeApi, { RunResponse, Pokemon } from "../api/lockeApi";
 import SaveIcon from '@mui/icons-material/Save';
 import UploadIcon from '@mui/icons-material/Upload';
 import FlagIcon from '@mui/icons-material/Flag';
@@ -10,7 +9,7 @@ import './Run.css';
 
 function RunComponent() {
   const { runId } = useParams<{ runId: string }>();
-  const [run, setRun] = useState<Run | null>(null);
+  const [runData, setRunData] = useState<RunResponse | null>(null);
   const [starterOptions, setStarterOptions] = useState<string[]>([]);
   const [error, setError] = useState<string | null>(null);
   const [snackbar, setSnackbar] = useState<{ open: boolean; message: string; severity: 'success' | 'error' }>({
@@ -24,13 +23,13 @@ function RunComponent() {
     
     (async () => {
       try {
-        const [runData, options] = await Promise.all([
+        const [runResponse, options] = await Promise.all([
           lockeApi.getRun(runId),
           lockeApi.getStarterOptions(runId)
         ]);
-        console.log('Run data:', runData);
+        console.log('Run response:', runResponse);
         console.log('Starter options:', options);
-        setRun(runData);
+        setRunData(runResponse);
         setStarterOptions(options);
       } catch (e) {
         console.error('Error fetching data:', e);
@@ -38,6 +37,12 @@ function RunComponent() {
       }
     })();
   }, [runId]);
+
+  // Helper function to get Pokémon name from ID
+  const getPokemonName = (pokemonId: string | null): string => {
+    if (!pokemonId || !runData) return '';
+    return runData.pokemons[pokemonId]?.name || pokemonId;
+  };
 
   const handleSave = async () => {
     if (!runId) return;
@@ -65,7 +70,7 @@ function RunComponent() {
     
     try {
       const loadedRun = await lockeApi.loadRun(runId);
-      setRun(loadedRun);
+      setRunData(loadedRun);
       setSnackbar({
         open: true,
         message: 'Run loaded successfully!',
@@ -93,7 +98,7 @@ function RunComponent() {
           break;
         case 'Finish':
           const updatedRun = await lockeApi.finishRun(runId);
-          setRun(updatedRun);
+          setRunData(updatedRun);
           setSnackbar({
             open: true,
             message: 'Run marked as finished!',
@@ -116,7 +121,9 @@ function RunComponent() {
 
   if (!runId) return <p>Error: No run ID provided</p>;
   if (error) return <p>Error: {error}</p>;
-  if (!run) return <p>Loading…</p>;
+  if (!runData) return <p>Loading…</p>;
+
+  const { run, pokemons } = runData;
 
   return (
     <div className="pokemendel-run-container">

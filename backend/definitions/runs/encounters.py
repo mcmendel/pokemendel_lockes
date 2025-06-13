@@ -16,7 +16,7 @@ class EncounterStatus(EnumList):
 class Encounter:
     route: str
     status: str
-    pokemon: Optional[Pokemon] = None
+    pokemon: Optional[str] = None
 
     def is_caught(self) -> bool:
         return self.pokemon is not None and self.status == EncounterStatus.CAUGHT

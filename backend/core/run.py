@@ -6,7 +6,7 @@ including the player's party, box, battles, encounters, and run status.
 
 from dataclasses import dataclass, field
 from datetime import datetime
-from typing import List, Optional
+from typing import List, Optional, Dict
 
 from models.pokemon import list_pokemon_by_run
 from models.run import Run as DbRun
@@ -141,6 +141,9 @@ class Run:
             starter=self.starter.metadata.id if self.starter else None
         )
         return db_run
+
+    def get_run_pokemons(self) -> Dict[str, Pokemon]:
+        return {pokemon.metadata.id: pokemon for pokemon in self.box.pokemons}
 
 
 def _get_run_encounters(db_run, all_pokemons, game):

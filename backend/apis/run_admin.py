@@ -1,5 +1,6 @@
 from models.run import fetch_run, update_run as update_run_db, _COLLECTIONS_SAVE_NAME
 from models.pokemon import backup_pokemons, restore_pokemons
+from responses.run import RunResponse
 from core.run import convert_db_run_to_core_run
 from dataclasses import asdict
 from games import get_game
@@ -7,7 +8,7 @@ from typing import Dict
 from apis.exceptions import InvalidGameError
 
 
-def get_run_api(run_id):
+def get_run_api(run_id: str) -> RunResponse:
     """Get a run by its ID.
     
     Args:
@@ -21,9 +22,10 @@ def get_run_api(run_id):
         InvalidGameError: If the game (for the run) does not exist
     """
     db_run = fetch_run(run_id)
-
-    # Fetch all pokemons for this run
-    return asdict(convert_db_run_to_core_run(db_run, run_id))
+    core_run = convert_db_run_to_core_run(db_run, run_id)
+    game = get_game(db_run.game)
+    response_run = RunResponse.from_core_run(core_run, game)
+    return response_run
 
 
 def save_run(run_id) -> None:
@@ -33,17 +35,20 @@ def save_run(run_id) -> None:
     backup_pokemons(run_id)
 
 
-def load_run(run_id) -> Dict:
+def load_run(run_id) -> RunResponse:
     print("Loading run %s" % run_id)
     db_run_to_load = fetch_run(run_id, _COLLECTIONS_SAVE_NAME)
     restore_pokemons(run_id)
     db_run_to_load.restarts += 1
     update_run_db(db_run_to_load)
     update_run_db(db_run_to_load, _COLLECTIONS_SAVE_NAME)
-    return asdict(convert_db_run_to_core_run(db_run_to_load, run_id))
+    core_run = convert_db_run_to_core_run(db_run_to_load, run_id)
+    game = get_game(db_run_to_load.game)
+    response_run = RunResponse.from_core_run(core_run, game)
+    return response_run
 
 
-def finish_run(run_id: str) -> Dict:
+def finish_run(run_id: str) -> RunResponse:
     print("Run %s had finished" % run_id)
     db_run = fetch_run(run_id)
     assert not db_run.finished, "Run %s is already finished" % run_id
@@ -59,5 +64,8 @@ def finish_run(run_id: str) -> Dict:
     db_run.finished = True
     update_run_db(db_run)
     save_run(run_id)
-    return asdict(convert_db_run_to_core_run(db_run, run_id))
+    core_run = convert_db_run_to_core_run(db_run, run_id)
+    game = get_game(db_run.game)
+    response_run = RunResponse.from_core_run(core_run, game)
+    return response_run
 
