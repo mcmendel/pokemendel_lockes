@@ -4,6 +4,7 @@ import lockeApi, { RunResponse, Pokemon, StatusResponse } from "../api/lockeApi"
 import SaveIcon from '@mui/icons-material/Save';
 import UploadIcon from '@mui/icons-material/Upload';
 import FlagIcon from '@mui/icons-material/Flag';
+import Party from './Party';
 import { 
     Tooltip, 
     Snackbar, 
@@ -196,9 +197,9 @@ function RunComponent() {
           </Tooltip>
         </div>
       </div>
-      <div className="run-info">
+      <div className="run-content">
         {!runData.run.starter ? (
-          <>
+          <div className="run-main-content">
             <div className="status-message">No starter selected yet</div>
             {starterOptions.length > 0 ? (
               <div className="starter-options">
@@ -224,9 +225,14 @@ function RunComponent() {
             ) : (
               <div>Loading starter options...</div>
             )}
-          </>
+          </div>
         ) : (
-          <div className="run-id">Run ID: {runData.run.id}</div>
+          <>
+            <Party pokemonCount={0} />
+            <div className="run-main-content">
+              {/* Main content will go here */}
+            </div>
+          </>
         )}
       </div>
 
