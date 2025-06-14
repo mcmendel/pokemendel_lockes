@@ -34,14 +34,15 @@ function RunComponent() {
     
     (async () => {
       try {
-        const [runResponse, options] = await Promise.all([
-          lockeApi.getRun(runId),
-          lockeApi.getStarterOptions(runId)
-        ]);
+        const runResponse = await lockeApi.getRun(runId);
         console.log('Run response:', runResponse);
-        console.log('Starter options:', options);
         setRunData(runResponse);
-        setStarterOptions(options);
+
+        if (!runResponse.run.starter) {
+          const options = await lockeApi.getStarterOptions(runId);
+          console.log('Starter options:', options);
+          setStarterOptions(options);
+        }
       } catch (e) {
         console.error('Error fetching data:', e);
         setError("Failed to fetch run data.");
@@ -170,12 +171,13 @@ function RunComponent() {
   if (error) return <p>Error: {error}</p>;
   if (!runData) return <p>Loading…</p>;
 
-  const { run, pokemons } = runData;
+  console.log('Current run data:', runData);
+  console.log('Current run starter:', runData.run.starter);
 
   return (
     <div className="pokemendel-run-container">
       <div className="run-header">
-        <div className="run-title">{run.run_name}</div>
+        <div className="run-title">{runData.run.run_name}</div>
         <div className="run-actions">
           <Tooltip title="Save" placement="top">
             <span className="run-action-icon" onClick={() => handleIconClick("Save")}>
@@ -195,7 +197,7 @@ function RunComponent() {
         </div>
       </div>
       <div className="run-info">
-        {!run.starter ? (
+        {!runData.run.starter ? (
           <>
             <div className="status-message">No starter selected yet</div>
             {starterOptions.length > 0 ? (
@@ -224,7 +226,7 @@ function RunComponent() {
             )}
           </>
         ) : (
-          <div className="run-id">Run ID: {run.id}</div>
+          <div className="run-id">Run ID: {runData.run.id}</div>
         )}
       </div>
 
