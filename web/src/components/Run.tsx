@@ -168,6 +168,29 @@ function RunComponent() {
     }
   };
 
+  const handlePokemonClick = (pokemonId: string) => {
+    alert(`Clicked Pokemon ID: ${pokemonId}`);
+  };
+
+  // Helper function to transform party data
+  const getPartyPokemons = (): Array<Pokemon | null> => {
+    if (!runData) return Array(6).fill(null);
+    
+    // Log the first pokemon to see its structure
+    const firstPokemonId = runData.run.party[0];
+    if (firstPokemonId) {
+      console.log('First pokemon data:', runData.pokemons[firstPokemonId]);
+    }
+    
+    // Create array of 6 slots
+    return Array.from({ length: 6 }, (_, index) => {
+      const pokemonId = runData.run.party[index];
+      if (!pokemonId) return null;
+      
+      return runData.pokemons[pokemonId] || null;
+    });
+  };
+
   if (!runId) return <p>Error: No run ID provided</p>;
   if (error) return <p>Error: {error}</p>;
   if (!runData) return <p>Loading…</p>;
@@ -228,7 +251,10 @@ function RunComponent() {
           </div>
         ) : (
           <>
-            <Party pokemonCount={0} />
+            <Party 
+              pokemons={getPartyPokemons()}
+              onPokemonClick={handlePokemonClick}
+            />
             <div className="run-main-content">
               {/* Main content will go here */}
             </div>

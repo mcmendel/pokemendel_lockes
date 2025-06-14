@@ -1,20 +1,28 @@
 import React from 'react';
+import Pokemon from './Pokemon';
+import { Pokemon as PokemonType } from '../api/lockeApi';
 import './Party.css';
 
 interface PartyProps {
-  pokemonCount: number;
+  pokemons: Array<PokemonType | null>;
+  onPokemonClick: (id: string) => void;
 }
 
-function Party({ pokemonCount }: PartyProps) {
-  const partyItems = Array.from({ length: 6 }, (_, i) => i + 1);
-
+function Party({ pokemons, onPokemonClick }: PartyProps) {
   return (
     <div className="party-container">
       <div className="party-header">Party</div>
       <div className="party-content">
-        {partyItems.map((itemNumber) => (
-          <div key={itemNumber} className="party-item">
-            Item {itemNumber} in party
+        {pokemons.map((pokemon, index) => (
+          <div key={index} className="party-slot">
+            {pokemon ? (
+              <Pokemon 
+                pokemon={pokemon}
+                onClick={onPokemonClick}
+              />
+            ) : (
+              <div className="empty-slot">Empty</div>
+            )}
           </div>
         ))}
       </div>
