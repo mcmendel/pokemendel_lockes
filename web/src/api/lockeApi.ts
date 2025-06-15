@@ -43,10 +43,27 @@ export interface Run {
     finished: boolean;
 }
 
-export interface Pokemon {
+export interface PokemonMetadata {
     id: string;
+    nickname: string | null;
+    caught_index: number | null;
+    starlocke_type: string | null;
+    gender: string | null;
+    paired: string | null;
+}
+
+export interface Pokemon {
     name: string;
-    // Add other Pokémon properties as needed
+    metadata: PokemonMetadata;
+    status: string;
+    gen: number;
+    types: number[];
+    categories: string[];
+    colors: string[];
+    evolves_to: string[];
+    num_legs: number;
+    stats: any | null;  // TODO: Define proper stats type if needed
+    supported_genders: string[];
 }
 
 export interface RunResponse {

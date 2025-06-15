@@ -1,13 +1,25 @@
 .pokemendel-run-container {
+  display: flex;
+  flex-direction: column;
   padding: 20px;
-  height: 100%;
+  position: relative;
 }
 
 .run-header {
   display: flex;
   justify-content: space-between;
   align-items: center;
-  margin-bottom: 20px;
+  z-index: 1; /* Ensure header stays above other content */
+}
+
+.run-content {
+  display: flex;
+  gap: 20px;
+}
+
+.run-main-content {
+  flex: 1;
+  margin-left: calc(20% + 40px); /* Width of party + gap */
 }
 
 .run-title {

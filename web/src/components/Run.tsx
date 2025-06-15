@@ -4,6 +4,7 @@ import lockeApi, { RunResponse, Pokemon, StatusResponse } from "../api/lockeApi"
 import SaveIcon from '@mui/icons-material/Save';
 import UploadIcon from '@mui/icons-material/Upload';
 import FlagIcon from '@mui/icons-material/Flag';
+import Party from './Party';
 import { 
     Tooltip, 
     Snackbar, 
@@ -34,14 +35,15 @@ function RunComponent() {
     
     (async () => {
       try {
-        const [runResponse, options] = await Promise.all([
-          lockeApi.getRun(runId),
-          lockeApi.getStarterOptions(runId)
-        ]);
+        const runResponse = await lockeApi.getRun(runId);
         console.log('Run response:', runResponse);
-        console.log('Starter options:', options);
         setRunData(runResponse);
-        setStarterOptions(options);
+
+        if (!runResponse.run.starter) {
+          const options = await lockeApi.getStarterOptions(runId);
+          console.log('Starter options:', options);
+          setStarterOptions(options);
+        }
       } catch (e) {
         console.error('Error fetching data:', e);
         setError("Failed to fetch run data.");
@@ -166,16 +168,40 @@ function RunComponent() {
     }
   };
 
+  const handlePokemonClick = (pokemonId: string) => {
+    alert(`Clicked Pokemon ID: ${pokemonId}`);
+  };
+
+  // Helper function to transform party data
+  const getPartyPokemons = (): Array<Pokemon | null> => {
+    if (!runData) return Array(6).fill(null);
+    
+    // Log the first pokemon to see its structure
+    const firstPokemonId = runData.run.party[0];
+    if (firstPokemonId) {
+      console.log('First pokemon data:', runData.pokemons[firstPokemonId]);
+    }
+    
+    // Create array of 6 slots
+    return Array.from({ length: 6 }, (_, index) => {
+      const pokemonId = runData.run.party[index];
+      if (!pokemonId) return null;
+      
+      return runData.pokemons[pokemonId] || null;
+    });
+  };
+
   if (!runId) return <p>Error: No run ID provided</p>;
   if (error) return <p>Error: {error}</p>;
   if (!runData) return <p>Loading…</p>;
 
-  const { run, pokemons } = runData;
+  console.log('Current run data:', runData);
+  console.log('Current run starter:', runData.run.starter);
 
   return (
     <div className="pokemendel-run-container">
       <div className="run-header">
-        <div className="run-title">{run.run_name}</div>
+        <div className="run-title">{runData.run.run_name}</div>
         <div className="run-actions">
           <Tooltip title="Save" placement="top">
             <span className="run-action-icon" onClick={() => handleIconClick("Save")}>
@@ -194,9 +220,9 @@ function RunComponent() {
           </Tooltip>
         </div>
       </div>
-      <div className="run-info">
-        {!run.starter ? (
-          <>
+      <div className="run-content">
+        {!runData.run.starter ? (
+          <div className="run-main-content">
             <div className="status-message">No starter selected yet</div>
             {starterOptions.length > 0 ? (
               <div className="starter-options">
@@ -222,9 +248,17 @@ function RunComponent() {
             ) : (
               <div>Loading starter options...</div>
             )}
-          </>
+          </div>
         ) : (
-          <div className="run-id">Run ID: {run.id}</div>
+          <>
+            <Party 
+              pokemons={getPartyPokemons()}
+              onPokemonClick={handlePokemonClick}
+            />
+            <div className="run-main-content">
+              {/* Main content will go here */}
+            </div>
+          </>
         )}
       </div>
 
