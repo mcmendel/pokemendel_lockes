@@ -5,6 +5,7 @@ import SaveIcon from '@mui/icons-material/Save';
 import UploadIcon from '@mui/icons-material/Upload';
 import FlagIcon from '@mui/icons-material/Flag';
 import Party from './Party';
+import Encounters from './Encounters';
 import { 
     Tooltip, 
     Snackbar, 
@@ -251,10 +252,13 @@ function RunComponent() {
           </div>
         ) : (
           <>
-            <Party 
-              pokemons={getPartyPokemons()}
-              onPokemonClick={handlePokemonClick}
-            />
+            <div className="run-content">
+              <Party 
+                pokemons={getPartyPokemons()}
+                onPokemonClick={handlePokemonClick}
+              />
+              <Encounters />
+            </div>
             <div className="run-main-content">
               {/* Main content will go here */}
             </div>

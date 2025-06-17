@@ -1,0 +1,28 @@
+.encounters-container {
+  background-color: #1565c0; /* Dark blue background */
+  border-radius: 8px;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+  margin: 0 0 6px 0;
+  padding: 6px;
+  flex: 0 0 50%;
+  height: calc(100vh - 220px); /* Same height as Party */
+  display: flex;
+  flex-direction: column;
+}
+
+.encounters-header {
+  font-size: 20px;
+  font-weight: bold;
+  color: white; /* White text for dark background */
+  padding: 12px 0;
+  flex-shrink: 0;
+}
+
+.encounters-content {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  background-color: #1976d2; /* Slightly lighter blue for content area */
+  border-radius: 4px;
+  overflow-y: auto;
+} 
