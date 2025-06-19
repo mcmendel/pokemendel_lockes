@@ -6,6 +6,7 @@ import UploadIcon from '@mui/icons-material/Upload';
 import FlagIcon from '@mui/icons-material/Flag';
 import Party from './Party';
 import Encounters from './Encounters';
+import Tabs from './Tabs';
 import { 
     Tooltip, 
     Snackbar, 
@@ -258,9 +259,7 @@ function RunComponent() {
                 onPokemonClick={handlePokemonClick}
               />
               <Encounters encounters={runData.run.encounters} />
-            </div>
-            <div className="run-main-content">
-              {/* Main content will go here */}
+              <Tabs />
             </div>
           </>
         )}
