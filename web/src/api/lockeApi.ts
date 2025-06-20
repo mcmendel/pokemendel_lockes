@@ -243,6 +243,20 @@ const lockeApi = {
         console.log('Set starter response:', data);
         return data;
     },
+
+    async getPotentialPokemons(runId: string): Promise<string[]> {
+        try {
+            const response = await fetch(`${API_BASE_URL}/run/${runId}/potential_pokemons`);
+            if (!response.ok) {
+                throw new Error(`HTTP error! status: ${response.status}`);
+            }
+            const data = await response.json();
+            return data;
+        } catch (error) {
+            console.error('Error fetching potential pokemons:', error);
+            throw error;
+        }
+    },
 };
 
 export default lockeApi; 

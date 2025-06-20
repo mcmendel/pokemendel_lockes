@@ -1,5 +1,5 @@
-import React, { useState } from 'react';
-import { Tabs as MuiTabs, Tab, Box, Typography, Grid, TextField } from '@mui/material';
+import React, { useState, useEffect } from 'react';
+import { Tabs as MuiTabs, Tab, Box, Typography, Grid, TextField, CircularProgress } from '@mui/material';
 import lockeApi from '../api/lockeApi';
 import './Tabs.css';
 
@@ -37,19 +37,46 @@ function a11yProps(index: number) {
 }
 
 interface TabsProps {
-  // Add props here when needed
+  runId?: string; // Add runId prop to access the API
 }
 
-function Tabs({}: TabsProps) {
+function Tabs({ runId }: TabsProps) {
   const [value, setValue] = useState(0);
   const [searchTerm, setSearchTerm] = useState('');
+  const [supportedSearchTerm, setSupportedSearchTerm] = useState('');
+  const [supportedPokemons, setSupportedPokemons] = useState<string[]>([]);
+  const [loadingSupported, setLoadingSupported] = useState(false);
+  const [errorSupported, setErrorSupported] = useState<string | null>(null);
 
   // Static data for Potential Encounters
   const potentialEncounters = ["Pikachu", "Squirtle", "Mewtwo", "Rattata"];
 
+  // Fetch supported pokemons when component mounts or runId changes
+  useEffect(() => {
+    if (runId) {
+      setLoadingSupported(true);
+      setErrorSupported(null);
+      lockeApi.getPotentialPokemons(runId)
+        .then(data => {
+          setSupportedPokemons(data);
+          setLoadingSupported(false);
+        })
+        .catch(error => {
+          console.error('Error fetching supported pokemons:', error);
+          setErrorSupported('Failed to load supported pokemons');
+          setLoadingSupported(false);
+        });
+    }
+  }, [runId]);
+
   // Filter Pokemon based on search term
   const filteredEncounters = potentialEncounters.filter(pokemon =>
     pokemon.toLowerCase().includes(searchTerm.toLowerCase())
+  );
+  
+  // Filter Supported Pokemon based on search term
+  const filteredSupportedPokemons = supportedPokemons.filter(pokemon =>
+    pokemon.toLowerCase().includes(supportedSearchTerm.toLowerCase())
   );
 
   const handleChange = (event: React.SyntheticEvent, newValue: number) => {
@@ -90,7 +117,64 @@ function Tabs({}: TabsProps) {
           </TabPanel>
           <TabPanel value={value} index={4}>
             <Typography variant="h6">Supported Pokemons</Typography>
-            <Typography>List of supported Pokemon and their details will be shown here.</Typography>
+            <TextField
+              fullWidth
+              variant="outlined"
+              placeholder="Search Supported Pokemon..."
+              value={supportedSearchTerm}
+              onChange={(e) => setSupportedSearchTerm(e.target.value)}
+              sx={{ mb: 2, mt: 1 }}
+            />
+            {loadingSupported ? (
+              <Box sx={{ display: 'flex', justifyContent: 'center', mt: 4 }}>
+                <CircularProgress />
+              </Box>
+            ) : errorSupported ? (
+              <Typography sx={{ textAlign: 'center', mt: 2, color: '#d32f2f' }}>
+                {errorSupported}
+              </Typography>
+            ) : (
+              <>
+                <Grid container spacing={2}>
+                  {filteredSupportedPokemons.map((pokemon, index) => (
+                    <Grid item xs={6} sm={4} md={3} key={index}>
+                      <Box sx={{ 
+                        display: 'flex', 
+                        flexDirection: 'column', 
+                        alignItems: 'center',
+                        p: 2,
+                        border: '1px solid #e0e0e0',
+                        borderRadius: 2,
+                        backgroundColor: '#f0f8ff'
+                      }}>
+                        <img 
+                          src={lockeApi.getPokemonImageUrl(pokemon)}
+                          alt={pokemon}
+                          style={{ 
+                            width: '80px', 
+                            height: '80px', 
+                            objectFit: 'contain',
+                            marginBottom: '8px'
+                          }}
+                          onError={(e) => {
+                            const target = e.target as HTMLImageElement;
+                            target.src = `https://placehold.co/80x80/1976d2/ffffff?text=${pokemon}`;
+                          }}
+                        />
+                        <Typography variant="body2" sx={{ textAlign: 'center', fontWeight: 500 }}>
+                          {pokemon}
+                        </Typography>
+                      </Box>
+                    </Grid>
+                  ))}
+                </Grid>
+                {filteredSupportedPokemons.length === 0 && supportedPokemons.length > 0 && (
+                  <Typography sx={{ textAlign: 'center', mt: 2, color: '#666' }}>
+                    No supported Pokemon found matching "{supportedSearchTerm}"
+                  </Typography>
+                )}
+              </>
+            )}
           </TabPanel>
           <TabPanel value={value} index={5}>
             <Typography variant="h6">Potential Encounters</Typography>
@@ -135,6 +219,11 @@ function Tabs({}: TabsProps) {
                 </Grid>
               ))}
             </Grid>
+            {filteredEncounters.length === 0 && (
+              <Typography sx={{ textAlign: 'center', mt: 2, color: '#666' }}>
+                No Pokemon found matching "{searchTerm}"
+              </Typography>
+            )}
           </TabPanel>
           <TabPanel value={value} index={6}>
             <Typography variant="h6">Important Battles</Typography>

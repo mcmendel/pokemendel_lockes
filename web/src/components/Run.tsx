@@ -259,7 +259,7 @@ function RunComponent() {
                 onPokemonClick={handlePokemonClick}
               />
               <Encounters encounters={runData.run.encounters} />
-              <Tabs />
+              <Tabs runId={runId} />
             </div>
           </>
         )}

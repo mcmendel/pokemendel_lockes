@@ -52,7 +52,7 @@ class RunPokemonsOptions:
             run_id=data["run_id"],
             pokemon_name=data["pokemon_name"],
             base_pokemon=data["base_pokemon"],
-            index=data["index"],
+            index=data.get("index", -1),
         )
 
 
