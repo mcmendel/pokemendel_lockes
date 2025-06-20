@@ -8,6 +8,7 @@ from tests.e2e.helpers import (
     get_run,
     save_run,
     get_starter_options,
+    get_run_supported_pokemons,
     choose_starter,
     assert_run,
     assert_saved_run,
@@ -22,7 +23,7 @@ TEST_GAME = "Red"
 
 def test_base_gen1(client_fixture):
     """Test that the list_runs endpoint works with e2e_ prefixed collections."""
-    # The collection access will automatically use 'e2e_runs' instead of 'runs'
+    # ==== CREATE RUN ====
     list_runs(client_fixture, None)
     list_lockes(client_fixture, TEST_LOCKE)
     start_locke_creation(client_fixture, TEST_LOCKE, TEST_GAME, False, False)
@@ -41,6 +42,9 @@ def test_base_gen1(client_fixture):
         starter=None
     )
     assert_saved_run(run_id, 0, 0, 0, 0, None)
+
+    # ==== CHOOSE STARTER ====
+    get_run_supported_pokemons(client_fixture, run_id, 151)
     starter_options = get_starter_options(client_fixture, run_id)
     assert set(starter_options) == {'Bulbasaur', 'Charmander', 'Squirtle'}
     choose_starter(client_fixture, run_id, starter_options[0])

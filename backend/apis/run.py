@@ -1,5 +1,6 @@
 from typing import List, Dict
 from models.run import fetch_run
+from models.run_pokemons_options import list_runs_options
 from games import get_game
 from core.lockes import LOCKE_INSTANCES
 from core.run import convert_db_run_to_core_run
@@ -33,3 +34,7 @@ def get_starter_options(run_id: str) -> List[str]:
 def choose_starter(run_id: str, pokemon_name: str) -> Dict:
     run_manager = _get_run_manager(run_id)
     return run_manager.choose_starter(pokemon_name)
+
+
+def get_run_potential_pokemons(run_id: str) -> List[str]:
+    return [pokemon_option.pokemon_name for pokemon_option in list_runs_options(run_id)]

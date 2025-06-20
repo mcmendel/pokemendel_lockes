@@ -81,6 +81,14 @@ def get_starter_options(client, run_id):
     run = response.get_json()
     return run
 
+
+def get_run_supported_pokemons(client, run_id, expected_num_pokemons):
+    response = client.get('/locke_manager/run/' + run_id + '/potential_pokemons')
+    assert response.status_code == 200
+    supported_pokemons = response.get_json()
+    assert len(supported_pokemons) == expected_num_pokemons
+    return supported_pokemons
+
 def choose_starter(client, run_id: str, pokemon_name: str):
     response = client.put("/locke_manager/run/" + run_id + "/starter", json={
         'pokemon_name': pokemon_name

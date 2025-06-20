@@ -1,6 +1,7 @@
 from . import db_connector
 from typing import List, Dict, Generator, Set, Optional
 from pymongo.errors import PyMongoError
+import pymongo
 import logging
 
 logger = logging.getLogger(__name__)
@@ -60,7 +61,8 @@ def fetch_documents_by_query(
     db_name: str, 
     collection_name: str, 
     query: Dict, 
-    keys: Set = frozenset()
+    keys: Set = frozenset(),
+    sort_key: str = None
 ) -> Generator[Dict, None, None]:
     """
     Fetch documents from a MongoDB collection based on a query.
@@ -80,7 +82,10 @@ def fetch_documents_by_query(
     try:
         db = db_connector.get_db(db_name)
         collection = db[collection_name]
-        yield from collection.find(query, projection=keys)
+        search_query = collection.find(query, projection=keys)
+        if sort_key:
+            search_query = search_query.sort(sort_key, pymongo.ASCENDING)
+        yield from search_query
     except PyMongoError as e:
         logger.error(f"Error fetching documents from {db_name}.{collection_name}: {str(e)}")
         raise

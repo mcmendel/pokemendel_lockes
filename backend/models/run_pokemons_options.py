@@ -1,6 +1,6 @@
 from datetime import datetime
 from typing import List, Dict, Optional, Any
-from dataclasses import dataclass, field
+from dataclasses import dataclass
 from . import DB_NAME
 from .db_helper import insert_document, fetch_documents_by_query, update_document_by_id, delete_documents_by_query
 
@@ -10,6 +10,7 @@ _COLLECTIONS_NAME = "runs_pokemons_options"
 
 @dataclass
 class RunPokemonsOptions:
+    index: int
     run_id: str
     pokemon_name: str
     base_pokemon: str
@@ -30,6 +31,8 @@ class RunPokemonsOptions:
             Dict[str, Any]: A dictionary representation of the RunPokemonsOptions object.
         """
         return {
+            "_id": f"{self.run_id}_{self.index}",
+            "index": self.index,
             "run_id": self.run_id,
             "pokemon_name": self.pokemon_name,
             "base_pokemon": self.base_pokemon,
@@ -49,6 +52,7 @@ class RunPokemonsOptions:
             run_id=data["run_id"],
             pokemon_name=data["pokemon_name"],
             base_pokemon=data["base_pokemon"],
+            index=data["index"],
         )
 
 
@@ -86,7 +90,7 @@ def list_runs_options(run_id: str, query: Optional[Dict] = None) -> List[RunPoke
         fetch_query = {'run_id': run_id}
         query = query or {}
         fetch_query.update(query)
-        results = list(fetch_documents_by_query(DB_NAME, _COLLECTIONS_NAME, fetch_query))
+        results = list(fetch_documents_by_query(DB_NAME, _COLLECTIONS_NAME, fetch_query, sort_key="index"))
         return [RunPokemonsOptions.from_dict(result) for result in results]
     except Exception as e:
         raise Exception(f"Failed to list runs: {str(e)}")

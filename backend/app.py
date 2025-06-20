@@ -7,7 +7,7 @@ from apis.main import list_runs_api
 from apis.resources import get_pokemon_info, get_gym_leader_info, get_type_info
 from apis.run_creation import start_run_creation, continue_run_creation
 from apis.run_admin import get_run_api, save_run, load_run, finish_run
-from apis.run import get_starter_options, choose_starter
+from apis.run import get_starter_options, choose_starter, get_run_potential_pokemons
 from core.lockes import list_all_lockes
 from functools import wraps
 
@@ -308,6 +308,12 @@ def choose_starter_api(run_id):
         }), 400
     choose_starter(run_id, data['pokemon_name'])
     return jsonify({'status': 'success'})
+
+
+@locke_route('run/<run_id>/potential_pokemons', methods=['GET'])
+def get_run_potential_pokemons_api(run_id):
+    potential_pokemons = get_run_potential_pokemons(run_id)
+    return jsonify(potential_pokemons)
 
 
 if __name__ == '__main__':

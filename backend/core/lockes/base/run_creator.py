@@ -78,6 +78,7 @@ class RunCreator:
             run_creation: The RunCreation instance to manage
         """
         self.run_creation = run_creation
+        self._potential_pokemon_counter = None
 
     def get_progress(self, locke_min_gen: int) -> RunCreationProgress:
         """Get the current progress of run creation.
@@ -166,6 +167,7 @@ class RunCreator:
         gen_pokemons = list_gen_pokemons(game.gen)
         print("Creating run with potential %s pokemons" % len(gen_pokemons))
         stored_pokemons = set()
+        self._potential_pokemon_counter = 0
         for evolution_line in iterate_gen_evolution_lines(game.gen, reversed=True):
             self._populate_evolution_line_if_relevant(
                 run_id, game.gen, evolution_line, locke, stored_pokemons
@@ -182,10 +184,12 @@ class RunCreator:
                 run_options = RunPokemonsOptions(
                     run_id=run_id,
                     pokemon_name=pokemon_name,
-                    base_pokemon=evolution_line[-1]
+                    base_pokemon=evolution_line[-1],
+                    index=self._potential_pokemon_counter,
                 )
                 save_run_options(run_options)
                 relevant_pokemons = True
+                self._potential_pokemon_counter += 1
 
     def _get_creation_missing_extra_info(self) -> RunCreationProgress:
         """Get any additional information needed for run creation.
