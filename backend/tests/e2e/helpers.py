@@ -65,6 +65,16 @@ def continue_locke_creation_finished(client, key, val):
     assert continue_response['id']
     assert not continue_response['next_key']
     assert not continue_response['potential_values']
+
+    # make sure all run potential pokemons entered correctly
+    db_runs = list(fetch_documents_by_query("locke_manager", "runs_pokemons_options", {"run_id": continue_response['id']}))
+    assert len(db_runs) >= 1
+    pokemon_indices = set()
+    for db_run in db_runs:
+        pokemon_indices.add(db_run['index'])
+        assert not db_run['caught']
+    assert len(pokemon_indices) == len(db_runs)
+
     return continue_response['id']
 
 

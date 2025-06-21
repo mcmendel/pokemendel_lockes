@@ -1,8 +1,8 @@
-from datetime import datetime
 from typing import List, Dict, Optional, Any
 from dataclasses import dataclass
 from . import DB_NAME
-from .db_helper import insert_document, fetch_documents_by_query, update_document_by_id, delete_documents_by_query
+from .db_helper import insert_document, fetch_documents_by_query, delete_documents_by_query
+import functools
 
 
 _COLLECTIONS_NAME = "runs_pokemons_options"
@@ -14,6 +14,7 @@ class RunPokemonsOptions:
     run_id: str
     pokemon_name: str
     base_pokemon: str
+    caught: bool = False
 
     def __post_init__(self):
         """Validate the run data after initialization."""
@@ -36,6 +37,7 @@ class RunPokemonsOptions:
             "run_id": self.run_id,
             "pokemon_name": self.pokemon_name,
             "base_pokemon": self.base_pokemon,
+            "caught": self.caught,
         }
 
     @classmethod
@@ -53,6 +55,7 @@ class RunPokemonsOptions:
             pokemon_name=data["pokemon_name"],
             base_pokemon=data["base_pokemon"],
             index=data.get("index", -1),
+            caught=data.get("caught", False),
         )
 
 
@@ -74,7 +77,23 @@ def save_run_options(run: RunPokemonsOptions) -> None:
         raise Exception(f"Failed to save run: {str(e)}")
 
 
-def list_runs_options(run_id: str, query: Optional[Dict] = None) -> List[RunPokemonsOptions]:
+@functools.lru_cache(10)
+def list_runs_options(run_id: str) -> List[RunPokemonsOptions]:
+    """List all RunPokemonsOptions from the database, optionally filtered by run_id.
+
+    Args:
+        query: Optional query dictionary to filter runs
+
+    Returns:
+        List[Run]: List of Run instances matching the query
+
+    Raises:
+        Exception: If database operation fails
+    """
+    return list_runs_options_by_query(run_id)
+
+
+def list_runs_options_by_query(run_id: str, query: Optional[Dict] = None) -> List[RunPokemonsOptions]:
     """List all RunPokemonsOptions from the database, optionally filtered by run_id.
 
     Args:
