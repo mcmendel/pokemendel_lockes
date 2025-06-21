@@ -99,11 +99,17 @@ def get_run_supported_pokemons(client, run_id, expected_num_pokemons):
     assert len(supported_pokemons) == expected_num_pokemons
     return supported_pokemons
 
-def choose_starter(client, run_id: str, pokemon_name: str):
+
+def choose_starter(client, run_id: str, pokemon_name: str, pokemon_base: str):
     response = client.put("/locke_manager/run/" + run_id + "/starter", json={
         'pokemon_name': pokemon_name
     })
     assert response.status_code == 200
+    db_runs = list(fetch_documents_by_query("locke_manager", "runs_pokemons_options", {"run_id": run_id, "base_pokemon": pokemon_base}))
+    assert len(db_runs) >= 1
+    for db_run in db_runs:
+        assert db_run['caught']
+
 
 
 def save_run(client, run_id):

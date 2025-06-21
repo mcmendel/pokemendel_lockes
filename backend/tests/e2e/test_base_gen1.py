@@ -47,7 +47,7 @@ def test_base_gen1(client_fixture):
     get_run_supported_pokemons(client_fixture, run_id, 151)
     starter_options = get_starter_options(client_fixture, run_id)
     assert set(starter_options) == {'Bulbasaur', 'Charmander', 'Squirtle'}
-    choose_starter(client_fixture, run_id, starter_options[0])
+    choose_starter(client_fixture, run_id, starter_options[0], starter_options[0])
 
     run_response = get_run(client_fixture, run_id)
     run = run_response['run']

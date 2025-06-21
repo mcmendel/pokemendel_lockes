@@ -1,7 +1,7 @@
 from typing import List, Dict, Optional, Any
 from dataclasses import dataclass
 from . import DB_NAME
-from .db_helper import insert_document, fetch_documents_by_query, delete_documents_by_query
+from .db_helper import insert_document, fetch_documents_by_query, delete_documents_by_query, update_document_by_id
 import functools
 
 
@@ -25,6 +25,14 @@ class RunPokemonsOptions:
         if not self.base_pokemon:
             raise ValueError("Base pokemon cannot be empty")
 
+    @staticmethod
+    def generate_id(run_id: str, pokemon_name: str) -> str:
+        return f"{run_id}_{pokemon_name}"
+
+    @property
+    def id(self):
+        return self.generate_id(self.run_id, self.pokemon_name)
+
     def to_dict(self) -> Dict[str, Any]:
         """Convert the RunPokemonsOptions object to a dictionary.
 
@@ -32,7 +40,7 @@ class RunPokemonsOptions:
             Dict[str, Any]: A dictionary representation of the RunPokemonsOptions object.
         """
         return {
-            "_id": f"{self.run_id}_{self.index}",
+            "_id": self.id,
             "index": self.index,
             "run_id": self.run_id,
             "pokemon_name": self.pokemon_name,
@@ -59,7 +67,7 @@ class RunPokemonsOptions:
         )
 
 
-def save_run_options(run: RunPokemonsOptions) -> None:
+def save_run_options(run: RunPokemonsOptions, create: bool = True) -> None:
     """Save a RunPokemonsOptions to the database.
 
     Args:
@@ -72,7 +80,10 @@ def save_run_options(run: RunPokemonsOptions) -> None:
     """
     try:
         run_dict = run.to_dict()
-        insert_document(DB_NAME, _COLLECTIONS_NAME, run_dict)
+        if create:
+            insert_document(DB_NAME, _COLLECTIONS_NAME, run_dict)
+        else:
+            update_document_by_id(DB_NAME, _COLLECTIONS_NAME, run.id, run_dict)
     except Exception as e:
         raise Exception(f"Failed to save run: {str(e)}")
 
@@ -128,3 +139,14 @@ def delete_run_pokemons(run_id: str) -> None:
         delete_documents_by_query(DB_NAME, _COLLECTIONS_NAME, {'run_id': run_id})
     except Exception as e:
         raise Exception(f"Failed to delete run: {str(e)}")
+
+
+def mark_caught_pokemon(run_id: str, pokemon_name: str):
+    pokemon_options = list_runs_options_by_query(
+        run_id, {'_id': RunPokemonsOptions.generate_id(run_id, pokemon_name)}
+    )
+    assert len(pokemon_options) == 1
+    pokemon_base = pokemon_options[0].base_pokemon
+    for pokemon_same_base in list_runs_options_by_query(run_id, {'base_pokemon': pokemon_base}):
+        pokemon_same_base.caught = True
+        save_run_options(pokemon_same_base, create=False)

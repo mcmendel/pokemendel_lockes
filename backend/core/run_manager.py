@@ -1,5 +1,5 @@
 from pokemendel_core.data import fetch_pokemon
-from models.run_pokemons_options import list_runs_options
+from models.run_pokemons_options import list_runs_options, mark_caught_pokemon
 from models.run import update_run
 from models.pokemon import save_pokemon
 from dataclasses import dataclass, asdict
@@ -48,9 +48,13 @@ class RunManager:
         self.locke.catch_pokemon(starter_pokemon, self.run)
         db_run = self.run.to_db_run(self.game.gen, self.locke.name, self.game.name, self.randomized, self.duplicate_clause, self.locke.extra_info)
         update_run(db_run)
+        self._update_caught_pokemon(starter_pokemon)
 
     def _generate_locke_pokemon(self, pokemon_name: str) -> Pokemon:
         core_pokemon = fetch_pokemon(pokemon_name, self.game.gen)
         pokemon_core_attributes = asdict(core_pokemon)
         return Pokemon(**pokemon_core_attributes, metadata=PokemonMetadata(id=uuid4().hex),  status=PokemonStatus.ALIVE)
+
+    def _update_caught_pokemon(self, pokemon: Pokemon):
+        mark_caught_pokemon(self.run.id, pokemon.name)
 
