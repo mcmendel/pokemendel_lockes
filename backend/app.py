@@ -7,7 +7,7 @@ from apis.main import list_runs_api
 from apis.resources import get_pokemon_info, get_gym_leader_info, get_type_info
 from apis.run_creation import start_run_creation, continue_run_creation
 from apis.run_admin import get_run_api, save_run, load_run, finish_run
-from apis.run import get_starter_options, choose_starter, get_run_potential_pokemons
+from apis.run import get_starter_options, choose_starter, get_run_potential_pokemons, get_run_potential_encounters
 from core.lockes import list_all_lockes
 from functools import wraps
 
@@ -314,6 +314,13 @@ def choose_starter_api(run_id):
 def get_run_potential_pokemons_api(run_id):
     potential_pokemons = get_run_potential_pokemons(run_id)
     return jsonify(potential_pokemons)
+
+
+@locke_route('run/<run_id>/encounters', methods=['GET'])
+def get_run_potential_encounters_api(run_id):
+    route = request.args.get('route')
+    potential_encounters = get_run_potential_encounters(run_id, route)
+    return jsonify(potential_encounters)
 
 
 if __name__ == '__main__':

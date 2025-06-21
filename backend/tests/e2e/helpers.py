@@ -100,6 +100,17 @@ def get_run_supported_pokemons(client, run_id, expected_num_pokemons):
     return supported_pokemons
 
 
+def get_run_potential_encounters(client, run_id, route, expected_num_pokemons):
+    url = '/locke_manager/run/' + run_id + '/encounters'
+    if route:
+        url = f"{url}?route={route}"
+    response = client.get(url)
+    assert response.status_code == 200
+    potential_encounters = response.get_json()
+    assert len(potential_encounters) == expected_num_pokemons
+    return potential_encounters
+
+
 def choose_starter(client, run_id: str, pokemon_name: str, pokemon_base: str):
     response = client.put("/locke_manager/run/" + run_id + "/starter", json={
         'pokemon_name': pokemon_name
@@ -109,7 +120,6 @@ def choose_starter(client, run_id: str, pokemon_name: str, pokemon_base: str):
     assert len(db_runs) >= 1
     for db_run in db_runs:
         assert db_run['caught']
-
 
 
 def save_run(client, run_id):
