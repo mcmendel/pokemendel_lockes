@@ -47,9 +47,9 @@ function Tabs({ runId }: TabsProps) {
   const [supportedPokemons, setSupportedPokemons] = useState<string[]>([]);
   const [loadingSupported, setLoadingSupported] = useState(false);
   const [errorSupported, setErrorSupported] = useState<string | null>(null);
-
-  // Static data for Potential Encounters
-  const potentialEncounters = ["Pikachu", "Squirtle", "Mewtwo", "Rattata"];
+  const [encounters, setEncounters] = useState<string[]>([]);
+  const [loadingEncounters, setLoadingEncounters] = useState(false);
+  const [errorEncounters, setErrorEncounters] = useState<string | null>(null);
 
   // Fetch supported pokemons when component mounts or runId changes
   useEffect(() => {
@@ -69,8 +69,26 @@ function Tabs({ runId }: TabsProps) {
     }
   }, [runId]);
 
+  // Fetch encounters when component mounts or runId changes
+  useEffect(() => {
+    if (runId) {
+      setLoadingEncounters(true);
+      setErrorEncounters(null);
+      lockeApi.getEncounters(runId)
+        .then(data => {
+          setEncounters(data);
+          setLoadingEncounters(false);
+        })
+        .catch(error => {
+          console.error('Error fetching encounters:', error);
+          setErrorEncounters('Failed to load encounters');
+          setLoadingEncounters(false);
+        });
+    }
+  }, [runId]);
+
   // Filter Pokemon based on search term
-  const filteredEncounters = potentialEncounters.filter(pokemon =>
+  const filteredEncounters = encounters.filter(pokemon =>
     pokemon.toLowerCase().includes(searchTerm.toLowerCase())
   );
   
@@ -186,43 +204,55 @@ function Tabs({ runId }: TabsProps) {
               onChange={(e) => setSearchTerm(e.target.value)}
               sx={{ mb: 2, mt: 1 }}
             />
-            <Grid container spacing={2}>
-              {filteredEncounters.map((pokemon, index) => (
-                <Grid item xs={6} sm={4} md={3} key={index}>
-                  <Box sx={{ 
-                    display: 'flex', 
-                    flexDirection: 'column', 
-                    alignItems: 'center',
-                    p: 2,
-                    border: '1px solid #e0e0e0',
-                    borderRadius: 2,
-                    backgroundColor: '#f9f9f9'
-                  }}>
-                    <img 
-                      src={lockeApi.getPokemonImageUrl(pokemon)}
-                      alt={pokemon}
-                      style={{ 
-                        width: '80px', 
-                        height: '80px', 
-                        objectFit: 'contain',
-                        marginBottom: '8px'
-                      }}
-                      onError={(e) => {
-                        const target = e.target as HTMLImageElement;
-                        target.src = `https://placehold.co/80x80/1976d2/ffffff?text=${pokemon}`;
-                      }}
-                    />
-                    <Typography variant="body2" sx={{ textAlign: 'center', fontWeight: 500 }}>
-                      {pokemon}
-                    </Typography>
-                  </Box>
-                </Grid>
-              ))}
-            </Grid>
-            {filteredEncounters.length === 0 && (
-              <Typography sx={{ textAlign: 'center', mt: 2, color: '#666' }}>
-                No Pokemon found matching "{searchTerm}"
+            {loadingEncounters ? (
+              <Box sx={{ display: 'flex', justifyContent: 'center', mt: 4 }}>
+                <CircularProgress />
+              </Box>
+            ) : errorEncounters ? (
+              <Typography sx={{ textAlign: 'center', mt: 2, color: '#d32f2f' }}>
+                {errorEncounters}
               </Typography>
+            ) : (
+              <>
+                <Grid container spacing={2}>
+                  {filteredEncounters.map((pokemon, index) => (
+                    <Grid item xs={6} sm={4} md={3} key={index}>
+                      <Box sx={{ 
+                        display: 'flex', 
+                        flexDirection: 'column', 
+                        alignItems: 'center',
+                        p: 2,
+                        border: '1px solid #e0e0e0',
+                        borderRadius: 2,
+                        backgroundColor: '#f9f9f9'
+                      }}>
+                        <img 
+                          src={lockeApi.getPokemonImageUrl(pokemon)}
+                          alt={pokemon}
+                          style={{ 
+                            width: '80px', 
+                            height: '80px', 
+                            objectFit: 'contain',
+                            marginBottom: '8px'
+                          }}
+                          onError={(e) => {
+                            const target = e.target as HTMLImageElement;
+                            target.src = `https://placehold.co/80x80/1976d2/ffffff?text=${pokemon}`;
+                          }}
+                        />
+                        <Typography variant="body2" sx={{ textAlign: 'center', fontWeight: 500 }}>
+                          {pokemon}
+                        </Typography>
+                      </Box>
+                    </Grid>
+                  ))}
+                </Grid>
+                {filteredEncounters.length === 0 && encounters.length > 0 && (
+                  <Typography sx={{ textAlign: 'center', mt: 2, color: '#666' }}>
+                    No Pokemon found matching "{searchTerm}"
+                  </Typography>
+                )}
+              </>
             )}
           </TabPanel>
           <TabPanel value={value} index={6}>

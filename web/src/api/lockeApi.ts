@@ -257,6 +257,20 @@ const lockeApi = {
             throw error;
         }
     },
+
+    async getEncounters(runId: string): Promise<string[]> {
+        try {
+            const response = await fetch(`${API_BASE_URL}/run/${runId}/encounters`);
+            if (!response.ok) {
+                throw new Error(`HTTP error! status: ${response.status}`);
+            }
+            const data = await response.json();
+            return data;
+        } catch (error) {
+            console.error('Error fetching encounters:', error);
+            throw error;
+        }
+    },
 };
 
 export default lockeApi; 
