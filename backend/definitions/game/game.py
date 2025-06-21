@@ -13,3 +13,4 @@ class Game:
     starters: List[Pokemon]
     important_battles: List[str] = field(default_factory=list)
     encounters: Dict[str, Set[str]] = field(default_factory=dict)
+    egg_pokemons: Set[str] = field(default_factory=set)

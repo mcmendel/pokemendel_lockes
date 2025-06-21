@@ -1,6 +1,7 @@
 from definitions import Game, GymTrainer, TrainerPokemon, EliteTrainer
 from pokemendel_core.utils.definitions import Regions, Types
 from pokemendel_core.data import fetch_pokemon
+from pokemendel_core.data.gen2 import PokemonGen2
 from dataclasses import dataclass
 
 
@@ -216,7 +217,10 @@ class _BaseGame(Game):
                 "Blackthorn City - GymTrainer (40)",
                 "Victory Road - Rival (38)",
                 "EliteTrainer 4  (50)",
-            ])
+            ]),
+            ('egg_pokemons', {
+                PokemonGen2.TOGEPI, PokemonGen2.PICHU, PokemonGen2.CLEFFA, PokemonGen2.IGGLYBUFF, PokemonGen2.TYROGUE, PokemonGen2.MAGBY, PokemonGen2.ELEKID, PokemonGen2.SMOOCHUM,
+            }),
         ]:
             kwargs[override_field] = kwargs.get(override_field, default_value)
         super().__init__(**kwargs)
