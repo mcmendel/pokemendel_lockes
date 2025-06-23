@@ -51,3 +51,8 @@ def get_run_potential_encounters(run_id: str, route: Optional[str]) -> List[str]
     relevant_encounters = [pokemon_option.pokemon_name for pokemon_option in run_options]
     route_encounters = set(relevant_encounters) if run_manager.randomized else run_manager.game.potential_encounters(route)
     return [encounter_pokemon for encounter_pokemon in relevant_encounters if encounter_pokemon in route_encounters]
+
+
+def encounter_pokemon(run_id: str, route: str, pokemon_name: str):
+    run_manager = _get_run_manager(run_id)
+    run_manager.encounter_pokemon(route, pokemon_name)

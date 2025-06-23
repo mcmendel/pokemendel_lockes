@@ -122,6 +122,13 @@ def choose_starter(client, run_id: str, pokemon_name: str, pokemon_base: str):
         assert db_run['caught']
 
 
+def encounter_pokemon(client, run_id: str, route: str, pokemon_name: str):
+    response = client.put("/locke_manager/run/" + run_id + "/encounter/" + route, json={
+        'pokemon_name': pokemon_name
+    })
+    assert response.status_code == 200
+
+
 def save_run(client, run_id):
     response = client.post('/locke_manager/run/' + run_id + '/save')
     assert response.status_code == 200

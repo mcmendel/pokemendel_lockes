@@ -12,6 +12,7 @@ from tests.e2e.helpers import (
     get_run_supported_pokemons,
     get_run_potential_encounters,
     choose_starter,
+    encounter_pokemon,
     assert_run,
     assert_saved_run,
     assert_run_potential_pokemons,
@@ -30,8 +31,7 @@ def test_base_gen1(client_fixture):
     # ==== CREATE RUN ====
     run_id = _create_run(client_fixture)
     _choose_starter(client_fixture, run_id)
-    potential_encounters = get_run_potential_encounters(client_fixture, run_id, "Route 2", 3)
-    assert PokemonGen1.CATERPIE in potential_encounters
+    _catch_pokemon1(client_fixture, run_id)
 
     print("TEST Finished")
 
@@ -77,6 +77,18 @@ def _create_run(client_fixture):
     get_run_supported_pokemons(client_fixture, run_id, 151)
     get_run_potential_encounters(client_fixture, run_id, None, BLUE_NUM_ENCOUNTER)
     return run_id
+
+
+def _catch_pokemon1(client_fixture, run_id):
+    potential_encounters = get_run_potential_encounters(client_fixture, run_id, "Route 2", 3)
+    assert PokemonGen1.CATERPIE in potential_encounters
+    assert PokemonGen1.PIKACHU not in potential_encounters
+    encounter_pokemon(client_fixture, run_id, "Route 2", PokemonGen1.CATERPIE)
+    run_response = get_run(client_fixture, run_id)
+    assert len(run_response['run']['box']) == 1
+    encounter = next(encounter for encounter in run_response['run']['encounters'] if encounter['route'] == "Route 2")
+    assert encounter['pokemon'] == PokemonGen1.CATERPIE
+    assert encounter['status'] == "Met"
 
 
 if __name__ == '__main__':
