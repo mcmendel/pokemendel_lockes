@@ -276,6 +276,24 @@ const lockeApi = {
             throw error;
         }
     },
+
+    async setEncounter(runId: string, route: string, pokemonName: string): Promise<StatusResponse> {
+        const response = await fetch(`${API_BASE_URL}/run/${runId}/encounter/${route}`, {
+            method: 'PUT',
+            headers: {
+                'Content-Type': 'application/json',
+            },
+            body: JSON.stringify({ pokemon_name: pokemonName })
+        });
+
+        if (!response.ok) {
+            throw new Error(`Failed to set encounter: ${response.statusText}`);
+        }
+
+        const data: StatusResponse = await response.json();
+        console.log('Set encounter response:', data);
+        return data;
+    },
 };
 
 export default lockeApi; 

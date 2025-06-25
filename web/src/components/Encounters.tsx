@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { Table, TableBody, TableCell, TableContainer, TableHead, TableRow, Paper, Dialog, DialogTitle, DialogContent, DialogActions, Button, Typography, Grid, CircularProgress, Box, TextField, InputAdornment } from '@mui/material';
 import SearchIcon from '@mui/icons-material/Search';
-import lockeApi from '../api/lockeApi';
+import lockeApi, { RunResponse } from '../api/lockeApi';
 import './Encounters.css';
 
 interface Encounter {
@@ -12,10 +12,12 @@ interface Encounter {
 
 interface EncountersProps {
   encounters: Encounter[];
-  runId?: string; // Add runId prop to access the API
+  runId?: string;
+  setRunData?: (data: RunResponse) => void;
+  setSnackbar?: (snackbar: { open: boolean; message: string; severity: 'success' | 'error' }) => void;
 }
 
-function Encounters({ encounters, runId }: EncountersProps) {
+function Encounters({ encounters, runId, setRunData, setSnackbar }: EncountersProps) {
   const [selectedEncounter, setSelectedEncounter] = useState<Encounter | null>(null);
   const [isDialogOpen, setIsDialogOpen] = useState(false);
   const [encounterPokemons, setEncounterPokemons] = useState<string[]>([]);
@@ -41,6 +43,33 @@ function Encounters({ encounters, runId }: EncountersProps) {
           setErrorEncounters('Failed to load encounters');
           setLoadingEncounters(false);
         });
+    }
+  };
+
+  const handlePokemonDoubleClick = async (pokemonName: string) => {
+    if (!runId || !selectedEncounter || !setRunData || !setSnackbar) return;
+
+    try {
+      const response = await lockeApi.setEncounter(runId, selectedEncounter.route, pokemonName);
+      if (response.status === 'success') {
+        // Fetch updated run data
+        const updatedRun = await lockeApi.getRun(runId);
+        setRunData(updatedRun);
+        setSnackbar({
+          open: true,
+          message: `Successfully set ${pokemonName} as encounter for ${selectedEncounter.route}!`,
+          severity: 'success'
+        });
+        // Close the dialog
+        handleDialogClose();
+      }
+    } catch (error) {
+      console.error('Error setting encounter:', error);
+      setSnackbar({
+        open: true,
+        message: `Failed to set encounter: ${error instanceof Error ? error.message : 'Unknown error'}`,
+        severity: 'error'
+      });
     }
   };
 
@@ -177,15 +206,23 @@ function Encounters({ encounters, runId }: EncountersProps) {
               </Grid>
               {filteredPokemons.map((pokemon, index) => (
                 <Grid item xs={6} sm={4} md={3} key={index}>
-                  <Box sx={{ 
-                    display: 'flex', 
-                    flexDirection: 'column', 
-                    alignItems: 'center',
-                    p: 2,
-                    border: '1px solid #e0e0e0',
-                    borderRadius: 2,
-                    backgroundColor: '#f9f9f9'
-                  }}>
+                  <Box 
+                    sx={{ 
+                      display: 'flex', 
+                      flexDirection: 'column', 
+                      alignItems: 'center',
+                      p: 2,
+                      border: '1px solid #e0e0e0',
+                      borderRadius: 2,
+                      backgroundColor: '#f9f9f9',
+                      cursor: 'pointer',
+                      '&:hover': {
+                        backgroundColor: '#f0f0f0',
+                        borderColor: '#1976d2'
+                      }
+                    }}
+                    onDoubleClick={() => handlePokemonDoubleClick(pokemon)}
+                  >
                     <img 
                       src={lockeApi.getPokemonImageUrl(pokemon)}
                       alt={pokemon}
