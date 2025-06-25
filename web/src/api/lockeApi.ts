@@ -258,9 +258,14 @@ const lockeApi = {
         }
     },
 
-    async getEncounters(runId: string): Promise<string[]> {
+    async getEncounters(runId: string, route?: string): Promise<string[]> {
         try {
-            const response = await fetch(`${API_BASE_URL}/run/${runId}/encounters`);
+            const url = new URL(`${API_BASE_URL}/run/${runId}/encounters`);
+            if (route) {
+                url.searchParams.append('route', route);
+            }
+            
+            const response = await fetch(url.toString());
             if (!response.ok) {
                 throw new Error(`HTTP error! status: ${response.status}`);
             }

@@ -258,7 +258,7 @@ function RunComponent() {
                 pokemons={getPartyPokemons()}
                 onPokemonClick={handlePokemonClick}
               />
-              <Encounters encounters={runData.run.encounters} />
+              <Encounters encounters={runData.run.encounters} runId={runId} />
               <Tabs runId={runId} />
             </div>
           </>
