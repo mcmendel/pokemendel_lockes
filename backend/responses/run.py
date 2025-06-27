@@ -1,7 +1,7 @@
 from definitions.runs.encounters import EncounterStatus
 from definitions.pokemons.pokemon import Pokemon
 from definitions.game import Game
-from core.run import Run as CoreRun
+from core.run import Run as CoreRun, Encounter
 from dataclasses import dataclass, field, asdict
 from datetime import datetime
 from typing import List, Optional, Dict
@@ -83,7 +83,7 @@ class RunResponse:
                 if battle.rival in {gym.leader for gym in game.elite4}
             ],
             encounters=[
-                _EncounterResponse(route=encounter.route, pokemon=encounter.pokemon.metadata.id if encounter.pokemon else None, status=encounter.status) for encounter in run.encounters
+                _EncounterResponse(route=encounter.route, pokemon=cls._convert_encounter_pokemon(encounter) if encounter.pokemon else None, status=encounter.status) for encounter in run.encounters
             ],
             starter=run.starter.metadata.id if run.starter else None,
             restarts=run.restarts,
@@ -93,6 +93,14 @@ class RunResponse:
             run=response_run,
             pokemons=run.get_run_pokemons(),
         )
+
+    @classmethod
+    def _convert_encounter_pokemon(cls, encounter: Encounter):
+        if not encounter.pokemon:
+            return None
+        if isinstance(encounter.pokemon, str):
+            return encounter.pokemon
+        return encounter.pokemon.metadata.id
 
     def to_dict(self) -> Dict:
         return asdict(self)

@@ -6,7 +6,7 @@ including the player's party, box, battles, encounters, and run status.
 
 from dataclasses import dataclass, field
 from datetime import datetime
-from typing import List, Optional, Dict
+from typing import List, Optional, Dict, Generator
 
 from models.pokemon import list_pokemon_by_run
 from models.run import Run as DbRun
@@ -133,7 +133,7 @@ class Run:
             party=[pokemon.metadata.id for pokemon in self.party.pokemons],
             box=[pokemon.metadata.id for pokemon in self.box.pokemons],
             battles=[],  # Empty array as battles are added during run progress
-            encounters=[],  # Empty array as encounters are added during run progress
+            encounters=list(self._convert_encounters_to_persist()),
             locke_extra_info=extra_info,
             restarts=self.restarts,
             duplicate_clause=duplicate_clause,
@@ -144,6 +144,20 @@ class Run:
 
     def get_run_pokemons(self) -> Dict[str, Pokemon]:
         return {pokemon.metadata.id: pokemon for pokemon in self.box.pokemons}
+
+    def _convert_encounters_to_persist(self) -> Generator[Dict[str, Optional[str]], None, None]:
+        for encounter in self.encounters:
+            if encounter.status == EncounterStatus.UNMET:
+                continue
+
+            encounter_dict = {
+                'route': encounter.route,
+                'status': encounter.status,
+                'pokemon': encounter.pokemon,
+            }
+            if encounter.status == EncounterStatus.CAUGHT:
+                encounter_dict['pokemon'] = encounter.pokemon.metadata.id
+            yield encounter_dict
 
 
 def _get_run_encounters(db_run, all_pokemons, game):
@@ -171,7 +185,7 @@ def _get_run_encounters(db_run, all_pokemons, game):
         if route in existing_encounters:
             # Route has been encountered
             status, pokemon_id = existing_encounters[route]
-            pokemon = all_pokemons.get(pokemon_id) if pokemon_id else None
+            pokemon = all_pokemons.get(pokemon_id) or pokemon_id or None
             encounters.append(Encounter(route=route, status=status, pokemon=pokemon))
         else:
             # Route hasn't been encountered yet

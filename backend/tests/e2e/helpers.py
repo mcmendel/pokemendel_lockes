@@ -65,6 +65,16 @@ def continue_locke_creation_finished(client, key, val):
     assert continue_response['id']
     assert not continue_response['next_key']
     assert not continue_response['potential_values']
+
+    # make sure all run potential pokemons entered correctly
+    db_runs = list(fetch_documents_by_query("locke_manager", "runs_pokemons_options", {"run_id": continue_response['id']}))
+    assert len(db_runs) >= 1
+    pokemon_indices = set()
+    for db_run in db_runs:
+        pokemon_indices.add(db_run['index'])
+        assert not db_run['caught']
+    assert len(pokemon_indices) == len(db_runs)
+
     return continue_response['id']
 
 
@@ -81,9 +91,47 @@ def get_starter_options(client, run_id):
     run = response.get_json()
     return run
 
-def choose_starter(client, run_id: str, pokemon_name: str):
+
+def get_run_supported_pokemons(client, run_id, expected_num_pokemons):
+    response = client.get('/locke_manager/run/' + run_id + '/potential_pokemons')
+    assert response.status_code == 200
+    supported_pokemons = response.get_json()
+    assert len(supported_pokemons) == expected_num_pokemons
+    return supported_pokemons
+
+
+def get_run_potential_encounters(client, run_id, route, expected_num_pokemons):
+    url = '/locke_manager/run/' + run_id + '/encounters'
+    if route:
+        url = f"{url}?route={route}"
+    response = client.get(url)
+    assert response.status_code == 200
+    potential_encounters = response.get_json()
+    assert len(potential_encounters) == expected_num_pokemons
+    return potential_encounters
+
+
+def choose_starter(client, run_id: str, pokemon_name: str, pokemon_base: str):
     response = client.put("/locke_manager/run/" + run_id + "/starter", json={
         'pokemon_name': pokemon_name
+    })
+    assert response.status_code == 200
+    db_runs = list(fetch_documents_by_query("locke_manager", "runs_pokemons_options", {"run_id": run_id, "base_pokemon": pokemon_base}))
+    assert len(db_runs) >= 1
+    for db_run in db_runs:
+        assert db_run['caught']
+
+
+def encounter_pokemon(client, run_id: str, route: str, pokemon_name: str):
+    response = client.put("/locke_manager/run/" + run_id + "/encounter/" + route, json={
+        'pokemon_name': pokemon_name
+    })
+    assert response.status_code == 200
+
+
+def update_encounter(client, run_id: str, route: str, encounter_status: str):
+    response = client.post("/locke_manager/run/" + run_id + "/encounter/" + route, json={
+        'encounter_status': encounter_status
     })
     assert response.status_code == 200
 

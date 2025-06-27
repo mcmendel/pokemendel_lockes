@@ -7,9 +7,17 @@ from apis.main import list_runs_api
 from apis.resources import get_pokemon_info, get_gym_leader_info, get_type_info
 from apis.run_creation import start_run_creation, continue_run_creation
 from apis.run_admin import get_run_api, save_run, load_run, finish_run
-from apis.run import get_starter_options, choose_starter
+from apis.run import (
+    get_starter_options,
+    choose_starter,
+    encounter_pokemon,
+    update_encounter,
+    get_run_potential_pokemons,
+    get_run_potential_encounters,
+)
 from core.lockes import list_all_lockes
 from functools import wraps
+import traceback
 
 load_dotenv()
 
@@ -32,7 +40,7 @@ def locke_route(path, *args, **kwargs):
                 return result
             except Exception as e:
                 status = getattr(e, "status_code", 500)
-                print(f"ERROR: {e}")
+                print(f"ERROR: {e}\n{traceback.format_exc()}")
                 return jsonify({
                     "status": "error",
                     "message": str(e)
@@ -307,6 +315,41 @@ def choose_starter_api(run_id):
             'error': 'Missing required field: pokemon_name'
         }), 400
     choose_starter(run_id, data['pokemon_name'])
+    return jsonify({'status': 'success'})
+
+
+@locke_route('run/<run_id>/potential_pokemons', methods=['GET'])
+def get_run_potential_pokemons_api(run_id):
+    potential_pokemons = get_run_potential_pokemons(run_id)
+    return jsonify(potential_pokemons)
+
+
+@locke_route('run/<run_id>/encounters', methods=['GET'])
+def get_run_potential_encounters_api(run_id):
+    route = request.args.get('route')
+    potential_encounters = get_run_potential_encounters(run_id, route)
+    return jsonify(potential_encounters)
+
+
+@locke_route('run/<run_id>/encounter/<route>', methods=['PUT'])
+def encounter_pokemon_api(run_id, route):
+    data = request.get_json()
+    if not data or 'pokemon_name' not in data:
+        return jsonify({
+            'error': 'Missing required field: pokemon_name'
+        }), 400
+    encounter_pokemon(run_id, route, data['pokemon_name'])
+    return jsonify({'status': 'success'})
+
+
+@locke_route('run/<run_id>/encounter/<route>', methods=['POST'])
+def update_encounter_api(run_id, route):
+    data = request.get_json()
+    if not data or 'encounter_status' not in data:
+        return jsonify({
+            'error': 'Missing required field: encounter_status'
+        }), 400
+    update_encounter(run_id, route, data['encounter_status'])
     return jsonify({'status': 'success'})
 
 

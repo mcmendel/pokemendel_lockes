@@ -243,6 +243,75 @@ const lockeApi = {
         console.log('Set starter response:', data);
         return data;
     },
+
+    async getPotentialPokemons(runId: string): Promise<string[]> {
+        try {
+            const response = await fetch(`${API_BASE_URL}/run/${runId}/potential_pokemons`);
+            if (!response.ok) {
+                throw new Error(`HTTP error! status: ${response.status}`);
+            }
+            const data = await response.json();
+            return data;
+        } catch (error) {
+            console.error('Error fetching potential pokemons:', error);
+            throw error;
+        }
+    },
+
+    async getEncounters(runId: string, route?: string): Promise<string[]> {
+        try {
+            const url = new URL(`${API_BASE_URL}/run/${runId}/encounters`);
+            if (route) {
+                url.searchParams.append('route', route);
+            }
+            
+            const response = await fetch(url.toString());
+            if (!response.ok) {
+                throw new Error(`HTTP error! status: ${response.status}`);
+            }
+            const data = await response.json();
+            return data;
+        } catch (error) {
+            console.error('Error fetching encounters:', error);
+            throw error;
+        }
+    },
+
+    async setEncounter(runId: string, route: string, pokemonName: string): Promise<StatusResponse> {
+        const response = await fetch(`${API_BASE_URL}/run/${runId}/encounter/${route}`, {
+            method: 'PUT',
+            headers: {
+                'Content-Type': 'application/json',
+            },
+            body: JSON.stringify({ pokemon_name: pokemonName })
+        });
+
+        if (!response.ok) {
+            throw new Error(`Failed to set encounter: ${response.statusText}`);
+        }
+
+        const data: StatusResponse = await response.json();
+        console.log('Set encounter response:', data);
+        return data;
+    },
+
+    async updateEncounterStatus(runId: string, route: string, encounterStatus: string): Promise<StatusResponse> {
+        const response = await fetch(`${API_BASE_URL}/run/${runId}/encounter/${route}`, {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+            },
+            body: JSON.stringify({ encounter_status: encounterStatus })
+        });
+
+        if (!response.ok) {
+            throw new Error(`Failed to update encounter status: ${response.statusText}`);
+        }
+
+        const data: StatusResponse = await response.json();
+        console.log('Update encounter status response:', data);
+        return data;
+    },
 };
 
 export default lockeApi; 
