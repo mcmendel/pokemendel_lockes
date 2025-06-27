@@ -43,7 +43,6 @@ class RunManager:
         run_options = {pokemon.pokemon_name for pokemon in list_runs_options(self.run.id)}
         assert pokemon_name in run_options, f"Pokemon {pokemon_name} is not valid"
         starter_pokemon = self._generate_locke_pokemon(pokemon_name=pokemon_name)
-        save_pokemon(starter_pokemon, self.run.id)
         self.run.starter = starter_pokemon
         self.locke.catch_pokemon(starter_pokemon, self.run)
         self.update_run()
@@ -60,10 +59,29 @@ class RunManager:
         route_encounter.status = EncounterStatus.MET
         self.update_run()
 
+    def update_encounter(self, route: str, encounter_status: str):
+        assert encounter_status in [EncounterStatus.CAUGHT, EncounterStatus.RAN, EncounterStatus.RAN], f"Encounter status {encounter_status} is invalid"
+        route_encounters = [encounter for encounter in self.run.encounters if encounter.route == route]
+        assert len(route_encounters) == 1
+        route_encounter = route_encounters[0]
+        assert route_encounter.pokemon, f"Route {route} already does not have pokemon for status update"
+        assert route_encounter.status == EncounterStatus.MET, f"Route {route} should have status {EncounterStatus.MET}, but instead has status {route_encounter.status}"
+        assert route in self.game.routes, f"Route {route} does not exist in game {self.game.name}"
+        route_encounter.status = encounter_status
+
+        if encounter_status == EncounterStatus.CAUGHT:
+            assert isinstance(route_encounter.pokemon, str), f"Uncaught pokemon in route {route_encounter.route} should have been string"
+            caught_pokemon = self._catch_pokemon(route_encounter.pokemon)
+            route_encounter.pokemon = caught_pokemon
+
+        self.update_run()
+
     def _generate_locke_pokemon(self, pokemon_name: str) -> Pokemon:
         core_pokemon = fetch_pokemon(pokemon_name, self.game.gen)
         pokemon_core_attributes = asdict(core_pokemon)
-        return Pokemon(**pokemon_core_attributes, metadata=PokemonMetadata(id=uuid4().hex),  status=PokemonStatus.ALIVE)
+        locke_pokemon = Pokemon(**pokemon_core_attributes, metadata=PokemonMetadata(id=uuid4().hex),  status=PokemonStatus.ALIVE)
+        save_pokemon(locke_pokemon, self.run.id)
+        return locke_pokemon
 
     def _update_caught_pokemon(self, pokemon: Pokemon):
         mark_caught_pokemon(self.run.id, pokemon.name)
@@ -71,4 +89,10 @@ class RunManager:
     def update_run(self):
         db_run = self.run.to_db_run(self.game.gen, self.locke.name, self.game.name, self.randomized, self.duplicate_clause, self.locke.extra_info)
         update_run(db_run)
+
+    def _catch_pokemon(self, pokemon_name: str) -> Pokemon:
+        new_pokemon = self._generate_locke_pokemon(pokemon_name)
+        self.locke.catch_pokemon(new_pokemon, self.run)
+        self._update_caught_pokemon(new_pokemon)
+        return new_pokemon
 

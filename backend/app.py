@@ -11,6 +11,7 @@ from apis.run import (
     get_starter_options,
     choose_starter,
     encounter_pokemon,
+    update_encounter,
     get_run_potential_pokemons,
     get_run_potential_encounters,
 )
@@ -338,6 +339,17 @@ def encounter_pokemon_api(run_id, route):
             'error': 'Missing required field: pokemon_name'
         }), 400
     encounter_pokemon(run_id, route, data['pokemon_name'])
+    return jsonify({'status': 'success'})
+
+
+@locke_route('run/<run_id>/encounter/<route>', methods=['POST'])
+def update_encounter_api(run_id, route):
+    data = request.get_json()
+    if not data or 'encounter_status' not in data:
+        return jsonify({
+            'error': 'Missing required field: encounter_status'
+        }), 400
+    update_encounter(run_id, route, data['encounter_status'])
     return jsonify({'status': 'success'})
 
 

@@ -129,6 +129,13 @@ def encounter_pokemon(client, run_id: str, route: str, pokemon_name: str):
     assert response.status_code == 200
 
 
+def update_encounter(client, run_id: str, route: str, encounter_status: str):
+    response = client.post("/locke_manager/run/" + run_id + "/encounter/" + route, json={
+        'encounter_status': encounter_status
+    })
+    assert response.status_code == 200
+
+
 def save_run(client, run_id):
     response = client.post('/locke_manager/run/' + run_id + '/save')
     assert response.status_code == 200

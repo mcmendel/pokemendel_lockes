@@ -56,3 +56,8 @@ def get_run_potential_encounters(run_id: str, route: Optional[str]) -> List[str]
 def encounter_pokemon(run_id: str, route: str, pokemon_name: str):
     run_manager = _get_run_manager(run_id)
     run_manager.encounter_pokemon(route, pokemon_name)
+
+
+def update_encounter(run_id: str, route: str, encounter_status: str):
+    run_manager = _get_run_manager(run_id)
+    run_manager.update_encounter(route, encounter_status)
