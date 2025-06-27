@@ -294,6 +294,24 @@ const lockeApi = {
         console.log('Set encounter response:', data);
         return data;
     },
+
+    async updateEncounterStatus(runId: string, route: string, encounterStatus: string): Promise<StatusResponse> {
+        const response = await fetch(`${API_BASE_URL}/run/${runId}/encounter/${route}`, {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+            },
+            body: JSON.stringify({ encounter_status: encounterStatus })
+        });
+
+        if (!response.ok) {
+            throw new Error(`Failed to update encounter status: ${response.statusText}`);
+        }
+
+        const data: StatusResponse = await response.json();
+        console.log('Update encounter status response:', data);
+        return data;
+    },
 };
 
 export default lockeApi; 

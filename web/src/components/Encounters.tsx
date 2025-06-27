@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from 'react';
-import { Table, TableBody, TableCell, TableContainer, TableHead, TableRow, Paper, Dialog, DialogTitle, DialogContent, DialogActions, Button, Typography, Grid, CircularProgress, Box, TextField, InputAdornment } from '@mui/material';
+import { Table, TableBody, TableCell, TableContainer, TableHead, TableRow, Paper, Dialog, DialogTitle, DialogContent, DialogActions, Button, Typography, Grid, CircularProgress, Box, TextField, InputAdornment, List, ListItem, ListItemButton, ListItemText } from '@mui/material';
 import SearchIcon from '@mui/icons-material/Search';
-import lockeApi, { RunResponse } from '../api/lockeApi';
+import lockeApi, { RunResponse, Pokemon } from '../api/lockeApi';
 import './Encounters.css';
 
 interface Encounter {
@@ -13,17 +13,50 @@ interface Encounter {
 interface EncountersProps {
   encounters: Encounter[];
   runId?: string;
+  runData?: RunResponse;
   setRunData?: (data: RunResponse) => void;
   setSnackbar?: (snackbar: { open: boolean; message: string; severity: 'success' | 'error' }) => void;
 }
 
-function Encounters({ encounters, runId, setRunData, setSnackbar }: EncountersProps) {
+function Encounters({ encounters, runId, runData, setRunData, setSnackbar }: EncountersProps) {
   const [selectedEncounter, setSelectedEncounter] = useState<Encounter | null>(null);
   const [isDialogOpen, setIsDialogOpen] = useState(false);
   const [encounterPokemons, setEncounterPokemons] = useState<string[]>([]);
   const [loadingEncounters, setLoadingEncounters] = useState(false);
   const [errorEncounters, setErrorEncounters] = useState<string | null>(null);
   const [searchTerm, setSearchTerm] = useState('');
+  
+  // New state for status selection dialog
+  const [isStatusDialogOpen, setIsStatusDialogOpen] = useState(false);
+  const [selectedPokemonForStatus, setSelectedPokemonForStatus] = useState<{ pokemon: string; route: string } | null>(null);
+  const [updatingStatus, setUpdatingStatus] = useState(false);
+
+  // Helper function to get pokemon display info based on encounter type
+  const getPokemonDisplayInfo = (encounter: Encounter) => {
+    if (!encounter.pokemon) {
+      return { name: null, imageUrl: null, pokemonData: null };
+    }
+
+    if (encounter.status === 'Caught') {
+      // For "Caught" status, pokemon is an ID - get from runData.pokemons
+      const pokemonData = runData?.pokemons[encounter.pokemon];
+      if (pokemonData) {
+        return {
+          name: pokemonData.name,
+          imageUrl: lockeApi.getPokemonImageUrl(pokemonData.name),
+          pokemonData: pokemonData
+        };
+      }
+      return { name: encounter.pokemon, imageUrl: null, pokemonData: null };
+    } else {
+      // For "Met", "Killed", "Ran" status, pokemon is the name
+      return {
+        name: encounter.pokemon,
+        imageUrl: lockeApi.getPokemonImageUrl(encounter.pokemon),
+        pokemonData: null
+      };
+    }
+  };
 
   const handleEncounterClick = (encounter: Encounter) => {
     setSelectedEncounter(encounter);
@@ -44,6 +77,52 @@ function Encounters({ encounters, runId, setRunData, setSnackbar }: EncountersPr
           setLoadingEncounters(false);
         });
     }
+  };
+
+  const handlePokemonClick = (encounter: Encounter) => {
+    // Only handle clicks for "Met" encounters with a pokemon
+    if (encounter.status === 'Met' && encounter.pokemon) {
+      setSelectedPokemonForStatus({ pokemon: encounter.pokemon, route: encounter.route });
+      setIsStatusDialogOpen(true);
+    }
+    // For "Caught" encounters, we could add different functionality if needed
+    // For now, no action for "Caught", "Killed", "Ran" encounters
+  };
+
+  const handleStatusSelection = async (status: string) => {
+    if (!runId || !selectedPokemonForStatus || !setRunData || !setSnackbar) return;
+
+    setUpdatingStatus(true);
+    try {
+      const response = await lockeApi.updateEncounterStatus(runId, selectedPokemonForStatus.route, status);
+      if (response.status === 'success') {
+        // Fetch updated run data
+        const updatedRun = await lockeApi.getRun(runId);
+        setRunData(updatedRun);
+        setSnackbar({
+          open: true,
+          message: `Successfully updated ${selectedPokemonForStatus.pokemon} status to ${status}!`,
+          severity: 'success'
+        });
+        // Close the status dialog
+        handleStatusDialogClose();
+      }
+    } catch (error) {
+      console.error('Error updating encounter status:', error);
+      setSnackbar({
+        open: true,
+        message: `Failed to update encounter status: ${error instanceof Error ? error.message : 'Unknown error'}`,
+        severity: 'error'
+      });
+    } finally {
+      setUpdatingStatus(false);
+    }
+  };
+
+  const handleStatusDialogClose = () => {
+    setIsStatusDialogOpen(false);
+    setSelectedPokemonForStatus(null);
+    setUpdatingStatus(false);
   };
 
   const handlePokemonDoubleClick = async (pokemonName: string) => {
@@ -121,45 +200,70 @@ function Encounters({ encounters, runId, setRunData, setSnackbar }: EncountersPr
                     key={index} 
                     sx={{ 
                       '&:hover': { backgroundColor: encounter.status === 'Met' ? '#616161' : 'rgba(0,0,0,0.03)' },
-                      cursor: !encounter.pokemon ? 'pointer' : 'default',
+                      cursor: !encounter.pokemon ? 'pointer' : (encounter.status === 'Met' ? 'pointer' : 'default'),
                       ...rowStyle
                     }}
-                    onClick={!encounter.pokemon ? () => handleEncounterClick(encounter) : undefined}
+                    onClick={!encounter.pokemon ? () => handleEncounterClick(encounter) : (encounter.status === 'Met' ? () => handlePokemonClick(encounter) : undefined)}
                   >
                     <TableCell sx={cellStyle}>
                       {encounter.route}
                     </TableCell>
                     <TableCell sx={cellStyle}>
-                      {encounter.pokemon ? (
-                        <img 
-                          src={lockeApi.getPokemonImageUrl(encounter.pokemon)}
-                          alt={encounter.pokemon}
-                          style={{ 
-                            width: '40px', 
-                            height: '40px', 
-                            objectFit: 'contain',
-                            borderRadius: '4px'
-                          }}
-                          onError={(e) => {
-                            const target = e.target as HTMLImageElement;
-                            target.src = `https://placehold.co/40x40/1976d2/ffffff?text=${encounter.pokemon}`;
-                          }}
-                        />
-                      ) : (
-                        <div style={{ 
-                          width: '40px', 
-                          height: '40px', 
-                          backgroundColor: encounter.status === 'Met' ? '#666' : '#f0f0f0',
-                          borderRadius: '4px',
-                          display: 'flex',
-                          alignItems: 'center',
-                          justifyContent: 'center',
-                          color: encounter.status === 'Met' ? 'white' : '#888',
-                          fontSize: '12px'
-                        }}>
-                          ?
-                        </div>
-                      )}
+                      {(() => {
+                        const pokemonInfo = getPokemonDisplayInfo(encounter);
+                        if (pokemonInfo.name && pokemonInfo.imageUrl) {
+                          return (
+                            <img 
+                              src={pokemonInfo.imageUrl}
+                              alt={pokemonInfo.name}
+                              style={{ 
+                                width: '40px', 
+                                height: '40px', 
+                                objectFit: 'contain',
+                                borderRadius: '4px'
+                              }}
+                              onError={(e) => {
+                                const target = e.target as HTMLImageElement;
+                                target.src = `https://placehold.co/40x40/1976d2/ffffff?text=${pokemonInfo.name}`;
+                              }}
+                            />
+                          );
+                        } else if (pokemonInfo.name) {
+                          return (
+                            <div style={{ 
+                              width: '40px', 
+                              height: '40px', 
+                              backgroundColor: '#f0f0f0',
+                              borderRadius: '4px',
+                              display: 'flex',
+                              alignItems: 'center',
+                              justifyContent: 'center',
+                              color: '#888',
+                              fontSize: '10px',
+                              textAlign: 'center',
+                              padding: '2px'
+                            }}>
+                              {pokemonInfo.name}
+                            </div>
+                          );
+                        } else {
+                          return (
+                            <div style={{ 
+                              width: '40px', 
+                              height: '40px', 
+                              backgroundColor: encounter.status === 'Met' ? '#666' : '#f0f0f0',
+                              borderRadius: '4px',
+                              display: 'flex',
+                              alignItems: 'center',
+                              justifyContent: 'center',
+                              color: encounter.status === 'Met' ? 'white' : '#888',
+                              fontSize: '12px'
+                            }}>
+                              ?
+                            </div>
+                          );
+                        }
+                      })()}
                     </TableCell>
                   </TableRow>
                 );
@@ -259,6 +363,58 @@ function Encounters({ encounters, runId, setRunData, setSnackbar }: EncountersPr
         <DialogActions>
           <Button onClick={handleDialogClose} color="primary">
             Close
+          </Button>
+        </DialogActions>
+      </Dialog>
+
+      {/* Status Selection Dialog */}
+      <Dialog
+        open={isStatusDialogOpen}
+        onClose={handleStatusDialogClose}
+        aria-labelledby="status-dialog-title"
+        maxWidth="sm"
+        fullWidth
+      >
+        <DialogTitle id="status-dialog-title">
+          Update Status for {selectedPokemonForStatus ? getPokemonDisplayInfo({ pokemon: selectedPokemonForStatus.pokemon, route: selectedPokemonForStatus.route, status: 'Met' }).name : ''}
+        </DialogTitle>
+        <DialogContent>
+          <Typography variant="body1" sx={{ mb: 2 }}>
+            Choose the new status for this encounter:
+          </Typography>
+          <List>
+            {['Caught', 'Killed', 'Ran'].map((status) => (
+              <ListItem key={status} disablePadding>
+                <ListItemButton 
+                  onClick={() => handleStatusSelection(status)}
+                  disabled={updatingStatus}
+                  sx={{
+                    '&:hover': {
+                      backgroundColor: status === 'Caught' ? '#e8f5e8' : 
+                                   status === 'Killed' ? '#ffebee' : '#fff3e0'
+                    }
+                  }}
+                >
+                  <ListItemText 
+                    primary={status}
+                    sx={{
+                      color: status === 'Caught' ? '#2e7d32' : 
+                             status === 'Killed' ? '#d32f2f' : '#f57c00'
+                    }}
+                  />
+                </ListItemButton>
+              </ListItem>
+            ))}
+          </List>
+          {updatingStatus && (
+            <Box sx={{ display: 'flex', justifyContent: 'center', mt: 2 }}>
+              <CircularProgress size={24} />
+            </Box>
+          )}
+        </DialogContent>
+        <DialogActions>
+          <Button onClick={handleStatusDialogClose} disabled={updatingStatus}>
+            Cancel
           </Button>
         </DialogActions>
       </Dialog>

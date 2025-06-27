@@ -261,6 +261,7 @@ function RunComponent() {
               <Encounters 
                 encounters={runData.run.encounters} 
                 runId={runId} 
+                runData={runData}
                 setRunData={setRunData}
                 setSnackbar={setSnackbar}
               />
