@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { Tabs as MuiTabs, Tab, Box, Typography, Grid, TextField, CircularProgress } from '@mui/material';
+import { Tabs as MuiTabs, Tab, Box, Typography, Grid, TextField, CircularProgress, Paper } from '@mui/material';
 import lockeApi from '../api/lockeApi';
 import './Tabs.css';
 
@@ -22,7 +22,7 @@ function TabPanel(props: TabPanelProps) {
     >
       {value === index && (
         <Box sx={{ p: 3 }}>
-          <Typography>{children}</Typography>
+          {children}
         </Box>
       )}
     </div>
@@ -37,10 +37,11 @@ function a11yProps(index: number) {
 }
 
 interface TabsProps {
-  runId?: string; // Add runId prop to access the API
+  runId?: string;
+  runData?: any; // Add runData prop to access statistics
 }
 
-function Tabs({ runId }: TabsProps) {
+function Tabs({ runId, runData }: TabsProps) {
   const [value, setValue] = useState(0);
   const [searchTerm, setSearchTerm] = useState('');
   const [supportedSearchTerm, setSupportedSearchTerm] = useState('');
@@ -50,6 +51,19 @@ function Tabs({ runId }: TabsProps) {
   const [encounters, setEncounters] = useState<string[]>([]);
   const [loadingEncounters, setLoadingEncounters] = useState(false);
   const [errorEncounters, setErrorEncounters] = useState<string | null>(null);
+
+  // Calculate statistics from run data
+  const totalEncounters = runData?.run?.encounters?.length || 0;
+  const caughtPokemon = runData?.run?.encounters?.filter((e: any) => e.status === 'Caught')?.length || 0;
+  const killedPokemon = runData?.run?.encounters?.filter((e: any) => e.status === 'Killed')?.length || 0;
+  const ranPokemon = runData?.run?.encounters?.filter((e: any) => e.status === 'Ran')?.length || 0;
+  const metPokemon = runData?.run?.encounters?.filter((e: any) => e.status === 'Met')?.length || 0;
+  const partySize = runData?.run?.party?.filter((p: any) => p !== null)?.length || 0;
+  const boxSize = runData?.run?.box?.length || 0;
+  const gymsWon = runData?.run?.gyms?.filter((g: any) => g.won)?.length || 0;
+  const totalGyms = runData?.run?.gyms?.length || 0;
+  const restarts = runData?.run?.restarts || 0;
+  const deadPokemon = Object.values(runData?.pokemons || {}).filter((p: any) => p.status === 'Dead')?.length || 0;
 
   // Fetch supported pokemons when component mounts or runId changes
   useEffect(() => {
@@ -118,8 +132,84 @@ function Tabs({ runId }: TabsProps) {
             </MuiTabs>
           </Box>
           <TabPanel value={value} index={0}>
-            <Typography variant="h6">Statistics</Typography>
-            <Typography>Run statistics and general information will be displayed here.</Typography>
+            <Typography variant="h6" sx={{ mb: 3 }}>Statistics</Typography>
+            
+            {/* Statistics Section */}
+            <Grid container spacing={3}>
+              {/* Encounter Statistics */}
+              <Grid item xs={12} md={6}>
+                <Paper sx={{ p: 3, height: '100%' }}>
+                  <Typography variant="h6" sx={{ mb: 2, color: '#1976d2' }}>
+                    Encounters
+                  </Typography>
+                  <Grid container spacing={2}>
+                    <Grid item xs={6}>
+                      <Typography variant="body2" color="text.secondary">Total Encounters</Typography>
+                      <Typography variant="h4">{totalEncounters}</Typography>
+                    </Grid>
+                    <Grid item xs={6}>
+                      <Typography variant="body2" color="text.secondary">Caught</Typography>
+                      <Typography variant="h4" sx={{ color: '#2e7d32' }}>{caughtPokemon}</Typography>
+                    </Grid>
+                    <Grid item xs={6}>
+                      <Typography variant="body2" color="text.secondary">Killed</Typography>
+                      <Typography variant="h4" sx={{ color: '#d32f2f' }}>{killedPokemon}</Typography>
+                    </Grid>
+                    <Grid item xs={6}>
+                      <Typography variant="body2" color="text.secondary">Ran</Typography>
+                      <Typography variant="h4" sx={{ color: '#f57c00' }}>{ranPokemon}</Typography>
+                    </Grid>
+                    <Grid item xs={6}>
+                      <Typography variant="body2" color="text.secondary">Met</Typography>
+                      <Typography variant="h4" sx={{ color: '#666' }}>{metPokemon}</Typography>
+                    </Grid>
+                    <Grid item xs={6}>
+                      <Typography variant="body2" color="text.secondary">Catch Rate</Typography>
+                      <Typography variant="h4" sx={{ color: '#2e7d32' }}>
+                        {totalEncounters > 0 ? Math.round((caughtPokemon / totalEncounters) * 100) : 0}%
+                      </Typography>
+                    </Grid>
+                  </Grid>
+                </Paper>
+              </Grid>
+
+              {/* Team & Progress Statistics */}
+              <Grid item xs={12} md={6}>
+                <Paper sx={{ p: 3, height: '100%' }}>
+                  <Typography variant="h6" sx={{ mb: 2, color: '#1976d2' }}>
+                    Team & Progress
+                  </Typography>
+                  <Grid container spacing={2}>
+                    <Grid item xs={6}>
+                      <Typography variant="body2" color="text.secondary">Party Size</Typography>
+                      <Typography variant="h4">{partySize}/6</Typography>
+                    </Grid>
+                    <Grid item xs={6}>
+                      <Typography variant="body2" color="text.secondary">Box Size</Typography>
+                      <Typography variant="h4">{boxSize}</Typography>
+                    </Grid>
+                    <Grid item xs={6}>
+                      <Typography variant="body2" color="text.secondary">Gyms Won</Typography>
+                      <Typography variant="h4" sx={{ color: '#2e7d32' }}>{gymsWon}/{totalGyms}</Typography>
+                    </Grid>
+                    <Grid item xs={6}>
+                      <Typography variant="body2" color="text.secondary">Restarts</Typography>
+                      <Typography variant="h4" sx={{ color: '#d32f2f' }}>{restarts}</Typography>
+                    </Grid>
+                    <Grid item xs={6}>
+                      <Typography variant="body2" color="text.secondary">Gym Progress</Typography>
+                      <Typography variant="h4" sx={{ color: '#1976d2' }}>
+                        {totalGyms > 0 ? Math.round((gymsWon / totalGyms) * 100) : 0}%
+                      </Typography>
+                    </Grid>
+                    <Grid item xs={6}>
+                      <Typography variant="body2" color="text.secondary">Dead Pokemon</Typography>
+                      <Typography variant="h4" sx={{ color: '#d32f2f' }}>{deadPokemon}</Typography>
+                    </Grid>
+                  </Grid>
+                </Paper>
+              </Grid>
+            </Grid>
           </TabPanel>
           <TabPanel value={value} index={1}>
             <Typography variant="h6">Box</Typography>

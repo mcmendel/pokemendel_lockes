@@ -265,7 +265,7 @@ function RunComponent() {
                 setRunData={setRunData}
                 setSnackbar={setSnackbar}
               />
-              <Tabs runId={runId} />
+              <Tabs runId={runId} runData={runData} />
             </div>
           </>
         )}
