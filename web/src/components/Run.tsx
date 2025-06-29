@@ -7,6 +7,7 @@ import FlagIcon from '@mui/icons-material/Flag';
 import Party from './Party';
 import Encounters from './Encounters';
 import Tabs from './Tabs';
+import Rules from './Rules';
 import { 
     Tooltip, 
     Snackbar, 
@@ -252,24 +253,23 @@ function RunComponent() {
             )}
           </div>
         ) : (
-          <>
-            <div className="run-content">
-              <Party 
-                pokemons={getPartyPokemons()}
-                onPokemonClick={handlePokemonClick}
-              />
-              <Encounters 
-                encounters={runData.run.encounters} 
-                runId={runId} 
-                runData={runData}
-                setRunData={setRunData}
-                setSnackbar={setSnackbar}
-              />
-              <Tabs runId={runId} runData={runData} />
-            </div>
-          </>
+          <div className="run-content">
+            <Party 
+              pokemons={getPartyPokemons()}
+              onPokemonClick={handlePokemonClick}
+            />
+            <Encounters 
+              encounters={runData.run.encounters} 
+              runId={runId} 
+              runData={runData}
+              setRunData={setRunData}
+              setSnackbar={setSnackbar}
+            />
+            <Tabs runId={runId} runData={runData} />
+          </div>
         )}
       </div>
+      {runData?.run?.starter && <Rules runData={runData} />}
 
       <Dialog
         open={isDialogOpen}

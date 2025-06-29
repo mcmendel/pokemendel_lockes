@@ -41,6 +41,7 @@ export interface Run {
     starter: string | null;
     restarts: number;
     finished: boolean;
+    rules: string[];
 }
 
 export interface PokemonMetadata {
