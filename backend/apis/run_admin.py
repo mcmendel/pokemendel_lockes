@@ -2,6 +2,7 @@ from models.run import fetch_run, update_run as update_run_db, _COLLECTIONS_SAVE
 from models.pokemon import backup_pokemons, restore_pokemons
 from responses.run import RunResponse
 from core.run import convert_db_run_to_core_run
+from core.lockes import LOCKE_INSTANCES
 from games import get_game
 from apis.exceptions import InvalidGameError
 
@@ -22,7 +23,8 @@ def get_run_api(run_id: str) -> RunResponse:
     db_run = fetch_run(run_id)
     core_run = convert_db_run_to_core_run(db_run, run_id)
     game = get_game(db_run.game)
-    response_run = RunResponse.from_core_run(core_run, game)
+    locke = LOCKE_INSTANCES[db_run.locke]
+    response_run = RunResponse.from_core_run(core_run, game, locke)
     return response_run
 
 

@@ -2,6 +2,7 @@ from definitions.runs.encounters import EncounterStatus
 from definitions.pokemons.pokemon import Pokemon
 from definitions.game import Game
 from core.run import Run as CoreRun, Encounter
+from core.locke import Locke
 from dataclasses import dataclass, field, asdict
 from datetime import datetime
 from typing import List, Optional, Dict
@@ -51,6 +52,7 @@ class _Run:
     box: List[_POKEMON_ID_TYPE]
     gyms: List[_BattleResponse]
     elite4: List[_BattleResponse]
+    rules: List[str]
     encounters: List[_EncounterResponse] = field(default_factory=list)
     starter: Optional[_POKEMON_ID_TYPE] = None
     restarts: int = 0
@@ -63,11 +65,12 @@ class RunResponse:
     pokemons: Dict[_POKEMON_ID_TYPE, Pokemon]
 
     @classmethod
-    def from_core_run(cls, run: CoreRun, game: Game):
+    def from_core_run(cls, run: CoreRun, game: Game, locke: Locke):
         response_run = _Run(
             id=run.id,
             run_name=run.run_name,
             creation_date=run.creation_date,
+            rules=locke.rules,
             party=[
                 pokemon.metadata.id for pokemon in run.party.pokemons
             ],
