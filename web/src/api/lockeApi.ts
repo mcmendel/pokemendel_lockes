@@ -318,6 +318,23 @@ const lockeApi = {
         console.log('Update encounter status response:', data);
         return data;
     },
+
+    async markGymWon(runId: string, leader: string): Promise<StatusResponse> {
+        const response = await fetch(`${API_BASE_URL}/run/${runId}/battle/${leader}`, {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+            },
+        });
+
+        if (!response.ok) {
+            throw new Error(`Failed to mark gym victory: ${response.statusText}`);
+        }
+
+        const data: StatusResponse = await response.json();
+        console.log('Mark gym won response:', data);
+        return data;
+    },
 };
 
 export default lockeApi; 

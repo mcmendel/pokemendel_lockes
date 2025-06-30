@@ -191,15 +191,20 @@ function RunComponent() {
     if (!runId || !selectedGymLeader) return;
 
     try {
-      // TODO: Add API call to mark gym as won
-      // const response = await lockeApi.markGymWon(runId, selectedGymLeader);
+      // Call the API to mark gym as won
+      const response = await lockeApi.markGymWon(runId, selectedGymLeader);
       
-      // For now, just show a success message
-      setSnackbar({
-        open: true,
-        message: `Successfully defeated ${selectedGymLeader}!`,
-        severity: 'success'
-      });
+      if (response.status === 'success') {
+        // Refresh the run data to get updated gym status
+        const updatedRun = await lockeApi.getRun(runId);
+        setRunData(updatedRun);
+        
+        setSnackbar({
+          open: true,
+          message: `Successfully defeated ${selectedGymLeader}!`,
+          severity: 'success'
+        });
+      }
     } catch (e) {
       setSnackbar({
         open: true,
