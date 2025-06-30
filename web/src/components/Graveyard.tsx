@@ -1,26 +1,26 @@
 import React from 'react';
 import { Grid, Typography, Box, Button } from '@mui/material';
-import Pokemon from './Pokemon';
 import { RunResponse } from '../api/lockeApi';
 import lockeApi from '../api/lockeApi';
-import './RunBox.css';
+import './Graveyard.css';
 
-interface RunBoxProps {
+interface GraveyardProps {
   runData: RunResponse;
   onPokemonClick: (id: string) => void;
 }
 
-function RunBox({ runData, onPokemonClick }: RunBoxProps) {
-  // Get alive Pokémon from the box
-  const boxPokemons = runData.run.box
+function Graveyard({ runData, onPokemonClick }: GraveyardProps) {
+  // Get dead Pokémon from both party and box
+  const allPokemonIds = [...runData.run.party, ...runData.run.box];
+  const deadPokemons = allPokemonIds
     .map(pokemonId => runData.pokemons[pokemonId])
-    .filter(pokemon => pokemon && pokemon.status !== 'dead');
+    .filter(pokemon => pokemon && pokemon.status === 'dead');
 
   return (
-    <div className="run-box-container">
-      <div className="run-box-header">Box</div>
-      <div className="run-box-content">
-        {boxPokemons.length === 0 ? (
+    <div className="graveyard-container">
+      <div className="graveyard-header">Graveyard</div>
+      <div className="graveyard-content">
+        {deadPokemons.length === 0 ? (
           <Box sx={{ 
             display: 'flex', 
             justifyContent: 'center', 
@@ -28,11 +28,11 @@ function RunBox({ runData, onPokemonClick }: RunBoxProps) {
             height: '200px',
             color: '#666'
           }}>
-            <Typography variant="body1">No Pokémon in box</Typography>
+            <Typography variant="body1">No fallen Pokémon</Typography>
           </Box>
         ) : (
           <Grid container spacing={2}>
-            {boxPokemons.map((pokemon) => (
+            {deadPokemons.map((pokemon) => (
               <Grid item xs={6} sm={4} md={3} lg={2} key={pokemon.metadata.id}>
                 <Button
                   onClick={() => onPokemonClick(pokemon.metadata.id)}
@@ -41,15 +41,15 @@ function RunBox({ runData, onPokemonClick }: RunBoxProps) {
                     flexDirection: 'column', 
                     alignItems: 'center',
                     p: 1,
-                    border: '1px solid #e0e0e0',
+                    border: '1px solid #d32f2f',
                     borderRadius: 2,
-                    backgroundColor: '#f9f9f9',
+                    backgroundColor: '#ffebee',
                     minHeight: '120px',
                     width: '100%',
                     textTransform: 'none',
                     '&:hover': {
-                      backgroundColor: '#e3f2fd',
-                      borderColor: '#1976d2'
+                      backgroundColor: '#ffcdd2',
+                      borderColor: '#b71c1c'
                     }
                   }}
                 >
@@ -60,14 +60,15 @@ function RunBox({ runData, onPokemonClick }: RunBoxProps) {
                       width: '80px', 
                       height: '80px', 
                       objectFit: 'contain',
-                      marginBottom: '8px'
+                      marginBottom: '8px',
+                      filter: 'grayscale(100%)'
                     }}
                     onError={(e) => {
                       const target = e.target as HTMLImageElement;
-                      target.src = `https://placehold.co/80x80/1976d2/ffffff?text=${pokemon.name}`;
+                      target.src = `https://placehold.co/80x80/d32f2f/ffffff?text=${pokemon.name}`;
                     }}
                   />
-                  <Typography variant="body2" sx={{ textAlign: 'center', fontWeight: 500 }}>
+                  <Typography variant="body2" sx={{ textAlign: 'center', fontWeight: 500, color: '#d32f2f' }}>
                     {pokemon.name}
                   </Typography>
                   {pokemon.metadata.nickname && (
@@ -75,6 +76,9 @@ function RunBox({ runData, onPokemonClick }: RunBoxProps) {
                       "{pokemon.metadata.nickname}"
                     </Typography>
                   )}
+                  <Typography variant="caption" sx={{ textAlign: 'center', color: '#d32f2f', fontWeight: 'bold' }}>
+                    R.I.P.
+                  </Typography>
                 </Button>
               </Grid>
             ))}
@@ -85,4 +89,4 @@ function RunBox({ runData, onPokemonClick }: RunBoxProps) {
   );
 }
 
-export default RunBox; 
+export default Graveyard; 

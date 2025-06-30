@@ -3,6 +3,7 @@ import { Tabs as MuiTabs, Tab, Box, Typography, Grid, TextField, CircularProgres
 import lockeApi from '../api/lockeApi';
 import ImportantBattles from './ImportantBattles';
 import RunBox from './RunBox';
+import Graveyard from './Graveyard';
 import './Tabs.css';
 
 interface TabPanelProps {
@@ -66,7 +67,7 @@ function Tabs({ runId, runData, onPokemonClick }: TabsProps) {
   const gymsWon = runData?.run?.gyms?.filter((g: any) => g.won)?.length || 0;
   const totalGyms = runData?.run?.gyms?.length || 0;
   const restarts = runData?.run?.restarts || 0;
-  const deadPokemon = Object.values(runData?.pokemons || {}).filter((p: any) => p.status === 'Dead')?.length || 0;
+  const deadPokemon = Object.values(runData?.pokemons || {}).filter((p: any) => p.status === 'dead')?.length || 0;
 
   // Fetch supported pokemons when component mounts or runId changes
   useEffect(() => {
@@ -218,8 +219,7 @@ function Tabs({ runId, runData, onPokemonClick }: TabsProps) {
             <RunBox runData={runData} onPokemonClick={onPokemonClick || (() => {})} />
           </TabPanel>
           <TabPanel value={value} index={2}>
-            <Typography variant="h6">Graveyard</Typography>
-            <Typography>Fallen Pokemon and death information will be shown here.</Typography>
+            <Graveyard runData={runData} onPokemonClick={onPokemonClick || (() => {})} />
           </TabPanel>
           <TabPanel value={value} index={3}>
             <Typography variant="h6">Gyms</Typography>
