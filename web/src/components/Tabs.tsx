@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { Tabs as MuiTabs, Tab, Box, Typography, Grid, TextField, CircularProgress, Paper } from '@mui/material';
 import lockeApi from '../api/lockeApi';
+import ImportantBattles from './ImportantBattles';
 import './Tabs.css';
 
 interface TabPanelProps {
@@ -346,8 +347,7 @@ function Tabs({ runId, runData }: TabsProps) {
             )}
           </TabPanel>
           <TabPanel value={value} index={6}>
-            <Typography variant="h6">Important Battles</Typography>
-            <Typography>Important battle information and strategies will be available here.</Typography>
+            <ImportantBattles runData={runData} />
           </TabPanel>
         </Box>
       </div>

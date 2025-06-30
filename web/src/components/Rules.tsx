@@ -1,13 +1,14 @@
 import React from 'react';
 import { Typography, List, ListItem, ListItemText, Paper } from '@mui/material';
+import { RunResponse } from '../api/lockeApi';
 import './Rules.css';
 
-function Rules() {
-  const rules = [
-    "Rule 1",
-    "Rule 2", 
-    "Rule 3"
-  ];
+interface RulesProps {
+  runData: RunResponse;
+}
+
+function Rules({ runData }: RulesProps) {
+  const rules = runData.run.rules || [];
 
   return (
     <div className="rules-container">

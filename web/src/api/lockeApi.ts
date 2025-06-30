@@ -42,6 +42,7 @@ export interface Run {
     restarts: number;
     finished: boolean;
     rules: string[];
+    main_battles: string[];
 }
 
 export interface PokemonMetadata {

@@ -1,0 +1,26 @@
+.important-battles-container {
+  background-color: #ffffff;
+  border-radius: 8px;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+  margin: 0 0 6px 0;
+  padding: 6px;
+  flex: 1;
+  max-height: 600px;
+  display: flex;
+  flex-direction: column;
+}
+
+.important-battles-header {
+  font-size: 20px;
+  font-weight: bold;
+  color: #1976d2;
+  padding: 12px 0;
+  flex-shrink: 0;
+}
+
+.important-battles-content {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  overflow-y: auto;
+} 
