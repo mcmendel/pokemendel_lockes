@@ -53,6 +53,7 @@ class _Run:
     gyms: List[_BattleResponse]
     elite4: List[_BattleResponse]
     rules: List[str]
+    main_battles: List[str]
     encounters: List[_EncounterResponse] = field(default_factory=list)
     starter: Optional[_POKEMON_ID_TYPE] = None
     restarts: int = 0
@@ -71,6 +72,7 @@ class RunResponse:
             run_name=run.run_name,
             creation_date=run.creation_date,
             rules=locke.rules,
+            main_battles=game.important_battles,
             party=[
                 pokemon.metadata.id for pokemon in run.party.pokemons
             ],
