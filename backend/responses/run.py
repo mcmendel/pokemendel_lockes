@@ -51,7 +51,6 @@ class _Run:
     party: List[_POKEMON_ID_TYPE]
     box: List[_POKEMON_ID_TYPE]
     gyms: List[_BattleResponse]
-    elite4: List[_BattleResponse]
     rules: List[str]
     main_battles: List[str]
     encounters: List[_EncounterResponse] = field(default_factory=list)
@@ -79,14 +78,7 @@ class RunResponse:
             box=[
                 pokemon.metadata.id for pokemon in run.box.pokemons
             ],
-            gyms=[
-                _BattleResponse(asdict(battle)) for battle in run.battles
-                if battle.rival in {gym.leader for gym in game.gyms}
-            ],
-            elite4=[
-                _BattleResponse(asdict(battle)) for battle in run.battles
-                if battle.rival in {gym.leader for gym in game.elite4}
-            ],
+            gyms=cls._convert_gyms(run, game),
             encounters=[
                 _EncounterResponse(route=encounter.route, pokemon=cls._convert_encounter_pokemon(encounter) if encounter.pokemon else None, status=encounter.status) for encounter in run.encounters
             ],
@@ -106,6 +98,18 @@ class RunResponse:
         if isinstance(encounter.pokemon, str):
             return encounter.pokemon
         return encounter.pokemon.metadata.id
+
+    @classmethod
+    def _convert_gyms(cls, run: CoreRun, game: Game) -> List[_BattleResponse]:
+        won_battles = {battle.rival: battle.won for battle in run.battles}
+        if len(won_battles) < len(game.gyms):
+            return [
+                _BattleResponse(leader=gym.leader, won=won_battles.get(gym.leader, False)) for gym in game.gyms
+            ]
+        
+        return [
+            _BattleResponse(leader=gym.leader, won=won_battles.get(gym.leader, False)) for gym in game.elite4
+        ]
 
     def to_dict(self) -> Dict:
         return asdict(self)
