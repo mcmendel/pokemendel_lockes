@@ -228,6 +228,10 @@ const lockeApi = {
         return `${API_BASE_URL}/resources/pokemon/${pokemonName.toLowerCase()}.png`;
     },
 
+    getGymLeaderImageUrl(gameName: string, gymName: string): string {
+        return `${API_BASE_URL}/resources/game/${gameName}/gyms/${gymName}`;
+    },
+
     async setStarter(runId: string, pokemonName: string): Promise<StatusResponse> {
         const response = await fetch(`${API_BASE_URL}/run/${runId}/starter`, {
             method: 'PUT',

@@ -106,7 +106,7 @@ class RunResponse:
             return [
                 _BattleResponse(leader=gym.leader, won=won_battles.get(gym.leader, False)) for gym in game.gyms
             ]
-        
+
         return [
             _BattleResponse(leader=gym.leader, won=won_battles.get(gym.leader, False)) for gym in game.elite4
         ]

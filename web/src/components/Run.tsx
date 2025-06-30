@@ -27,6 +27,8 @@ function RunComponent() {
   const [error, setError] = useState<string | null>(null);
   const [selectedStarter, setSelectedStarter] = useState<string | null>(null);
   const [isDialogOpen, setIsDialogOpen] = useState(false);
+  const [selectedGymLeader, setSelectedGymLeader] = useState<string | null>(null);
+  const [isGymDialogOpen, setIsGymDialogOpen] = useState(false);
   const [snackbar, setSnackbar] = useState<{ open: boolean; message: string; severity: 'success' | 'error' }>({
     open: false,
     message: '',
@@ -175,6 +177,40 @@ function RunComponent() {
     alert(`Clicked Pokemon ID: ${pokemonId}`);
   };
 
+  const handleGymClick = (leader: string) => {
+    setSelectedGymLeader(leader);
+    setIsGymDialogOpen(true);
+  };
+
+  const handleGymDialogClose = () => {
+    setIsGymDialogOpen(false);
+    setSelectedGymLeader(null);
+  };
+
+  const handleConfirmGymVictory = async () => {
+    if (!runId || !selectedGymLeader) return;
+
+    try {
+      // TODO: Add API call to mark gym as won
+      // const response = await lockeApi.markGymWon(runId, selectedGymLeader);
+      
+      // For now, just show a success message
+      setSnackbar({
+        open: true,
+        message: `Successfully defeated ${selectedGymLeader}!`,
+        severity: 'success'
+      });
+    } catch (e) {
+      setSnackbar({
+        open: true,
+        message: `Failed to mark gym victory: ${e instanceof Error ? e.message : 'Unknown error'}`,
+        severity: 'error'
+      });
+    } finally {
+      handleGymDialogClose();
+    }
+  };
+
   // Helper function to transform party data
   const getPartyPokemons = (): Array<Pokemon | null> => {
     if (!runData) return Array(6).fill(null);
@@ -265,7 +301,7 @@ function RunComponent() {
               setRunData={setRunData}
               setSnackbar={setSnackbar}
             />
-            <Tabs runId={runId} runData={runData} onPokemonClick={handlePokemonClick} />
+            <Tabs runId={runId} runData={runData} onPokemonClick={handlePokemonClick} onGymClick={handleGymClick} />
           </div>
         )}
       </div>
@@ -289,6 +325,29 @@ function RunComponent() {
             No
           </Button>
           <Button onClick={handleConfirmStarter} color="primary" variant="contained">
+            Yes
+          </Button>
+        </DialogActions>
+      </Dialog>
+
+      <Dialog
+        open={isGymDialogOpen}
+        onClose={handleGymDialogClose}
+        aria-labelledby="gym-dialog-title"
+      >
+        <DialogTitle id="gym-dialog-title">
+          Confirm Gym Victory
+        </DialogTitle>
+        <DialogContent>
+          {selectedGymLeader && (
+            <p>Did you defeat {selectedGymLeader}?</p>
+          )}
+        </DialogContent>
+        <DialogActions>
+          <Button onClick={handleGymDialogClose} color="primary">
+            No
+          </Button>
+          <Button onClick={handleConfirmGymVictory} color="primary" variant="contained">
             Yes
           </Button>
         </DialogActions>
