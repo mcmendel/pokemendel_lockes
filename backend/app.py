@@ -14,6 +14,7 @@ from apis.run import (
     update_encounter,
     get_run_potential_pokemons,
     get_run_potential_encounters,
+    win_battle,
 )
 from core.lockes import list_all_lockes
 from functools import wraps
@@ -350,6 +351,12 @@ def update_encounter_api(run_id, route):
             'error': 'Missing required field: encounter_status'
         }), 400
     update_encounter(run_id, route, data['encounter_status'])
+    return jsonify({'status': 'success'})
+
+
+@locke_route('run/<run_id>/battle/<leader>', methods=['POST'])
+def win_battle(run_id, leader):
+    win_battle(run_id, leader)
     return jsonify({'status': 'success'})
 
 
