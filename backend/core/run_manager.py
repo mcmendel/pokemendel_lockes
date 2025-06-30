@@ -5,7 +5,7 @@ from models.pokemon import save_pokemon
 from dataclasses import dataclass, asdict
 from definitions.pokemons.pokemon import Pokemon, PokemonMetadata, PokemonStatus
 from core.locke import Locke
-from core.run import Run, EncounterStatus
+from core.run import Run, EncounterStatus, Battle
 from games import Game
 from typing import List
 from uuid import uuid4
@@ -87,8 +87,19 @@ class RunManager:
         mark_caught_pokemon(self.run.id, pokemon.name)
 
     def update_run(self):
+        print("Saving run %s" % self.run.id)
         db_run = self.run.to_db_run(self.game.gen, self.locke.name, self.game.name, self.randomized, self.duplicate_clause, self.locke.extra_info)
         update_run(db_run)
+
+    def win_battle(self, leader: str):
+        print("Winning battle %s in run %s" % (leader, self.run.id))
+        try:
+            run_battle = next(battle for battle in self.run.battles if battle.rival == leader)
+            run_battle.won = True
+        except StopIteration:
+            self.run.battles.append(Battle(leader, True))
+
+        self.update_run()
 
     def _catch_pokemon(self, pokemon_name: str) -> Pokemon:
         new_pokemon = self._generate_locke_pokemon(pokemon_name)

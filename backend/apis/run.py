@@ -61,3 +61,8 @@ def encounter_pokemon(run_id: str, route: str, pokemon_name: str):
 def update_encounter(run_id: str, route: str, encounter_status: str):
     run_manager = _get_run_manager(run_id)
     run_manager.update_encounter(route, encounter_status)
+
+
+def win_battle(run_id: str, leader: str):
+    run_manager = _get_run_manager(run_id)
+    run_manager.win_battle(leader)
