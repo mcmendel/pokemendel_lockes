@@ -2,6 +2,7 @@ import React, { useState, useEffect } from 'react';
 import { Tabs as MuiTabs, Tab, Box, Typography, Grid, TextField, CircularProgress, Paper } from '@mui/material';
 import lockeApi from '../api/lockeApi';
 import ImportantBattles from './ImportantBattles';
+import RunBox from './RunBox';
 import './Tabs.css';
 
 interface TabPanelProps {
@@ -40,9 +41,10 @@ function a11yProps(index: number) {
 interface TabsProps {
   runId?: string;
   runData?: any; // Add runData prop to access statistics
+  onPokemonClick?: (id: string) => void;
 }
 
-function Tabs({ runId, runData }: TabsProps) {
+function Tabs({ runId, runData, onPokemonClick }: TabsProps) {
   const [value, setValue] = useState(0);
   const [searchTerm, setSearchTerm] = useState('');
   const [supportedSearchTerm, setSupportedSearchTerm] = useState('');
@@ -213,8 +215,7 @@ function Tabs({ runId, runData }: TabsProps) {
             </Grid>
           </TabPanel>
           <TabPanel value={value} index={1}>
-            <Typography variant="h6">Box</Typography>
-            <Typography>Pokemon box management and storage will be available here.</Typography>
+            <RunBox runData={runData} onPokemonClick={onPokemonClick || (() => {})} />
           </TabPanel>
           <TabPanel value={value} index={2}>
             <Typography variant="h6">Graveyard</Typography>
