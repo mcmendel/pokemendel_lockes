@@ -65,7 +65,6 @@ class BaseLocke(Locke):
         mandatory_steps = self._mandatory_steps
         prerequisites = [] if not mandatory_steps else [mandatory_steps[-1].step_name]
         optional_steps = [
-            StepInfo(StepsNames.NICKNAME, prerequisites=prerequisites),
             StepInfo(StepsNames.ADD_TO_PARTY, prerequisites=prerequisites),
             StepInfo(StepsNames.REMOVE_FROM_PARTY, prerequisites=prerequisites),
             StepInfo(StepsNames.SWITCH_PARTY_POKEMONS, prerequisites=prerequisites),
@@ -79,7 +78,7 @@ class BaseLocke(Locke):
         Returns:
             List[StepInfo]: A list of steps that must be completed in order
         """
-        return [StepsNames.NICKNAME]
+        return [StepInfo(StepsNames.NICKNAME, prerequisites=[])]
 
     @classproperty
     def steps_mapper(cls) -> Dict[StepsNames, StepInterface]:

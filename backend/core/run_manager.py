@@ -4,10 +4,10 @@ from models.run import update_run
 from models.pokemon import save_pokemon
 from dataclasses import dataclass, asdict
 from definitions.pokemons.pokemon import Pokemon, PokemonMetadata, PokemonStatus
-from core.locke import Locke
+from core.locke import Locke, StepInfo, StepInterface
 from core.run import Run, EncounterStatus, Battle
 from games import Game
-from typing import List
+from typing import List, Dict, Set, Optional
 from uuid import uuid4
 
 @dataclass
@@ -75,6 +75,74 @@ class RunManager:
             route_encounter.pokemon = caught_pokemon
 
         self.update_run()
+
+    def get_pokemon_next_actions(self, pokemon_id: str) -> List:
+        pokemon = next(box_pokemon for box_pokemon in self.run.box.pokemons if box_pokemon.metadata.id == pokemon_id)
+        assert pokemon.status == PokemonStatus.ALIVE, f"Can get actions for not alive ({pokemon.status}) pokemon {pokemon_id}"
+        next_steps = self.get_first_relevant_steps(pokemon)
+        return [
+            self.locke.steps_mapper[next_step].step_options(self.run.id, pokemon)
+            for next_step in next_steps
+        ]
+
+    def get_first_relevant_steps(self, pokemon: Pokemon) -> List[str]:
+        step_map: Dict[str, StepInfo] = {step.step_name: step for step in self.locke.steps}
+        memo: Dict[str, Optional[bool]] = {}  # Memoize results
+
+        def prerequisites_are_relevant(step_info: StepInfo) -> bool:
+            for prereq_name in step_info.prerequisites:
+                prereq_step = step_map.get(prereq_name)
+                if not prereq_step:
+                    return False
+                if not is_step_relevant(prereq_step):
+                    return False
+            return True
+
+        def is_step_relevant(step_info: StepInfo) -> bool:
+            if step_info.step_name in memo:
+                return memo[step_info.step_name] is True
+            if not prerequisites_are_relevant(step_info):
+                memo[step_info.step_name] = False
+                return False
+            step = self.locke.steps_mapper[step_info.step_name]
+            result = step.is_step_relevant(self.run.id, pokemon)
+            memo[step_info.step_name] = result
+            return result
+
+        for step_info in self.locke.steps:
+            step = self.locke.steps_mapper[step_info.step_name]
+            if prerequisites_are_relevant(step_info) and step.is_step_relevant(self.run.id, pokemon):
+                return [step_info.step_name]
+
+        return []  # No step is relevant
+
+    def _get_first_irrelevant_steps(self, pokemon: Pokemon) -> List[str]:
+        step_map: Dict[str, StepInfo] = {step.step_name: step for step in self.locke.steps}
+        visited: Set[str] = set()
+        irrelevant_steps: List[str] = []
+
+        def is_step_chain_relevant(step_name: str) -> bool:
+            if step_name in visited:
+                return True  # Already processed
+            step_info = step_map[step_name]
+            for prereq_name in step_info.prerequisites:
+                if prereq_name not in step_map:
+                    continue  # Unknown prereq, assume fine
+                if not is_step_chain_relevant(prereq_name):
+                    return False
+            step: StepInterface = self.locke.steps_mapper[step_name]
+            if step.is_step_relevant(self.run, pokemon):
+                irrelevant_steps.append(step_name)
+                return False
+
+            visited.add(step_name)
+            return True
+
+        for step in self.locke.steps:
+            if step.step_name not in visited:
+                is_step_chain_relevant(step.step_name)
+
+        return irrelevant_steps
 
     def _generate_locke_pokemon(self, pokemon_name: str) -> Pokemon:
         core_pokemon = fetch_pokemon(pokemon_name, self.game.gen)

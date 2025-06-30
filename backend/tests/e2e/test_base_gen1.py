@@ -14,6 +14,7 @@ from tests.e2e.helpers import (
     choose_starter,
     encounter_pokemon,
     update_encounter,
+    get_next_actions,
     assert_run,
     assert_saved_run,
     assert_run_potential_pokemons,
@@ -54,6 +55,8 @@ def _choose_starter(client_fixture, run_id):
         pokemon_id=run['starter'],
         pokemon_name=starter_options[0],
     )
+    next_actions = get_next_actions(client_fixture, run_id, run['starter'])
+    assert next_actions == [['Free text', []]]
 
 
 def _create_run(client_fixture):
@@ -69,8 +72,7 @@ def _create_run(client_fixture):
         id=run_id,
         party_size=0,
         box_size=0,
-        won_gyms=0,
-        won_elites=0,
+        won_gyms=8,
         num_encounters=0,
         starter=None
     )
@@ -101,6 +103,8 @@ def _catch_pokemon1(client_fixture, run_id):
         pokemon_id=encounter['pokemon'],
         pokemon_name=PokemonGen1.CATERPIE,
     )
+    next_actions = get_next_actions(client_fixture, run_id, encounter['pokemon'])
+    assert next_actions == [['Free text', []]]
 
 
 def assert_pokemon(run_response: dict, pokemon_id: str, pokemon_name: str, nickname: str = ''):

@@ -15,6 +15,7 @@ from apis.run import (
     get_run_potential_pokemons,
     get_run_potential_encounters,
     win_battle,
+    get_next_actions,
 )
 from core.lockes import list_all_lockes
 from functools import wraps
@@ -354,8 +355,14 @@ def update_encounter_api(run_id, route):
     return jsonify({'status': 'success'})
 
 
+@locke_route('run/<run_id>/pokemon/<pokemon_id>/actions', methods=['GET'])
+def get_next_actions_api(run_id, pokemon_id):
+    pokemon_next_actions = get_next_actions(run_id, pokemon_id)
+    return jsonify(pokemon_next_actions)
+
+
 @locke_route('run/<run_id>/battle/<leader>', methods=['POST'])
-def win_battle(run_id, leader):
+def win_battle_api(run_id, leader):
     win_battle(run_id, leader)
     return jsonify({'status': 'success'})
 
