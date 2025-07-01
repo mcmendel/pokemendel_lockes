@@ -335,6 +335,18 @@ const lockeApi = {
         console.log('Mark gym won response:', data);
         return data;
     },
+
+    async getPokemonActions(runId: string, pokemonId: string): Promise<string[]> {
+        const response = await fetch(`${API_BASE_URL}/run/${runId}/pokemon/${pokemonId}/actions`);
+
+        if (!response.ok) {
+            throw new Error(`Failed to fetch pokemon actions: ${response.statusText}`);
+        }
+
+        const data: string[] = await response.json();
+        console.log('Pokemon actions response:', data);
+        return data;
+    },
 };
 
 export default lockeApi; 

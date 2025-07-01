@@ -16,7 +16,13 @@ import {
     DialogTitle,
     DialogContent,
     DialogActions,
-    Button
+    Button,
+    Typography,
+    Box,
+    List,
+    ListItem,
+    ListItemText,
+    CircularProgress
 } from '@mui/material';
 import './Run.css';
 
@@ -29,6 +35,10 @@ function RunComponent() {
   const [isDialogOpen, setIsDialogOpen] = useState(false);
   const [selectedGymLeader, setSelectedGymLeader] = useState<string | null>(null);
   const [isGymDialogOpen, setIsGymDialogOpen] = useState(false);
+  const [selectedPokemonId, setSelectedPokemonId] = useState<string | null>(null);
+  const [isPokemonActionsDialogOpen, setIsPokemonActionsDialogOpen] = useState(false);
+  const [pokemonActions, setPokemonActions] = useState<string[]>([]);
+  const [loadingPokemonActions, setLoadingPokemonActions] = useState(false);
   const [snackbar, setSnackbar] = useState<{ open: boolean; message: string; severity: 'success' | 'error' }>({
     open: false,
     message: '',
@@ -173,8 +183,35 @@ function RunComponent() {
     }
   };
 
-  const handlePokemonClick = (pokemonId: string) => {
-    alert(`Clicked Pokemon ID: ${pokemonId}`);
+  const handlePokemonClick = async (pokemonId: string) => {
+    try {
+      setLoadingPokemonActions(true);
+      setSelectedPokemonId(pokemonId);
+      const actions = await lockeApi.getPokemonActions(runId!, pokemonId);
+      setPokemonActions(actions);
+      setIsPokemonActionsDialogOpen(true);
+    } catch (error) {
+      console.error('Error fetching pokemon actions:', error);
+      setSnackbar({
+        open: true,
+        message: `Failed to fetch pokemon actions: ${error instanceof Error ? error.message : 'Unknown error'}`,
+        severity: 'error'
+      });
+    } finally {
+      setLoadingPokemonActions(false);
+    }
+  };
+
+  const handlePokemonActionsDialogClose = () => {
+    setIsPokemonActionsDialogOpen(false);
+    setSelectedPokemonId(null);
+    setPokemonActions([]);
+  };
+
+  const handleActionClick = (action: string) => {
+    // For now, just log the action. You can extend this to handle specific actions
+    console.log(`Action selected: ${action} for pokemon: ${selectedPokemonId}`);
+    handlePokemonActionsDialogClose();
   };
 
   const handleGymClick = (leader: string) => {
@@ -354,6 +391,65 @@ function RunComponent() {
           </Button>
           <Button onClick={handleConfirmGymVictory} color="primary" variant="contained">
             Yes
+          </Button>
+        </DialogActions>
+      </Dialog>
+
+      <Dialog
+        open={isPokemonActionsDialogOpen}
+        onClose={handlePokemonActionsDialogClose}
+        maxWidth="sm"
+        fullWidth
+      >
+        <DialogTitle>
+          Pokemon Actions
+          {selectedPokemonId && runData?.pokemons[selectedPokemonId] && (
+            <>
+              <Typography variant="h6">
+                {runData.pokemons[selectedPokemonId].name}
+              </Typography>
+              {runData.pokemons[selectedPokemonId].metadata.nickname && (
+                <Typography variant="subtitle2" color="text.secondary">
+                  "{runData.pokemons[selectedPokemonId].metadata.nickname}"
+                </Typography>
+              )}
+            </>
+          )}
+        </DialogTitle>
+        <DialogContent>
+          {loadingPokemonActions ? (
+            <Box sx={{ display: 'flex', justifyContent: 'center', p: 3 }}>
+              <CircularProgress />
+            </Box>
+          ) : pokemonActions.length === 0 ? (
+            <Typography sx={{ p: 2, textAlign: 'center', color: 'text.secondary' }}>
+              No actions available for this Pokémon
+            </Typography>
+          ) : (
+            <List>
+              {pokemonActions.map((action, index) => (
+                <ListItem 
+                  key={index} 
+                  button 
+                  onClick={() => handleActionClick(action)}
+                  sx={{ 
+                    border: '1px solid #e0e0e0', 
+                    borderRadius: 1, 
+                    mb: 1,
+                    '&:hover': {
+                      backgroundColor: '#f5f5f5'
+                    }
+                  }}
+                >
+                  <ListItemText primary={action} />
+                </ListItem>
+              ))}
+            </List>
+          )}
+        </DialogContent>
+        <DialogActions>
+          <Button onClick={handlePokemonActionsDialogClose} color="primary">
+            Close
           </Button>
         </DialogActions>
       </Dialog>
