@@ -63,7 +63,7 @@ def update_encounter(run_id: str, route: str, encounter_status: str):
     run_manager.update_encounter(route, encounter_status)
 
 
-def get_next_actions(run_id: str, pokemon_id: str) -> List[Tuple[str, List[str]]]:
+def get_next_actions(run_id: str, pokemon_id: str) -> List[str]:
     run_manager = _get_run_manager(run_id)
     return run_manager.get_pokemon_next_actions(pokemon_id)
 

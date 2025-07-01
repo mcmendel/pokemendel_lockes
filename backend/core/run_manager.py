@@ -76,14 +76,12 @@ class RunManager:
 
         self.update_run()
 
-    def get_pokemon_next_actions(self, pokemon_id: str) -> List:
+    def get_pokemon_next_actions(self, pokemon_id: str) -> List[str]:
         pokemon = next(box_pokemon for box_pokemon in self.run.box.pokemons if box_pokemon.metadata.id == pokemon_id)
         assert pokemon.status == PokemonStatus.ALIVE, f"Can get actions for not alive ({pokemon.status}) pokemon {pokemon_id}"
         next_steps = self.get_first_relevant_steps(pokemon)
-        return [
-            self.locke.steps_mapper[next_step].step_options(self.run.id, pokemon)
-            for next_step in next_steps
-        ]
+        print("In run %s, pokemon %s next steps are: %s" % (self.run.id, pokemon_id, next_steps))
+        return next_steps
 
     def get_first_relevant_steps(self, pokemon: Pokemon) -> List[str]:
         step_map: Dict[str, StepInfo] = {step.step_name: step for step in self.locke.steps}
