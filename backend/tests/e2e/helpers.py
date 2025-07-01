@@ -143,6 +143,13 @@ def get_next_actions(client, run_id: str, pokemon_id: str) -> list:
     return next_actions
 
 
+def get_action_options(client, run_id: str, pokemon_id: str, action: str) -> list:
+    response = client.get("/locke_manager/run/" + run_id + "/pokemon/" + pokemon_id + "/action?action=" + action)
+    assert response.status_code == 200
+    action_options = response.get_json()
+    return action_options
+
+
 def save_run(client, run_id):
     response = client.post('/locke_manager/run/' + run_id + '/save')
     assert response.status_code == 200

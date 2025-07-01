@@ -15,6 +15,7 @@ from tests.e2e.helpers import (
     encounter_pokemon,
     update_encounter,
     get_next_actions,
+    get_action_options,
     assert_run,
     assert_saved_run,
     assert_run_potential_pokemons,
@@ -119,6 +120,12 @@ def _handle_caught_pokemon(client, run_response: dict, run_id: str, num_box: int
     )
     next_actions = get_next_actions(client, run_id, pokemon_id)
     assert next_actions == ["Nickname Pokemon"]
+
+    nickname_options = get_action_options(client, run_id, pokemon_id, "Nickname Pokemon")
+    assert nickname_options == {
+        "input_options": [],
+        "input_type": "Free text"
+    }
 
 
 def assert_pokemon(run_response: dict, pokemon_id: str, pokemon_name: str, nickname: str = ''):
