@@ -347,6 +347,18 @@ const lockeApi = {
         console.log('Pokemon actions response:', data);
         return data;
     },
+
+    async getPokemonActionInfo(runId: string, pokemonId: string, actionName: string): Promise<{input_type: string, input_options: string[]}> {
+        const response = await fetch(`${API_BASE_URL}/run/${runId}/pokemon/${pokemonId}/action?action=${encodeURIComponent(actionName)}`);
+
+        if (!response.ok) {
+            throw new Error(`Failed to fetch pokemon action info: ${response.statusText}`);
+        }
+
+        const data: {input_type: string, input_options: string[]} = await response.json();
+        console.log('Pokemon action info response:', data);
+        return data;
+    },
 };
 
 export default lockeApi; 
