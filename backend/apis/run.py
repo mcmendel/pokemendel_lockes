@@ -77,6 +77,11 @@ def get_action_options(run_id: str, pokemon_id: str, action: str) -> Dict[str, U
     }
 
 
+def execute_action(run_id: str, pokemon_id: str, action: str, value: str):
+    run_manager = _get_run_manager(run_id)
+    run_manager.execute_action(pokemon_id, action, value)
+
+
 def win_battle(run_id: str, leader: str):
     run_manager = _get_run_manager(run_id)
     run_manager.win_battle(leader)

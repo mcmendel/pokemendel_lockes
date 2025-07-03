@@ -150,6 +150,14 @@ def get_action_options(client, run_id: str, pokemon_id: str, action: str) -> lis
     return action_options
 
 
+def execute_action(client, run_id: str, pokemon_id: str, action: str, value: str):
+    response = client.post("/locke_manager/run/" + run_id + "/pokemon/" + pokemon_id + "/action", json={
+        'action': action,
+        'value': value,
+    })
+    assert response.status_code == 200
+
+
 def save_run(client, run_id):
     response = client.post('/locke_manager/run/' + run_id + '/save')
     assert response.status_code == 200

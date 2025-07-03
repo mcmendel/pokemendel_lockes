@@ -1,7 +1,7 @@
 from pokemendel_core.data import fetch_pokemon
 from models.run_pokemons_options import list_runs_options, mark_caught_pokemon
 from models.run import update_run
-from models.pokemon import save_pokemon
+from models.pokemon import save_pokemon, update_pokemon
 from dataclasses import dataclass, asdict
 from definitions.pokemons.pokemon import Pokemon, PokemonMetadata, PokemonStatus
 from core.locke import Locke, StepInfo, StepInterface
@@ -46,7 +46,7 @@ class RunManager:
         self.run.starter = starter_pokemon
         self.locke.catch_pokemon(starter_pokemon, self.run)
         self.update_run()
-        self._update_caught_pokemon(starter_pokemon)
+        mark_caught_pokemon(self.run.id, starter_pokemon.name)
 
     def encounter_pokemon(self, route: str, pokemon_name: str):
         route_encounters = [encounter for encounter in self.run.encounters if encounter.route == route]
@@ -89,6 +89,16 @@ class RunManager:
         assert step.is_step_relevant(self.run, pokemon), f"Step {action} is not relevant for pokemon {pokemon_id}"
         return step.step_options(self.run, pokemon)
 
+    def execute_action(self, pokemon_id: str, action: str, value: str):
+        assert action in self.locke.steps_mapper, f"Step {action} is not relevant for pokemon {pokemon_id}"
+        step: StepInterface = self.locke.steps_mapper[action]
+        pokemon = self.run.get_pokemon_by_id(pokemon_id, verify_alive=True)
+        assert step.is_step_relevant(self.run, pokemon), f"Step {action} is not relevant for pokemon {pokemon_id}"
+        execution_result = step.execute_step(self.run, pokemon, value)
+        for pokemon_id in  execution_result.pokemons_to_update:
+            pokemon_to_update = self.run.get_pokemon_by_id(pokemon_id)
+            update_pokemon(pokemon_to_update, self.run.id)
+
     def _get_first_relevant_steps(self, pokemon: Pokemon) -> List[str]:
         step_map: Dict[str, StepInfo] = {step.step_name: step for step in self.locke.steps}
         memo: Dict[str, Optional[bool]] = {}  # Memoize results
@@ -127,9 +137,6 @@ class RunManager:
         save_pokemon(locke_pokemon, self.run.id)
         return locke_pokemon
 
-    def _update_caught_pokemon(self, pokemon: Pokemon):
-        mark_caught_pokemon(self.run.id, pokemon.name)
-
     def update_run(self):
         print("Saving run %s" % self.run.id)
         db_run = self.run.to_db_run(self.game.gen, self.locke.name, self.game.name, self.randomized, self.duplicate_clause, self.locke.extra_info)
@@ -148,6 +155,6 @@ class RunManager:
     def _catch_pokemon(self, pokemon_name: str) -> Pokemon:
         new_pokemon = self._generate_locke_pokemon(pokemon_name)
         self.locke.catch_pokemon(new_pokemon, self.run)
-        self._update_caught_pokemon(new_pokemon)
+        mark_caught_pokemon(self.run.id, new_pokemon.name)
         return new_pokemon
 

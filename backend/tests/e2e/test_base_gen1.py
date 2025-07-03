@@ -16,6 +16,7 @@ from tests.e2e.helpers import (
     update_encounter,
     get_next_actions,
     get_action_options,
+    execute_action,
     assert_run,
     assert_saved_run,
     assert_run_potential_pokemons,
@@ -47,6 +48,7 @@ def _choose_starter(client_fixture, run_id):
     run_response = get_run(client_fixture, run_id)
     run = run_response['run']
     assert run['starter']
+    starter_id = run['starter']
     _handle_caught_pokemon(
         client=client_fixture,
         run_response=run_response,
@@ -56,7 +58,10 @@ def _choose_starter(client_fixture, run_id):
         pokemon_id=run['starter'],
         pokemon_name=starter_options[0],
         is_pokemon_in_party=True,
+        nickname="Sandra",
     )
+    next_actions = get_next_actions(client_fixture, run_id, starter_id)
+    assert next_actions == []
 
 
 def _create_run(client_fixture):
@@ -96,19 +101,23 @@ def _catch_pokemon1(client_fixture, run_id):
     update_encounter(client_fixture, run_id, "Route 2", "Caught")
     run_response = get_run(client_fixture, run_id)
     encounter = next(encounter for encounter in run_response['run']['encounters'] if encounter['route'] == "Route 2")
+    encounter_id = encounter['pokemon']
     _handle_caught_pokemon(
         client=client_fixture,
         run_response=run_response,
         run_id=run_id,
         num_box=2,
         num_party=2,
-        pokemon_id=encounter['pokemon'],
+        pokemon_id=encounter_id,
         pokemon_name=PokemonGen1.CATERPIE,
         is_pokemon_in_party=True,
+        nickname="Lilly",
     )
+    next_actions = get_next_actions(client_fixture, run_id, encounter_id)
+    assert next_actions == []
 
 
-def _handle_caught_pokemon(client, run_response: dict, run_id: str, num_box: int, num_party: int, pokemon_id: str, pokemon_name: str, is_pokemon_in_party: bool):
+def _handle_caught_pokemon(client, run_response: dict, run_id: str, num_box: int, num_party: int, pokemon_id: str, pokemon_name: str, is_pokemon_in_party: bool, nickname: str):
     assert len(run_response['run']['box']) == num_box
     assert len(run_response['run']['party']) == num_party
     assert pokemon_id in run_response['run']['box']
@@ -126,6 +135,14 @@ def _handle_caught_pokemon(client, run_response: dict, run_id: str, num_box: int
         "input_options": [],
         "input_type": "Free text"
     }
+    execute_action(client, run_id, pokemon_id, "Nickname Pokemon", nickname)
+    run_response = get_run(client, run_id)
+    assert_pokemon(
+        run_response=run_response,
+        pokemon_id=pokemon_id,
+        pokemon_name=pokemon_name,
+        nickname=nickname,
+    )
 
 
 def assert_pokemon(run_response: dict, pokemon_id: str, pokemon_name: str, nickname: str = ''):
