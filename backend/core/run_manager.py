@@ -100,7 +100,7 @@ class RunManager:
             update_pokemon(pokemon_to_update, self.run.id)
 
     def _get_first_relevant_steps(self, pokemon: Pokemon) -> List[str]:
-        step_map: Dict[str, StepInfo] = {step.step_name: step for step in self.locke.steps}
+        step_map: Dict[str, StepInfo] = {step.step_name: step for step in self.locke.steps(self.game.gen)}
         memo: Dict[str, Optional[bool]] = {}  # Memoize results
 
         def prerequisites_are_relevant(step_info: StepInfo) -> bool:
@@ -123,7 +123,7 @@ class RunManager:
             memo[step_info.step_name] = result
             return result
 
-        for step_info in self.locke.steps:
+        for step_info in self.locke.steps(self.game.gen):
             step = self.locke.steps_mapper[step_info.step_name]
             if prerequisites_are_relevant(step_info) and step.is_step_relevant(self.run, pokemon):
                 return [step_info.step_name]

@@ -59,18 +59,18 @@ class Locke(ABC):
         """
         pass
 
-    @property
     @abstractmethod
-    def steps(self) -> List[StepInfo]:
+    def steps(self, gen: int) -> List[StepInfo]:
         """Get all steps for this Locke challenge, including mandatory and optional steps.
+        Args:
+            gen: generation of the run where the locke is running
         Returns:
             List[StepInfo]: A list of all steps with their prerequisites
         """
         pass
 
-    @property
     @abstractmethod
-    def _mandatory_steps(self) -> List[StepInfo]:
+    def _mandatory_steps(self, gen: int) -> List[StepInfo]:
         """Abstract property. Must be implemented by subclasses."""
         pass
 
