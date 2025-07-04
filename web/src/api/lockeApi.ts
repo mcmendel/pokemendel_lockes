@@ -359,6 +359,24 @@ const lockeApi = {
         console.log('Pokemon action info response:', data);
         return data;
     },
+
+    async executePokemonAction(runId: string, pokemonId: string, action: string, value: string): Promise<StatusResponse> {
+        const response = await fetch(`${API_BASE_URL}/run/${runId}/pokemon/${pokemonId}/action`, {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+            },
+            body: JSON.stringify({ action, value })
+        });
+
+        if (!response.ok) {
+            throw new Error(`Failed to execute pokemon action: ${response.statusText}`);
+        }
+
+        const data: StatusResponse = await response.json();
+        console.log('Execute pokemon action response:', data);
+        return data;
+    },
 };
 
 export default lockeApi; 

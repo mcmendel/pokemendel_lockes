@@ -228,9 +228,8 @@ function RunComponent() {
       setActionInputText('');
 
       if (actionInfo.input_type === 'Nothing') {
-        // Handle "Nothing" case - you can add API call here if needed
-        console.log(`Executing action: ${action} for pokemon: ${selectedPokemonId}`);
-        handlePokemonActionsDialogClose();
+        // Execute action immediately with empty string value
+        await executeAction(action, '');
       } else {
         // Show input dialog for "Free text" or "One of"
         setIsActionInputDialogOpen(true);
@@ -247,6 +246,33 @@ function RunComponent() {
     }
   };
 
+  const executeAction = async (action: string, value: string) => {
+    if (!selectedPokemonId || !runId) return;
+
+    try {
+      const response = await lockeApi.executePokemonAction(runId, selectedPokemonId, action, value);
+      
+      if (response.status === 'success') {
+        // Refresh the run data
+        const updatedRun = await lockeApi.getRun(runId);
+        setRunData(updatedRun);
+        
+        setSnackbar({
+          open: true,
+          message: `Action "${action}" executed successfully!`,
+          severity: 'success'
+        });
+      }
+    } catch (error) {
+      console.error('Error executing action:', error);
+      setSnackbar({
+        open: true,
+        message: `Failed to execute action: ${error instanceof Error ? error.message : 'Unknown error'}`,
+        severity: 'error'
+      });
+    }
+  };
+
   const handleActionInputDialogClose = () => {
     setIsActionInputDialogOpen(false);
     setSelectedAction(null);
@@ -255,10 +281,13 @@ function RunComponent() {
     setActionInputText('');
   };
 
-  const handleActionInputSubmit = () => {
-    // Handle the action input submission
-    console.log(`Executing action: ${selectedAction} for pokemon: ${selectedPokemonId} with input: ${actionInputText}`);
-    // TODO: Add API call to execute the action with the input
+  const handleActionInputSubmit = async () => {
+    if (!selectedAction) return;
+    
+    // Execute the action with the input value
+    await executeAction(selectedAction, actionInputText);
+    
+    // Close dialogs
     handleActionInputDialogClose();
     handlePokemonActionsDialogClose();
   };
@@ -597,4 +626,4 @@ function RunComponent() {
   );
 }
 
-export default RunComponent; 
+export default RunComponent;
