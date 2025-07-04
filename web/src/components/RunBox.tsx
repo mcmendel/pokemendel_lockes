@@ -1,8 +1,7 @@
 import React from 'react';
-import { Grid, Typography, Box, Button } from '@mui/material';
+import { Grid, Typography, Box } from '@mui/material';
 import Pokemon from './Pokemon';
 import { RunResponse } from '../api/lockeApi';
-import lockeApi from '../api/lockeApi';
 import './RunBox.css';
 
 interface RunBoxProps {
@@ -34,48 +33,22 @@ function RunBox({ runData, onPokemonClick }: RunBoxProps) {
           <Grid container spacing={2}>
             {boxPokemons.map((pokemon) => (
               <Grid item xs={6} sm={4} md={3} lg={2} key={pokemon.metadata.id}>
-                <Button
-                  onClick={() => onPokemonClick(pokemon.metadata.id)}
-                  sx={{ 
-                    display: 'flex', 
-                    flexDirection: 'column', 
-                    alignItems: 'center',
-                    p: 1,
-                    border: '1px solid #e0e0e0',
-                    borderRadius: 2,
-                    backgroundColor: '#f9f9f9',
-                    minHeight: '120px',
-                    width: '100%',
-                    textTransform: 'none',
-                    '&:hover': {
-                      backgroundColor: '#e3f2fd',
-                      borderColor: '#1976d2'
-                    }
-                  }}
-                >
-                  <img 
-                    src={lockeApi.getPokemonImageUrl(pokemon.name)}
-                    alt={pokemon.name}
-                    style={{ 
-                      width: '80px', 
-                      height: '80px', 
-                      objectFit: 'contain',
-                      marginBottom: '8px'
-                    }}
-                    onError={(e) => {
-                      const target = e.target as HTMLImageElement;
-                      target.src = `https://placehold.co/80x80/1976d2/ffffff?text=${pokemon.name}`;
-                    }}
+                <Box sx={{ 
+                  display: 'flex', 
+                  flexDirection: 'column', 
+                  alignItems: 'center',
+                  p: 1,
+                  border: '1px solid #e0e0e0',
+                  borderRadius: 2,
+                  backgroundColor: '#f9f9f9',
+                  minHeight: '120px'
+                }}>
+                  <Pokemon 
+                    pokemon={pokemon}
+                    onClick={onPokemonClick}
+                    height={100}
                   />
-                  <Typography variant="body2" sx={{ textAlign: 'center', fontWeight: 500 }}>
-                    {pokemon.name}
-                  </Typography>
-                  {pokemon.metadata.nickname && (
-                    <Typography variant="caption" sx={{ textAlign: 'center', color: '#666' }}>
-                      "{pokemon.metadata.nickname}"
-                    </Typography>
-                  )}
-                </Button>
+                </Box>
               </Grid>
             ))}
           </Grid>

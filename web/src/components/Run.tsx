@@ -16,7 +16,14 @@ import {
     DialogTitle,
     DialogContent,
     DialogActions,
-    Button
+    Button,
+    Typography,
+    Box,
+    List,
+    ListItem,
+    ListItemText,
+    CircularProgress,
+    TextField
 } from '@mui/material';
 import './Run.css';
 
@@ -29,6 +36,16 @@ function RunComponent() {
   const [isDialogOpen, setIsDialogOpen] = useState(false);
   const [selectedGymLeader, setSelectedGymLeader] = useState<string | null>(null);
   const [isGymDialogOpen, setIsGymDialogOpen] = useState(false);
+  const [selectedPokemonId, setSelectedPokemonId] = useState<string | null>(null);
+  const [isPokemonActionsDialogOpen, setIsPokemonActionsDialogOpen] = useState(false);
+  const [pokemonActions, setPokemonActions] = useState<string[]>([]);
+  const [loadingPokemonActions, setLoadingPokemonActions] = useState(false);
+  const [selectedAction, setSelectedAction] = useState<string | null>(null);
+  const [isActionInputDialogOpen, setIsActionInputDialogOpen] = useState(false);
+  const [actionInputType, setActionInputType] = useState<string>('');
+  const [actionInputOptions, setActionInputOptions] = useState<string[]>([]);
+  const [actionInputText, setActionInputText] = useState<string>('');
+  const [loadingActionInfo, setLoadingActionInfo] = useState(false);
   const [snackbar, setSnackbar] = useState<{ open: boolean; message: string; severity: 'success' | 'error' }>({
     open: false,
     message: '',
@@ -173,8 +190,106 @@ function RunComponent() {
     }
   };
 
-  const handlePokemonClick = (pokemonId: string) => {
-    alert(`Clicked Pokemon ID: ${pokemonId}`);
+  const handlePokemonClick = async (pokemonId: string) => {
+    try {
+      setLoadingPokemonActions(true);
+      setSelectedPokemonId(pokemonId);
+      const actions = await lockeApi.getPokemonActions(runId!, pokemonId);
+      setPokemonActions(actions);
+      setIsPokemonActionsDialogOpen(true);
+    } catch (error) {
+      console.error('Error fetching pokemon actions:', error);
+      setSnackbar({
+        open: true,
+        message: `Failed to fetch pokemon actions: ${error instanceof Error ? error.message : 'Unknown error'}`,
+        severity: 'error'
+      });
+    } finally {
+      setLoadingPokemonActions(false);
+    }
+  };
+
+  const handlePokemonActionsDialogClose = () => {
+    setIsPokemonActionsDialogOpen(false);
+    setSelectedPokemonId(null);
+    setPokemonActions([]);
+  };
+
+  const handleActionClick = async (action: string) => {
+    if (!selectedPokemonId || !runId) return;
+
+    try {
+      setLoadingActionInfo(true);
+      setSelectedAction(action);
+      const actionInfo = await lockeApi.getPokemonActionInfo(runId, selectedPokemonId, action);
+      
+      setActionInputType(actionInfo.input_type);
+      setActionInputOptions(actionInfo.input_options || []);
+      setActionInputText('');
+
+      if (actionInfo.input_type === 'Nothing') {
+        // Execute action immediately with empty string value
+        await executeAction(action, '');
+      } else {
+        // Show input dialog for "Free text" or "One of"
+        setIsActionInputDialogOpen(true);
+      }
+    } catch (error) {
+      console.error('Error fetching action info:', error);
+      setSnackbar({
+        open: true,
+        message: `Failed to get action info: ${error instanceof Error ? error.message : 'Unknown error'}`,
+        severity: 'error'
+      });
+    } finally {
+      setLoadingActionInfo(false);
+    }
+  };
+
+  const executeAction = async (action: string, value: string) => {
+    if (!selectedPokemonId || !runId) return;
+
+    try {
+      const response = await lockeApi.executePokemonAction(runId, selectedPokemonId, action, value);
+      
+      if (response.status === 'success') {
+        // Refresh the run data
+        const updatedRun = await lockeApi.getRun(runId);
+        setRunData(updatedRun);
+        
+        setSnackbar({
+          open: true,
+          message: `Action "${action}" executed successfully!`,
+          severity: 'success'
+        });
+      }
+    } catch (error) {
+      console.error('Error executing action:', error);
+      setSnackbar({
+        open: true,
+        message: `Failed to execute action: ${error instanceof Error ? error.message : 'Unknown error'}`,
+        severity: 'error'
+      });
+    }
+  };
+
+  const handleActionInputDialogClose = () => {
+    setIsActionInputDialogOpen(false);
+    setSelectedAction(null);
+    setActionInputType('');
+    setActionInputOptions([]);
+    setActionInputText('');
+  };
+
+  const handleActionInputSubmit = async () => {
+    if (!selectedAction) return;
+    
+    // Execute the action with the input value
+    await executeAction(selectedAction, actionInputText);
+    
+    // Close dialogs
+    handleActionInputDialogClose();
+    handlePokemonActionsDialogClose();
   };
 
   const handleGymClick = (leader: string) => {
@@ -358,6 +473,141 @@ function RunComponent() {
         </DialogActions>
       </Dialog>
 
+      <Dialog
+        open={isPokemonActionsDialogOpen}
+        onClose={handlePokemonActionsDialogClose}
+        maxWidth="sm"
+        fullWidth
+      >
+        <DialogTitle>
+          Pokemon Actions
+          {selectedPokemonId && runData?.pokemons[selectedPokemonId] && (
+            <>
+              <Typography variant="h6">
+                {runData.pokemons[selectedPokemonId].name}
+              </Typography>
+              {runData.pokemons[selectedPokemonId].metadata.nickname && (
+                <Typography variant="subtitle2" color="text.secondary">
+                  "{runData.pokemons[selectedPokemonId].metadata.nickname}"
+                </Typography>
+              )}
+            </>
+          )}
+        </DialogTitle>
+        <DialogContent>
+          {loadingPokemonActions ? (
+            <Box sx={{ display: 'flex', justifyContent: 'center', p: 3 }}>
+              <CircularProgress />
+            </Box>
+          ) : pokemonActions.length === 0 ? (
+            <Typography sx={{ p: 2, textAlign: 'center', color: 'text.secondary' }}>
+              No actions available for this Pokémon
+            </Typography>
+          ) : (
+            <List>
+              {pokemonActions.map((action, index) => (
+                <ListItem 
+                  key={index} 
+                  button 
+                  onClick={() => handleActionClick(action)}
+                  sx={{ 
+                    border: '1px solid #e0e0e0', 
+                    borderRadius: 1, 
+                    mb: 1,
+                    '&:hover': {
+                      backgroundColor: '#f5f5f5'
+                    }
+                  }}
+                >
+                  <ListItemText primary={action} />
+                </ListItem>
+              ))}
+            </List>
+          )}
+        </DialogContent>
+        <DialogActions>
+          <Button onClick={handlePokemonActionsDialogClose} color="primary">
+            Close
+          </Button>
+        </DialogActions>
+      </Dialog>
+
+      <Dialog
+        open={isActionInputDialogOpen}
+        onClose={handleActionInputDialogClose}
+        maxWidth="sm"
+        fullWidth
+      >
+        <DialogTitle>
+          {selectedAction}
+          {selectedPokemonId && runData?.pokemons[selectedPokemonId] && (
+            <Typography variant="subtitle2" color="text.secondary">
+              for {runData.pokemons[selectedPokemonId].name}
+            </Typography>
+          )}
+        </DialogTitle>
+        <DialogContent>
+          {loadingActionInfo ? (
+            <Box sx={{ display: 'flex', justifyContent: 'center', p: 3 }}>
+              <CircularProgress />
+            </Box>
+          ) : actionInputType === 'Free text' ? (
+            <TextField
+              autoFocus
+              margin="dense"
+              label="Enter text"
+              type="text"
+              fullWidth
+              variant="outlined"
+              value={actionInputText}
+              onChange={(e) => setActionInputText(e.target.value)}
+              sx={{ mt: 2 }}
+            />
+          ) : actionInputType === 'One of' ? (
+            <Box sx={{ mt: 2 }}>
+              <Typography variant="body2" sx={{ mb: 2 }}>
+                Select an option:
+              </Typography>
+              <List>
+                {actionInputOptions.map((option, index) => (
+                  <ListItem 
+                    key={index} 
+                    button 
+                    onClick={() => setActionInputText(option)}
+                    selected={actionInputText === option}
+                    sx={{ 
+                      border: '1px solid #e0e0e0', 
+                      borderRadius: 1, 
+                      mb: 1,
+                      '&:hover': {
+                        backgroundColor: '#f5f5f5'
+                      },
+                      '&.Mui-selected': {
+                        backgroundColor: '#e3f2fd',
+                        borderColor: '#1976d2'
+                      }
+                    }}
+                  >
+                    <ListItemText primary={option} />
+                  </ListItem>
+                ))}
+              </List>
+            </Box>
+          ) : null}
+        </DialogContent>
+        <DialogActions>
+          <Button onClick={handleActionInputDialogClose} color="primary">
+            Cancel
+          </Button>
+          {(actionInputType === 'Free text' && actionInputText.trim()) || 
+           (actionInputType === 'One of' && actionInputText) ? (
+            <Button onClick={handleActionInputSubmit} color="primary" variant="contained">
+              Submit
+            </Button>
+          ) : null}
+        </DialogActions>
+      </Dialog>
+
       <Snackbar 
         open={snackbar.open} 
         autoHideDuration={6000} 
@@ -376,4 +626,4 @@ function RunComponent() {
   );
 }
 
-export default RunComponent; 
+export default RunComponent;

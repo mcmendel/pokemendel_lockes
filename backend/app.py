@@ -15,6 +15,9 @@ from apis.run import (
     get_run_potential_pokemons,
     get_run_potential_encounters,
     win_battle,
+    get_next_actions,
+    get_action_options,
+    execute_action,
 )
 from core.lockes import list_all_lockes
 from functools import wraps
@@ -354,8 +357,33 @@ def update_encounter_api(run_id, route):
     return jsonify({'status': 'success'})
 
 
+@locke_route('run/<run_id>/pokemon/<pokemon_id>/actions', methods=['GET'])
+def get_next_actions_api(run_id, pokemon_id):
+    pokemon_next_actions = get_next_actions(run_id, pokemon_id)
+    return jsonify(pokemon_next_actions)
+
+
+@locke_route('run/<run_id>/pokemon/<pokemon_id>/action', methods=['GET'])
+def get_action_options_api(run_id, pokemon_id):
+    action = request.args.get('action')
+    assert action, "Did not receive required action"
+    action_options = get_action_options(run_id, pokemon_id, action)
+    return jsonify(action_options)
+
+
+@locke_route('run/<run_id>/pokemon/<pokemon_id>/action', methods=['POST'])
+def execute_action_api(run_id, pokemon_id):
+    data = request.get_json()
+    if not data or 'action' not in data or 'value' not in data:
+        return jsonify({
+            'error': 'Missing required fields: action or value'
+        }), 400
+    execute_action(run_id, pokemon_id, data['action'], data['value'])
+    return jsonify({'status': 'success'})
+
+
 @locke_route('run/<run_id>/battle/<leader>', methods=['POST'])
-def win_battle(run_id, leader):
+def win_battle_api(run_id, leader):
     win_battle(run_id, leader)
     return jsonify({'status': 'success'})
 

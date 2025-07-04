@@ -335,6 +335,48 @@ const lockeApi = {
         console.log('Mark gym won response:', data);
         return data;
     },
+
+    async getPokemonActions(runId: string, pokemonId: string): Promise<string[]> {
+        const response = await fetch(`${API_BASE_URL}/run/${runId}/pokemon/${pokemonId}/actions`);
+
+        if (!response.ok) {
+            throw new Error(`Failed to fetch pokemon actions: ${response.statusText}`);
+        }
+
+        const data: string[] = await response.json();
+        console.log('Pokemon actions response:', data);
+        return data;
+    },
+
+    async getPokemonActionInfo(runId: string, pokemonId: string, actionName: string): Promise<{input_type: string, input_options: string[]}> {
+        const response = await fetch(`${API_BASE_URL}/run/${runId}/pokemon/${pokemonId}/action?action=${encodeURIComponent(actionName)}`);
+
+        if (!response.ok) {
+            throw new Error(`Failed to fetch pokemon action info: ${response.statusText}`);
+        }
+
+        const data: {input_type: string, input_options: string[]} = await response.json();
+        console.log('Pokemon action info response:', data);
+        return data;
+    },
+
+    async executePokemonAction(runId: string, pokemonId: string, action: string, value: string): Promise<StatusResponse> {
+        const response = await fetch(`${API_BASE_URL}/run/${runId}/pokemon/${pokemonId}/action`, {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+            },
+            body: JSON.stringify({ action, value })
+        });
+
+        if (!response.ok) {
+            throw new Error(`Failed to execute pokemon action: ${response.statusText}`);
+        }
+
+        const data: StatusResponse = await response.json();
+        console.log('Execute pokemon action response:', data);
+        return data;
+    },
 };
 
 export default lockeApi; 

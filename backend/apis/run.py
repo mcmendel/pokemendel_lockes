@@ -1,4 +1,4 @@
-from typing import List, Dict, Optional
+from typing import List, Dict, Optional, Union
 from models.run import fetch_run
 from models.run_pokemons_options import list_runs_options, list_runs_options_by_query
 from games import get_game
@@ -61,6 +61,25 @@ def encounter_pokemon(run_id: str, route: str, pokemon_name: str):
 def update_encounter(run_id: str, route: str, encounter_status: str):
     run_manager = _get_run_manager(run_id)
     run_manager.update_encounter(route, encounter_status)
+
+
+def get_next_actions(run_id: str, pokemon_id: str) -> List[str]:
+    run_manager = _get_run_manager(run_id)
+    return run_manager.get_pokemon_next_actions(pokemon_id)
+
+
+def get_action_options(run_id: str, pokemon_id: str, action: str) -> Dict[str, Union[str, List[str]]]:
+    run_manager = _get_run_manager(run_id)
+    input_type, input_options = run_manager.get_action_options(pokemon_id, action)
+    return {
+        'input_type': input_type,
+        'input_options': input_options,
+    }
+
+
+def execute_action(run_id: str, pokemon_id: str, action: str, value: str):
+    run_manager = _get_run_manager(run_id)
+    run_manager.execute_action(pokemon_id, action, value)
 
 
 def win_battle(run_id: str, leader: str):

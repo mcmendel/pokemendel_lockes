@@ -10,6 +10,7 @@ from core.steps import (
     AddToPartyStep,
     RemoveFromPartyStep,
     ReplacePartyPokemon,
+    NicknamePokemonStep,
 )
 from core.run import Run
 from pokemendel_core.utils.class_property import classproperty
@@ -77,7 +78,7 @@ class BaseLocke(Locke):
         Returns:
             List[StepInfo]: A list of steps that must be completed in order
         """
-        return []
+        return [StepInfo(StepsNames.NICKNAME, prerequisites=[])]
 
     @classproperty
     def steps_mapper(cls) -> Dict[StepsNames, StepInterface]:
@@ -89,6 +90,7 @@ class BaseLocke(Locke):
             StepsNames.ADD_TO_PARTY: AddToPartyStep(),
             StepsNames.REMOVE_FROM_PARTY: RemoveFromPartyStep(),
             StepsNames.SWITCH_PARTY_POKEMONS: ReplacePartyPokemon(),
+            StepsNames.NICKNAME: NicknamePokemonStep(),
         }
 
     def catch_pokemon(self, pokemon: Pokemon, run: Run):

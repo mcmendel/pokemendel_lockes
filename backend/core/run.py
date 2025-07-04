@@ -11,7 +11,7 @@ from typing import List, Optional, Dict, Generator
 from models.pokemon import list_pokemon_by_run
 from models.run import Run as DbRun
 from apis.exceptions import RunNotFoundError, InvalidGameError
-from definitions import Battle, Encounter, Pokemon, EncounterStatus
+from definitions import Battle, Encounter, Pokemon, EncounterStatus, PokemonStatus
 from games import get_game
 from core.party import Party
 from core.box import Box
@@ -65,13 +65,18 @@ class Run:
         """
         self.battles.append(battle)
 
-    def get_pokemon_by_id(self, id: str) -> Pokemon:
+    def get_pokemon_by_id(self, id: str, verify_alive: bool = False) -> Pokemon:
         """Get a Pokemon by its ID.
         
         Args:
             id: The ID of the Pokemon to get
+            verify_alive: verify pokemon is alive
         """
-        return self.box.get_pokemon_by_id(id)
+        pokemon = self.box.get_pokemon_by_id(id)
+        assert pokemon, f"Pokemon {id} does not exist"
+        if verify_alive:
+            assert pokemon.status == PokemonStatus.ALIVE, f"Pokemon {id} is not alive"
+        return pokemon
 
     def add_encounter(self, encounter: Encounter) -> None:
         """Add an encounter to the run.
