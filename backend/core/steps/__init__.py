@@ -8,10 +8,12 @@ from core.steps.add_to_party_step import AddToPartyStep
 from core.steps.remove_from_party_step import RemoveFromPartyStep
 from core.steps.replace_party_pokemon import ReplacePartyPokemon
 from core.steps.nickname_pokemon_step import NicknamePokemonStep
+from core.steps.choose_gender_step import ChooseGenderStep
 
 __all__ = [
     'AddToPartyStep',
     'RemoveFromPartyStep',
     'ReplacePartyPokemon',
     'NicknamePokemonStep',
+    'ChooseGenderStep',
 ]

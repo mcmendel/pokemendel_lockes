@@ -11,6 +11,7 @@ from core.steps import (
     RemoveFromPartyStep,
     ReplacePartyPokemon,
     NicknamePokemonStep,
+    ChooseGenderStep,
 )
 from core.run import Run
 from pokemendel_core.utils.class_property import classproperty
@@ -53,8 +54,7 @@ class BaseLocke(Locke):
         """
         return cls._DEFAULT_RULES.copy()
 
-    @property
-    def steps(self) -> List[StepInfo]:
+    def steps(self, gen: int) -> List[StepInfo]:
         """Get all steps for this Locke challenge, including mandatory and optional steps.
         The steps include:
         - Mandatory steps that must be completed in order (can be empty)
@@ -62,23 +62,25 @@ class BaseLocke(Locke):
         Returns:
             List[StepInfo]: A list of all steps with their prerequisites
         """
-        mandatory_steps = self._mandatory_steps
-        prerequisites = [] if not mandatory_steps else [mandatory_steps[-1].step_name]
+        mandatory_steps = self._mandatory_steps(gen)
+        prerequisites = [step_info.step_name for step_info in mandatory_steps]
         optional_steps = [
-            StepInfo(StepsNames.ADD_TO_PARTY, prerequisites=prerequisites),
-            StepInfo(StepsNames.REMOVE_FROM_PARTY, prerequisites=prerequisites),
-            StepInfo(StepsNames.SWITCH_PARTY_POKEMONS, prerequisites=prerequisites),
+            # StepInfo(StepsNames.ADD_TO_PARTY, prerequisites=prerequisites),
+            # StepInfo(StepsNames.REMOVE_FROM_PARTY, prerequisites=prerequisites),
+            # StepInfo(StepsNames.SWITCH_PARTY_POKEMONS, prerequisites=prerequisites),
         ]
         return mandatory_steps + optional_steps
 
-    @property
-    def _mandatory_steps(self) -> List[StepInfo]:
+    def _mandatory_steps(self, gen: int) -> List[StepInfo]:
         """Get the mandatory steps that must be completed in order.
         This implementation returns an empty list, allowing subclasses to override it.
         Returns:
             List[StepInfo]: A list of steps that must be completed in order
         """
-        return [StepInfo(StepsNames.NICKNAME, prerequisites=[])]
+        mandatory_steps = [StepInfo(StepsNames.NICKNAME, prerequisites=[])]
+        if gen >= 2:
+            mandatory_steps.append(StepInfo(StepsNames.GENDER, prerequisites=[StepsNames.NICKNAME]))
+        return mandatory_steps
 
     @classproperty
     def steps_mapper(cls) -> Dict[StepsNames, StepInterface]:
@@ -91,6 +93,7 @@ class BaseLocke(Locke):
             StepsNames.REMOVE_FROM_PARTY: RemoveFromPartyStep(),
             StepsNames.SWITCH_PARTY_POKEMONS: ReplacePartyPokemon(),
             StepsNames.NICKNAME: NicknamePokemonStep(),
+            StepsNames.GENDER: ChooseGenderStep(),
         }
 
     def catch_pokemon(self, pokemon: Pokemon, run: Run):
