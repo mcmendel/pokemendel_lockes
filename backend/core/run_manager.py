@@ -78,7 +78,7 @@ class RunManager:
 
     def get_pokemon_next_actions(self, pokemon_id: str) -> List[str]:
         pokemon = self.run.get_pokemon_by_id(pokemon_id, verify_alive=True)
-        next_steps = self._get_first_relevant_steps(pokemon)
+        next_steps = self._get_all_relevant_steps(pokemon)
         print("In run %s, pokemon %s next steps are: %s" % (self.run.id, pokemon_id, next_steps))
         return next_steps
 
@@ -99,23 +99,23 @@ class RunManager:
             pokemon_to_update = self.run.get_pokemon_by_id(pokemon_id)
             update_pokemon(pokemon_to_update, self.run.id)
 
-    def _get_first_relevant_steps(self, pokemon: Pokemon) -> List[str]:
+    def _get_all_relevant_steps(self, pokemon: Pokemon) -> List[str]:
         step_map: Dict[str, StepInfo] = {step.step_name: step for step in self.locke.steps(self.game.gen)}
         memo: Dict[str, Optional[bool]] = {}  # Memoize results
 
-        def prerequisites_are_relevant(step_info: StepInfo) -> bool:
+        def prerequisites_are_finished(step_info: StepInfo) -> bool:
             for prereq_name in step_info.prerequisites:
                 prereq_step = step_map.get(prereq_name)
                 if not prereq_step:
-                    return False
-                if not is_step_relevant(prereq_step):
+                    return True
+                if is_step_relevant(prereq_step):
                     return False
             return True
 
         def is_step_relevant(step_info: StepInfo) -> bool:
             if step_info.step_name in memo:
                 return memo[step_info.step_name] is True
-            if not prerequisites_are_relevant(step_info):
+            if not prerequisites_are_finished(step_info):
                 memo[step_info.step_name] = False
                 return False
             step = self.locke.steps_mapper[step_info.step_name]
@@ -123,12 +123,15 @@ class RunManager:
             memo[step_info.step_name] = result
             return result
 
+        returned_steps = []
+
         for step_info in self.locke.steps(self.game.gen):
             step = self.locke.steps_mapper[step_info.step_name]
-            if prerequisites_are_relevant(step_info) and step.is_step_relevant(self.run, pokemon):
-                return [step_info.step_name]
+            if prerequisites_are_finished(step_info):
+                if is_step_relevant(step_info):
+                    returned_steps.append(step_info.step_name)
 
-        return []  # No step is relevant
+        return returned_steps
 
     def _generate_locke_pokemon(self, pokemon_name: str) -> Pokemon:
         core_pokemon = fetch_pokemon(pokemon_name, self.game.gen)
