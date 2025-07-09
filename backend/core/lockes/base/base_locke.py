@@ -66,7 +66,7 @@ class BaseLocke(Locke):
         prerequisites = [step_info.step_name for step_info in mandatory_steps]
         optional_steps = [
             # StepInfo(StepsNames.ADD_TO_PARTY, prerequisites=prerequisites),
-            # StepInfo(StepsNames.REMOVE_FROM_PARTY, prerequisites=prerequisites),
+            StepInfo(StepsNames.REMOVE_FROM_PARTY, prerequisites=prerequisites),
             # StepInfo(StepsNames.SWITCH_PARTY_POKEMONS, prerequisites=prerequisites),
         ]
         return mandatory_steps + optional_steps
