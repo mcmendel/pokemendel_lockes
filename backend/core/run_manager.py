@@ -99,6 +99,8 @@ class RunManager:
             pokemon_to_update = self.run.get_pokemon_by_id(pokemon_id)
             update_pokemon(pokemon_to_update, self.run.id)
 
+        self.update_run()
+
     def _get_all_relevant_steps(self, pokemon: Pokemon) -> List[str]:
         step_map: Dict[str, StepInfo] = {step.step_name: step for step in self.locke.steps(self.game.gen)}
         memo: Dict[str, Optional[bool]] = {}  # Memoize results

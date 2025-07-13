@@ -10,6 +10,7 @@ from core.steps.replace_party_pokemon import ReplacePartyPokemon
 from core.steps.nickname_pokemon_step import NicknamePokemonStep
 from core.steps.choose_gender_step import ChooseGenderStep
 from core.steps.evolve_pokemon_step import EvolvePokemonStep
+from core.steps.kill_pokemon_step import KillPokemonStep
 
 __all__ = [
     'AddToPartyStep',
@@ -18,4 +19,5 @@ __all__ = [
     'NicknamePokemonStep',
     'ChooseGenderStep',
     'EvolvePokemonStep',
+    'KillPokemonStep',
 ]

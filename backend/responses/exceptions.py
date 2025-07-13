@@ -1,0 +1,2 @@
+class BlackoutException(Exception):
+    pass

@@ -3,6 +3,7 @@
 from flask import Flask, jsonify, send_file, request
 from flask_cors import CORS
 from dotenv import load_dotenv
+from responses.exceptions import BlackoutException
 from apis.main import list_runs_api
 from apis.resources import get_pokemon_info, get_gym_leader_info, get_type_info
 from apis.run_creation import start_run_creation, continue_run_creation
@@ -42,6 +43,9 @@ def locke_route(path, *args, **kwargs):
             try:
                 result = f(*args, **kwargs)
                 return result
+            except BlackoutException:
+                print("Blackout happened")
+                return jsonify({"message": "blackout"}), 522
             except Exception as e:
                 status = getattr(e, "status_code", 500)
                 print(f"ERROR: {e}\n{traceback.format_exc()}")
