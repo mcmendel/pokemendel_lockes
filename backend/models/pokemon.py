@@ -4,10 +4,8 @@ from typing import List, Optional, TypeAlias, Dict
 from dataclasses import asdict
 from definitions.pokemons.pokemon import Pokemon as PokemonDef
 from definitions.pokemons.pokemon_metadata import PokemonMetadata
-from definitions.pokemons.pokemon_status import PokemonStatus
-from pokemendel_core.utils.definitions.genders import Genders
 from pokemendel_core.utils.definitions.types import Types
-from pokemendel_core.models.pokemon import Pokemon as CorePokemon
+from pokemendel_core.data import fetch_pokemon as fetch_static_pokemon
 from .db_helper import (
     insert_document,
     update_document_by_id,
@@ -51,12 +49,19 @@ def _db_dict_to_pokemon(data: dict) -> Pokemon:
             return Types(t)
         except Exception:
             return getattr(Types, t.upper())
+
+    core_pokemon = fetch_static_pokemon(data["name"], data["gen"])
     return Pokemon(
         name=data["name"],
         gen=data.get("gen", 1),
         types=[to_type_enum(t) for t in data.get("types", [])],
         metadata=metadata,
-        status=data["status"]
+        status=data["status"],
+        evolves_to=core_pokemon.evolves_to,
+        colors=core_pokemon.colors,
+        supported_genders=core_pokemon.supported_genders,
+        categories=core_pokemon.categories,
+        num_legs=core_pokemon.num_legs,
     )
 
 def save_pokemon(pokemon: Pokemon, run_id: str, collections: List[str] = None) -> None:

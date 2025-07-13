@@ -12,6 +12,7 @@ from core.steps import (
     ReplacePartyPokemon,
     NicknamePokemonStep,
     ChooseGenderStep,
+    EvolvePokemonStep,
 )
 from core.run import Run
 from pokemendel_core.utils.class_property import classproperty
@@ -68,6 +69,7 @@ class BaseLocke(Locke):
             StepInfo(StepsNames.ADD_TO_PARTY, prerequisites=prerequisites),
             StepInfo(StepsNames.REMOVE_FROM_PARTY, prerequisites=prerequisites),
             StepInfo(StepsNames.SWITCH_PARTY_POKEMONS, prerequisites=prerequisites),
+            StepInfo(StepsNames.EVOLVE, prerequisites=prerequisites),
         ]
         return mandatory_steps + optional_steps
 
@@ -94,6 +96,7 @@ class BaseLocke(Locke):
             StepsNames.SWITCH_PARTY_POKEMONS: ReplacePartyPokemon(),
             StepsNames.NICKNAME: NicknamePokemonStep(),
             StepsNames.GENDER: ChooseGenderStep(),
+            StepsNames.EVOLVE: EvolvePokemonStep(),
         }
 
     def catch_pokemon(self, pokemon: Pokemon, run: Run):
