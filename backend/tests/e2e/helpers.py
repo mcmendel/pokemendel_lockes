@@ -164,10 +164,11 @@ def save_run(client, run_id):
     saved_run = get_run(client, run_id)
 
 
-def assert_run(run_response, id, party_size, box_size, won_gyms, num_encounters, starter, num_restarts=0, finished=False):
+def assert_run(run_response, id, party_size, box_size, won_gyms, num_encounters, starter, num_restarts=0, finished=False, gen=1):
     run = run_response['run']
     assert run['id'] == id
     assert run['run_name'] == 'TestRun'
+    assert run['gen'] == gen
     assert len(run['party']) == party_size
     assert len(run['box']) == box_size
     assert len(run['gyms']) == won_gyms

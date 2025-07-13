@@ -48,6 +48,7 @@ class _Run:
     id: str
     run_name: str
     creation_date: datetime
+    gen: int
     party: List[_POKEMON_ID_TYPE]
     box: List[_POKEMON_ID_TYPE]
     gyms: List[_BattleResponse]
@@ -70,6 +71,7 @@ class RunResponse:
             id=run.id,
             run_name=run.run_name,
             creation_date=run.creation_date,
+            gen=run.gen,
             rules=locke.rules,
             main_battles=game.important_battles,
             party=[
