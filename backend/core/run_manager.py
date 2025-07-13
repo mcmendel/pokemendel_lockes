@@ -126,7 +126,6 @@ class RunManager:
         returned_steps = []
 
         for step_info in self.locke.steps(self.game.gen):
-            step = self.locke.steps_mapper[step_info.step_name]
             if prerequisites_are_finished(step_info):
                 if is_step_relevant(step_info):
                     returned_steps.append(step_info.step_name)
