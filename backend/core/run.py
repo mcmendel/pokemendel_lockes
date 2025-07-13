@@ -42,6 +42,7 @@ class Run:
     id: str
     run_name: str
     creation_date: datetime
+    gen: int
     party: Party
     box: Box
     battles: List[Battle] = field(default_factory=list)
@@ -133,7 +134,7 @@ class Run:
             name=self.run_name,
             locke=locke_name,
             game=game_name,
-            gen=gen,
+            gen=self.gen,
             randomized=is_randomize,
             party=[pokemon.metadata.id for pokemon in self.party.pokemons],
             box=[pokemon.metadata.id for pokemon in self.box.pokemons],
@@ -229,6 +230,7 @@ def convert_db_run_to_core_run(db_run: DbRun, run_id: str) -> Run:
         encounters=encounters,
         starter=starter,
         restarts=db_run.restarts,
-        finished=db_run.finished
+        finished=db_run.finished,
+        gen=db_run.gen,
     )
     return core_run

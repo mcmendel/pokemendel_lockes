@@ -48,6 +48,7 @@ class _Run:
     id: str
     run_name: str
     creation_date: datetime
+    gen: int
     party: List[_POKEMON_ID_TYPE]
     box: List[_POKEMON_ID_TYPE]
     gyms: List[_BattleResponse]
@@ -70,6 +71,7 @@ class RunResponse:
             id=run.id,
             run_name=run.run_name,
             creation_date=run.creation_date,
+            gen=run.gen,
             rules=locke.rules,
             main_battles=game.important_battles,
             party=[
@@ -86,9 +88,17 @@ class RunResponse:
             restarts=run.restarts,
             finished=run.finished,
         )
+        run_pokemons = run.get_run_pokemons()
+        for run_pokemon in run_pokemons.values():
+            serialized_evolutions = []
+            for evolution in run_pokemon.evolves_to:
+                evolution_dict = asdict(evolution)
+                evolution_dict['evolution_type'] = evolution.evolution_type.value
+                serialized_evolutions.append(evolution_dict)
+            run_pokemon.evolves_to = serialized_evolutions
         return cls(
             run=response_run,
-            pokemons=run.get_run_pokemons(),
+            pokemons=run_pokemons,
         )
 
     @classmethod

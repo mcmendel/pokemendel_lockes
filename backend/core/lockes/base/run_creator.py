@@ -152,6 +152,7 @@ class RunCreator:
         run_id = uuid4().hex
         print("Creating run id %s for locke %s" % (run_id, locke.name))
         self._populate_run_optional_pokemons(run_id=run_id, locke=locke)
+        gen = get_game(self.run_creation.game).gen
         
         # Create a new run with empty party and box
         return Run(
@@ -159,7 +160,8 @@ class RunCreator:
             run_name=self.run_creation.name,
             creation_date=datetime.now(),
             party=Party(pokemons=[]),
-            box=Box(pokemons=[])
+            box=Box(pokemons=[]),
+            gen=gen,
         )
 
     def _populate_run_optional_pokemons(self, run_id: str, locke: BaseLocke):
