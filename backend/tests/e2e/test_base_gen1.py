@@ -61,7 +61,7 @@ def _choose_starter(client_fixture, run_id):
         nickname="Sandra",
     )
     next_actions = get_next_actions(client_fixture, run_id, starter_id)
-    assert next_actions == ['Evolve Pokemon']
+    assert next_actions == ['Evolve Pokemon', "Kill Pokemon"]
 
 
 def _create_run(client_fixture):
@@ -114,7 +114,7 @@ def _catch_pokemon1(client_fixture, run_id):
         nickname="Lilly",
     )
     next_actions = get_next_actions(client_fixture, run_id, encounter_id)
-    assert next_actions == ["Remove from Party", "Evolve Pokemon"]
+    assert next_actions == ["Remove from Party", "Evolve Pokemon", "Kill Pokemon"]
 
 
 def _handle_caught_pokemon(client, run_response: dict, run_id: str, num_box: int, num_party: int, pokemon_id: str, pokemon_name: str, is_pokemon_in_party: bool, nickname: str):

@@ -370,7 +370,9 @@ const lockeApi = {
         });
 
         if (!response.ok) {
-            throw new Error(`Failed to execute pokemon action: ${response.statusText}`);
+            const error = new Error(`Failed to execute pokemon action: ${response.statusText}`);
+            (error as any).status = response.status;
+            throw error;
         }
 
         const data: StatusResponse = await response.json();
