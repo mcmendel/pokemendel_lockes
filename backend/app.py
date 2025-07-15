@@ -45,7 +45,7 @@ def locke_route(path, *args, **kwargs):
                 return result
             except BlackoutException:
                 print("Blackout happened")
-                return jsonify({"message": "blackout"}), 522
+                return jsonify({"status": "error", "message": "blackout"}), 522
             except Exception as e:
                 status = getattr(e, "status_code", 500)
                 print(f"ERROR: {e}\n{traceback.format_exc()}")

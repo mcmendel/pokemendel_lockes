@@ -46,6 +46,7 @@ function RunComponent() {
   const [actionInputOptions, setActionInputOptions] = useState<string[]>([]);
   const [actionInputText, setActionInputText] = useState<string>('');
   const [loadingActionInfo, setLoadingActionInfo] = useState(false);
+  const [isBlackoutDialogOpen, setIsBlackoutDialogOpen] = useState(false);
   const [snackbar, setSnackbar] = useState<{ open: boolean; message: string; severity: 'success' | 'error' }>({
     open: false,
     message: '',
@@ -230,6 +231,8 @@ function RunComponent() {
       if (actionInfo.input_type === 'Nothing') {
         // Execute action immediately with empty string value
         await executeAction(action, '');
+        // Close the Pokemon actions popup after successful execution
+        handlePokemonActionsDialogClose();
       } else {
         // Show input dialog for "Free text" or "One of"
         setIsActionInputDialogOpen(true);
@@ -263,13 +266,19 @@ function RunComponent() {
           severity: 'success'
         });
       }
-    } catch (error) {
+    } catch (error: any) {
       console.error('Error executing action:', error);
-      setSnackbar({
-        open: true,
-        message: `Failed to execute action: ${error instanceof Error ? error.message : 'Unknown error'}`,
-        severity: 'error'
-      });
+      
+      // Check if it's a 522 status code (blackout)
+      if (error.status === 522) {
+        setIsBlackoutDialogOpen(true);
+      } else {
+        setSnackbar({
+          open: true,
+          message: `Failed to execute action: ${error instanceof Error ? error.message : 'Unknown error'}`,
+          severity: 'error'
+        });
+      }
     }
   };
 
@@ -290,6 +299,16 @@ function RunComponent() {
     // Close dialogs
     handleActionInputDialogClose();
     handlePokemonActionsDialogClose();
+  };
+
+  const handleBlackoutDialogClose = () => {
+    setIsBlackoutDialogOpen(false);
+  };
+
+  const handleBlackoutContinue = async () => {
+    handleBlackoutDialogClose();
+    // Call the same logic as the Load button
+    await handleLoad();
   };
 
   const handleGymClick = (leader: string) => {
@@ -605,6 +624,26 @@ function RunComponent() {
               Submit
             </Button>
           ) : null}
+        </DialogActions>
+      </Dialog>
+
+      <Dialog
+        open={isBlackoutDialogOpen}
+        onClose={handleBlackoutDialogClose}
+        aria-labelledby="blackout-dialog-title"
+      >
+        <DialogTitle id="blackout-dialog-title">
+          Blackout
+        </DialogTitle>
+        <DialogContent>
+          <Typography>
+            Blackout happened. You need to load from last save
+          </Typography>
+        </DialogContent>
+        <DialogActions>
+          <Button onClick={handleBlackoutContinue} color="primary" variant="contained">
+            Continue
+          </Button>
         </DialogActions>
       </Dialog>
 
