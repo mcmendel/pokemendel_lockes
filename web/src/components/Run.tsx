@@ -5,6 +5,7 @@ import SaveIcon from '@mui/icons-material/Save';
 import UploadIcon from '@mui/icons-material/Upload';
 import FlagIcon from '@mui/icons-material/Flag';
 import Party from './Party';
+import Starter from './Starter';
 import Encounters from './Encounters';
 import Tabs from './Tabs';
 import Rules from './Rules';
@@ -350,6 +351,12 @@ function RunComponent() {
     }
   };
 
+  // Helper function to get starter Pokemon data
+  const getStarterPokemon = (): Pokemon | null => {
+    if (!runData || !runData.run.starter) return null;
+    return runData.pokemons[runData.run.starter] || null;
+  };
+
   // Helper function to transform party data
   const getPartyPokemons = (): Array<Pokemon | null> => {
     if (!runData) return Array(6).fill(null);
@@ -431,6 +438,10 @@ function RunComponent() {
           <div className="run-content">
             <Party 
               pokemons={getPartyPokemons()}
+              onPokemonClick={handlePokemonClick}
+            />
+            <Starter 
+              starter={getStarterPokemon()}
               onPokemonClick={handlePokemonClick}
             />
             <Encounters 
