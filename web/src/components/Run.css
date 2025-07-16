@@ -20,6 +20,7 @@
   margin-bottom: 20px;
   width: 100%;
   box-sizing: border-box;
+  align-items: flex-start;
 }
 
 .run-main-content {
