@@ -1,5 +1,6 @@
-from models.run import fetch_run, update_run as update_run_db, _COLLECTIONS_SAVE_NAME
-from models.pokemon import backup_pokemons, restore_pokemons
+from models.run import fetch_run, update_run as update_run_db, _COLLECTIONS_SAVE_NAME, Run
+from models.pokemon import backup_pokemons, restore_pokemons, fetch_pokemon
+from models.run_pokemons_options import unmark_caught_pokemon
 from responses.run import RunResponse
 from core.run import convert_db_run_to_core_run
 from core.lockes import LOCKE_INSTANCES
@@ -38,6 +39,8 @@ def save_run(run_id) -> None:
 def load_run(run_id) -> RunResponse:
     print("Loading run %s" % run_id)
     db_run_to_load = fetch_run(run_id, _COLLECTIONS_SAVE_NAME)
+    pre_load_run = fetch_run(run_id)
+    _restore_pokemon_options(pre_load_run=pre_load_run, post_load_run=db_run_to_load)
     restore_pokemons(run_id)
     db_run_to_load.restarts += 1
     update_run_db(db_run_to_load)
@@ -46,6 +49,13 @@ def load_run(run_id) -> RunResponse:
     game = get_game(db_run_to_load.game)
     response_run = RunResponse.from_core_run(core_run, game)
     return response_run
+
+
+def _restore_pokemon_options(pre_load_run: Run, post_load_run: Run):
+    newly_caught_pokemons = set(pre_load_run.box) - set(post_load_run.box)
+    for pokemon_id in newly_caught_pokemons:
+        pokemon = fetch_pokemon(pokemon_id)
+        unmark_caught_pokemon(pre_load_run.run_id, pokemon.name)
 
 
 def finish_run(run_id: str) -> RunResponse:
