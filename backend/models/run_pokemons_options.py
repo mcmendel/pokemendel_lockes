@@ -150,3 +150,14 @@ def mark_caught_pokemon(run_id: str, pokemon_name: str):
     for pokemon_same_base in list_runs_options_by_query(run_id, {'base_pokemon': pokemon_base}):
         pokemon_same_base.caught = True
         save_run_options(pokemon_same_base, create=False)
+
+
+def unmark_caught_pokemon(run_id: str, pokemon_name: str):
+    pokemon_options = list_runs_options_by_query(
+        run_id, {'_id': RunPokemonsOptions.generate_id(run_id, pokemon_name)}
+    )
+    assert len(pokemon_options) == 1
+    pokemon_base = pokemon_options[0].base_pokemon
+    for pokemon_same_base in list_runs_options_by_query(run_id, {'base_pokemon': pokemon_base}):
+        pokemon_same_base.caught = False
+        save_run_options(pokemon_same_base, create=False)
