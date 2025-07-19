@@ -47,7 +47,8 @@ def load_run(run_id) -> RunResponse:
     update_run_db(db_run_to_load, _COLLECTIONS_SAVE_NAME)
     core_run = convert_db_run_to_core_run(db_run_to_load, run_id)
     game = get_game(db_run_to_load.game)
-    response_run = RunResponse.from_core_run(core_run, game)
+    locke = LOCKE_INSTANCES[db_run_to_load.locke]
+    response_run = RunResponse.from_core_run(core_run, game, locke)
     return response_run
 
 

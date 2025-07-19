@@ -62,6 +62,6 @@ class RemoveFromPartyStep(StepInterface):
         Raises:
             AssertionError: If value is not None
         """
-        assert value is None, "Value is not expected when removing pokemon from party"
+        assert not value, "Value is not expected when removing pokemon from party"
         run.party.remove_pokemon(pokemon)
         return ExecutionReturnValue(pokemons_to_update=[])

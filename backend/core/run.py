@@ -128,6 +128,9 @@ class Run:
         self.restarts += 1
 
     def to_db_run(self, gen: int, locke_name: str, game_name: str, is_randomize: bool, duplicate_clause: bool, extra_info: dict) -> DbRun:
+        game = get_game(game_name)
+        won_battles = {battle.rival: battle.won for battle in self.battles}
+        battles = [{'rival': gym.leader, 'won': won_battles.get(gym.leader, False)} for gym in game.gyms] + [{'rival': gym.leader, 'won': won_battles.get(gym.leader, False)} for gym in game.elite4]
         db_run = DbRun(
             run_id=self.id,
             created_date=self.creation_date,
@@ -138,7 +141,7 @@ class Run:
             randomized=is_randomize,
             party=[pokemon.metadata.id for pokemon in self.party.pokemons],
             box=[pokemon.metadata.id for pokemon in self.box.pokemons],
-            battles=[],  # Empty array as battles are added during run progress
+            battles=battles,
             encounters=list(self._convert_encounters_to_persist()),
             locke_extra_info=extra_info,
             restarts=self.restarts,
