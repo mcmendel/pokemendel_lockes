@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from "react";
-import { useParams } from "react-router-dom";
+import { useParams, Navigate } from "react-router-dom";
 import lockeApi, { RunResponse, Pokemon, StatusResponse } from "../api/lockeApi";
 import SaveIcon from '@mui/icons-material/Save';
 import UploadIcon from '@mui/icons-material/Upload';
@@ -379,6 +379,11 @@ function RunComponent() {
   if (!runId) return <p>Error: No run ID provided</p>;
   if (error) return <p>Error: {error}</p>;
   if (!runData) return <p>Loading…</p>;
+  
+  // Redirect to celebration page if run is finished
+  if (runData.run.finished) {
+    return <Navigate to={`/locke_manager/celebration/${runId}`} replace />;
+  }
 
   console.log('Current run data:', runData);
   console.log('Current run starter:', runData.run.starter);

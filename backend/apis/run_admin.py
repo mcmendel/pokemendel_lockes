@@ -77,6 +77,7 @@ def finish_run(run_id: str) -> RunResponse:
     save_run(run_id)
     core_run = convert_db_run_to_core_run(db_run, run_id)
     game = get_game(db_run.game)
-    response_run = RunResponse.from_core_run(core_run, game)
+    locke = LOCKE_INSTANCES[db_run.locke]
+    response_run = RunResponse.from_core_run(core_run, game, locke)
     return response_run
 

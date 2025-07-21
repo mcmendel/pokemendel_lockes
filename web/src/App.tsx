@@ -4,6 +4,7 @@ import HomePage from './components/HomePage';
 import NewRunPage from './components/NewRunPage';
 import RunConfiguration from './components/RunConfiguration';
 import Run from './components/Run';
+import Celebration from './components/Celebration';
 import Layout from './components/Layout';
 import './App.css';
 
@@ -16,6 +17,7 @@ function App() {
           <Route path="/locke_manager/new" element={<NewRunPage />} />
           <Route path="/new/:runName" element={<RunConfiguration />} />
           <Route path="/locke_manager/run/:runId" element={<Run />} />
+          <Route path="/locke_manager/celebration/:runId" element={<Celebration />} />
           <Route path="*" element={<Navigate to="/locke_manager" replace />} />
         </Routes>
       </Layout>
