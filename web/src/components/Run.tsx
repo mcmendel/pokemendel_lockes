@@ -596,31 +596,52 @@ function RunComponent() {
           ) : actionInputType === 'One of' ? (
             <Box sx={{ mt: 2 }}>
               <Typography variant="body2" sx={{ mb: 2 }}>
-                Select an option:
+                Select a Pokemon:
               </Typography>
               <List>
-                {actionInputOptions.map((option, index) => (
-                  <ListItem 
-                    key={index} 
-                    button 
-                    onClick={() => setActionInputText(option)}
-                    selected={actionInputText === option}
-                    sx={{ 
-                      border: '1px solid #e0e0e0', 
-                      borderRadius: 1, 
-                      mb: 1,
-                      '&:hover': {
-                        backgroundColor: '#f5f5f5'
-                      },
-                      '&.Mui-selected': {
-                        backgroundColor: '#e3f2fd',
-                        borderColor: '#1976d2'
-                      }
-                    }}
-                  >
-                    <ListItemText primary={option} />
-                  </ListItem>
-                ))}
+                {actionInputOptions.map((pokemonId, index) => {
+                  const pokemon = runData?.pokemons[pokemonId];
+                  return (
+                    <ListItem 
+                      key={index} 
+                      button 
+                      onClick={() => setActionInputText(pokemonId)}
+                      selected={actionInputText === pokemonId}
+                      sx={{ 
+                        border: '1px solid #e0e0e0', 
+                        borderRadius: 1, 
+                        mb: 1,
+                        '&:hover': {
+                          backgroundColor: '#f5f5f5'
+                        },
+                        '&.Mui-selected': {
+                          backgroundColor: '#e3f2fd',
+                          borderColor: '#1976d2'
+                        }
+                      }}
+                    >
+                      <Box sx={{ display: 'flex', alignItems: 'center', gap: 2, width: '100%' }}>
+                        <img 
+                          src={lockeApi.getPokemonImageUrl(pokemon?.name || pokemonId)}
+                          alt={pokemon?.name || pokemonId}
+                          style={{ 
+                            width: '40px', 
+                            height: '40px', 
+                            objectFit: 'contain' 
+                          }}
+                          onError={(e) => {
+                            const target = e.target as HTMLImageElement;
+                            target.src = `https://placehold.co/40x40/1976d2/ffffff?text=${pokemon?.name || pokemonId}`;
+                          }}
+                        />
+                        <ListItemText 
+                          primary={pokemon?.name || pokemonId}
+                          secondary={pokemon?.metadata?.nickname ? `"${pokemon.metadata.nickname}"` : undefined}
+                        />
+                      </Box>
+                    </ListItem>
+                  );
+                })}
               </List>
             </Box>
           ) : null}
