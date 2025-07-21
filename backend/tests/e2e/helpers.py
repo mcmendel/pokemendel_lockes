@@ -107,7 +107,7 @@ def get_run_potential_encounters(client, run_id, route, expected_num_pokemons):
     response = client.get(url)
     assert response.status_code == 200
     potential_encounters = response.get_json()
-    assert len(potential_encounters) == expected_num_pokemons
+    assert len(potential_encounters) == expected_num_pokemons, f"{expected_num_pokemons} != {len(potential_encounters)}"
     return potential_encounters
 
 
@@ -162,6 +162,21 @@ def save_run(client, run_id):
     response = client.post('/locke_manager/run/' + run_id + '/save')
     assert response.status_code == 200
     saved_run = get_run(client, run_id)
+    return saved_run
+
+
+def load_run(client, run_id):
+    response = client.post('/locke_manager/run/' + run_id + '/load')
+    assert response.status_code == 200
+    loaded_run = get_run(client, run_id)
+    return loaded_run
+
+
+def win_battle(client, run_id, leader):
+    response = client.post('/locke_manager/run/' + run_id + '/battle/' + leader)
+    assert response.status_code == 200
+    run_response = get_run(client, run_id)
+    assert next(gym for gym in run_response['run']['gyms'] if gym['leader'] == leader)['won']
 
 
 def assert_run(run_response, id, party_size, box_size, won_gyms, num_encounters, starter, num_restarts=0, finished=False, gen=1):

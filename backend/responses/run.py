@@ -94,6 +94,8 @@ class RunResponse:
             for evolution in run_pokemon.evolves_to:
                 evolution_dict = asdict(evolution)
                 evolution_dict['evolution_type'] = evolution.evolution_type.value
+                if evolution.item:
+                    evolution_dict['item'] = evolution.item.value
                 serialized_evolutions.append(evolution_dict)
             run_pokemon.evolves_to = serialized_evolutions
         return cls(
@@ -112,12 +114,9 @@ class RunResponse:
     @classmethod
     def _convert_gyms(cls, run: CoreRun, game: Game) -> List[_BattleResponse]:
         won_battles = {battle.rival: battle.won for battle in run.battles}
-        if len(won_battles) < len(game.gyms):
-            return [
-                _BattleResponse(leader=gym.leader, won=won_battles.get(gym.leader, False)) for gym in game.gyms
-            ]
-
         return [
+            _BattleResponse(leader=gym.leader, won=won_battles.get(gym.leader, False)) for gym in game.gyms
+        ] + [
             _BattleResponse(leader=gym.leader, won=won_battles.get(gym.leader, False)) for gym in game.elite4
         ]
 

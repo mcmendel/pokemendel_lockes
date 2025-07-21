@@ -218,7 +218,7 @@ class _BaseGame(Game):
 BLUE = _BaseGame(
     name="Blue",
     encounters={
-        "Pallet Town": {"Poliwag", "Tentacool", "Goldeen", "Magikarp"},
+        "Pallet Town": {"Poliwag", "Tentacool", "Goldeen", "Magikarp", "Tangela"},
         "Viridian City": {"Poliwag", "Tentacool", "Goldeen", "Magikarp"},
         "Viridian Forest": {"Caterpie", "Metapod", "Weedle", "Kakuna", "Pikachu"},
         "Pewter City": {"Aerodactyl"},
