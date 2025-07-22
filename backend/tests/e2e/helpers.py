@@ -179,6 +179,13 @@ def win_battle(client, run_id, leader):
     assert next(gym for gym in run_response['run']['gyms'] if gym['leader'] == leader)['won']
 
 
+def finish_run(client, run_id):
+    response = client.post('/locke_manager/run/' + run_id + '/finish')
+    assert response.status_code == 200
+    run_response = get_run(client, run_id)
+    assert run_response['run']['finished']
+
+
 def assert_run(run_response, id, party_size, box_size, won_gyms, num_encounters, starter, num_restarts=0, finished=False, gen=1):
     run = run_response['run']
     assert run['id'] == id

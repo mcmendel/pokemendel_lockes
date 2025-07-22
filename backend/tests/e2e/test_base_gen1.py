@@ -19,6 +19,7 @@ from tests.e2e.helpers import (
     get_action_options,
     execute_action,
     win_battle,
+    finish_run,
     assert_run,
     assert_saved_run,
     assert_run_potential_pokemons,
@@ -136,6 +137,7 @@ def test_base_gen1(client_fixture):
     win_battle(client_fixture, run_id, 'Bruno')
     win_battle(client_fixture, run_id, 'Agatha')
     win_battle(client_fixture, run_id, 'Lance')
+    finish_run(client_fixture, run_id)
 
     print("TEST Finished")
 
