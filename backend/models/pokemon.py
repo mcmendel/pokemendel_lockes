@@ -5,6 +5,7 @@ from dataclasses import asdict
 from definitions.pokemons.pokemon import Pokemon as PokemonDef
 from definitions.pokemons.pokemon_metadata import PokemonMetadata
 from pokemendel_core.utils.definitions.types import Types
+from pokemendel_core.utils.definitions.genders import Genders
 from pokemendel_core.data import fetch_pokemon as fetch_static_pokemon
 from .db_helper import (
     insert_document,
@@ -59,7 +60,7 @@ def _db_dict_to_pokemon(data: dict) -> Pokemon:
         status=data["status"],
         evolves_to=core_pokemon.evolves_to,
         colors=core_pokemon.colors,
-        supported_genders=core_pokemon.supported_genders,
+        supported_genders=core_pokemon.supported_genders or [Genders.MALE, Genders.FEMALE],
         categories=core_pokemon.categories,
         num_legs=core_pokemon.num_legs,
     )
