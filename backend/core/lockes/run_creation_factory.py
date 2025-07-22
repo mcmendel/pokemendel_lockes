@@ -7,6 +7,8 @@ classes, defaulting to the base RunCreator if no specific implementation exists.
 
 from typing import Type
 from core.lockes.base.run_creator import RunCreator
+from core.lockes.mono.mono_locke import MonoLocke
+from core.lockes.mono.run_creator import MonoRunCreator
 
 
 def get_run_creator_class(locke_name: str) -> Type[RunCreator]:
@@ -25,4 +27,6 @@ def get_run_creator_class(locke_name: str) -> Type[RunCreator]:
     """
     # TODO: Add specific implementations for different locke types
     # For now, all lockes use the base implementation
+    if locke_name == MonoLocke.name:
+        return MonoRunCreator
     return RunCreator 

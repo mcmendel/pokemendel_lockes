@@ -1,0 +1,28 @@
+from typing import List, Set
+from models.run_pokemons_options import RunPokemonsOptions, save_run_options
+from pokemendel_core.data import fetch_pokemon
+from core.lockes.base.base_locke import BaseLocke
+from games import get_game
+from pokemendel_core.utils.definitions.types import get_generation_types
+from core.lockes.base.run_creator import RunCreationProgress, RunCreator
+
+
+MONO_TYPE_KEY = "mono_type"
+
+
+class MonoRunCreator(RunCreator):
+
+    def _get_creation_missing_extra_info(self) -> RunCreationProgress:
+        """Get any additional information needed for run creation.
+        
+        This method should be overridden by concrete implementations to handle
+        their specific requirements.
+        
+        Returns:
+            RunCreationProgress indicating what additional information is needed
+        """
+        if MONO_TYPE_KEY in self.run_creation.extra_info:
+            return RunCreationProgress(run_creation=self.run_creation, has_all_info=True)
+        game = get_game(self.run_creation.game)
+        generation_types = get_generation_types(game.gen)
+        return RunCreationProgress(run_creation=self.run_creation, has_all_info=False, missing_key=MONO_TYPE_KEY, missing_key_options=generation_types)
