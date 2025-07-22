@@ -1,4 +1,17 @@
 from pokemendel_core.data.gen1 import PokemonGen1
+from pokemendel_core.data.gen2 import PokemonGen2
+from tests.e2e.gen1_helpers import (
+    GAME_NAME as GEN1_GAME_NAME,
+    NUM_POKEMONS as GEN1_NUM_POKEMONS,
+    NUM_ENCOUNTERS as GEN1_NUM_ENCOUNTERS,
+    STARTERS as GEN1_STARTERS,
+)
+from tests.e2e.gen2_helpers import (
+    GAME_NAME as GEN2_GAME_NAME,
+    NUM_POKEMONS as GEN2_NUM_POKEMONS,
+    NUM_ENCOUNTERS as GEN2_NUM_ENCOUNTERS,
+    STARTERS as GEN2_STARTERS,
+)
 from tests.e2e.helpers import (
     client_fixture,
     list_runs,
@@ -36,8 +49,15 @@ BLUE_NUM_ENCOUNTER = 93
 def test_base_gen1(client_fixture):
     """Test that the list_runs endpoint works with e2e_ prefixed collections."""
     # ==== CREATE RUN ====
-    run_id = _create_run(client_fixture)
-    starter_id = _choose_starter(client_fixture, run_id)
+    run_id = _create_run(client_fixture, GEN1_GAME_NAME, GEN1_NUM_POKEMONS, gen=1, num_gyms=12, num_encounters=GEN1_NUM_ENCOUNTERS)
+    starter_id = _choose_starter(
+        client_fixture,
+        run_id,
+        expected_starter_options=GEN1_STARTERS,
+        starter_name=PokemonGen1.CHARMANDER,
+        num_encounters=GEN1_NUM_ENCOUNTERS,
+        nickname="Sandra",
+    )
     caterpie_id = _catch_pokemon1(client_fixture, run_id)
     evolve_pokemon(client_fixture, run_id, caterpie_id, PokemonGen1.METAPOD, "Lilly")
     save_run(client_fixture, run_id)
@@ -142,11 +162,26 @@ def test_base_gen1(client_fixture):
     print("TEST Finished")
 
 
-def _choose_starter(client_fixture, run_id):
+def test_base_gen2(client_fixture):
+    run_id = _create_run(client_fixture, GEN2_GAME_NAME, GEN2_NUM_POKEMONS, gen=2, num_gyms=13, num_encounters=GEN2_NUM_ENCOUNTERS)
+    starter_id = _choose_starter(
+        client_fixture,
+        run_id,
+        expected_starter_options=GEN2_STARTERS,
+        starter_name=PokemonGen2.TOTODILE,
+        num_encounters=GEN2_NUM_ENCOUNTERS - 1,
+        nickname="Tommy",
+        gender="Male",
+    )
+    rattata_id = _catch_pokemon1_gen2(client_fixture, run_id)
+
+
+def _choose_starter(client_fixture, run_id, expected_starter_options, starter_name, num_encounters, nickname, gender=None):
     starter_options = get_starter_options(client_fixture, run_id)
-    assert set(starter_options) == {'Bulbasaur', 'Charmander', 'Squirtle'}
-    choose_starter(client_fixture, run_id, PokemonGen1.CHARMANDER, PokemonGen1.CHARMANDER)
-    get_run_potential_encounters(client_fixture, run_id, None, BLUE_NUM_ENCOUNTER)
+    assert set(starter_options) == expected_starter_options
+    assert starter_name in starter_options
+    choose_starter(client_fixture, run_id, starter_name, starter_name)
+    get_run_potential_encounters(client_fixture, run_id, None, num_encounters)
     run_response = get_run(client_fixture, run_id)
     run = run_response['run']
     assert run['starter']
@@ -158,39 +193,49 @@ def _choose_starter(client_fixture, run_id):
         num_box=1,
         num_party=1,
         pokemon_id=run['starter'],
-        pokemon_name=PokemonGen1.CHARMANDER,
+        pokemon_name=starter_name,
         is_pokemon_in_party=True,
-        nickname="Sandra",
+        nickname=nickname,
     )
     next_actions = get_next_actions(client_fixture, run_id, starter_id)
+    if gender:
+        assert next_actions == ["Gender"]
+        gender_options = get_action_options(client_fixture, run_id, starter_id, "Gender")
+        assert gender_options["input_type"] == "One of"
+        assert gender in gender_options["input_options"]
+        execute_action(client_fixture, run_id, starter_id, "Gender", gender)
+        next_actions = get_next_actions(client_fixture, run_id, starter_id)
+
     assert next_actions == ['Evolve Pokemon', "Kill Pokemon"]
     return starter_id
 
 
-def _create_run(client_fixture):
+def _create_run(client_fixture, game_name, num_pokemons, gen, num_gyms, num_encounters):
     list_runs(client_fixture, None)
     list_lockes(client_fixture, TEST_LOCKE)
-    start_locke_creation(client_fixture, TEST_LOCKE, TEST_GAME, True, False)
-    continue_locke_creation_not_finished(client_fixture, None, None, 'GAME', TEST_GAME)
-    run_id = continue_locke_creation_finished(client_fixture, 'GAME', TEST_GAME)
-    assert_run_potential_pokemons(run_id, 151)
+    start_locke_creation(client_fixture, TEST_LOCKE, game_name, True, False)
+    continue_locke_creation_not_finished(client_fixture, None, None, 'GAME', game_name)
+    run_id = continue_locke_creation_finished(client_fixture, 'GAME', game_name)
+    assert_run_potential_pokemons(run_id, num_pokemons)
     run_response = get_run(client_fixture, run_id)
     assert_run(
         run_response=run_response,
         id=run_id,
         party_size=0,
         box_size=0,
-        won_gyms=12,
+        won_gyms=num_gyms,
         num_encounters=0,
-        starter=None
+        starter=None,
+        gen=gen,
     )
     assert_saved_run(run_id, 0, 0, 0, 0, None)
 
-    get_run_supported_pokemons(client_fixture, run_id, 151)
-    get_run_potential_encounters(client_fixture, run_id, None, BLUE_NUM_ENCOUNTER)
+    get_run_supported_pokemons(client_fixture, run_id, num_pokemons)
+    get_run_potential_encounters(client_fixture, run_id, None, num_encounters)
     return run_id
 
 
+# Gen 1
 def _catch_pokemon1(client_fixture, run_id):
     potential_encounters = get_run_potential_encounters(client_fixture, run_id, "Route 2", 3)
     assert PokemonGen1.CATERPIE in potential_encounters
@@ -464,7 +509,41 @@ def _kill_pokemon(client_fixture, run_id, pokemon_id, num_party, num_box):
     assert len(run_response['run']['box']) == num_box
 
 
-def _handle_caught_pokemon(client, run_response: dict, run_id: str, num_box: int, num_party: int, pokemon_id: str, pokemon_name: str, is_pokemon_in_party: bool, nickname: str):
+# GEN 2
+def _catch_pokemon1_gen2(client_fixture, run_id):
+    route = "Route 29"
+    caught_pokemon = PokemonGen2.RATTATA
+    potential_encounters = get_run_potential_encounters(client_fixture, run_id, "Route 29", 17)
+    assert caught_pokemon in potential_encounters
+    assert PokemonGen2.PIKACHU not in potential_encounters
+    encounter_pokemon(client_fixture, run_id, "Route 29", caught_pokemon)
+    run_response = get_run(client_fixture, run_id)
+    assert len(run_response['run']['box']) == 1
+    encounter = next(encounter for encounter in run_response['run']['encounters'] if encounter['route'] == route)
+    assert encounter['pokemon'] == caught_pokemon
+    assert encounter['status'] == "Met"
+    update_encounter(client_fixture, run_id, route, "Caught")
+    run_response = get_run(client_fixture, run_id)
+    encounter = next(encounter for encounter in run_response['run']['encounters'] if encounter['route'] == route)
+    encounter_id = encounter['pokemon']
+    _handle_caught_pokemon(
+        client=client_fixture,
+        run_response=run_response,
+        run_id=run_id,
+        num_box=2,
+        num_party=2,
+        pokemon_id=encounter_id,
+        pokemon_name=caught_pokemon,
+        is_pokemon_in_party=True,
+        nickname="Dean",
+        gender="Female",
+    )
+    next_actions = get_next_actions(client_fixture, run_id, encounter_id)
+    assert next_actions == ["Remove from Party", "Evolve Pokemon", "Kill Pokemon"]
+    return encounter_id
+
+
+def _handle_caught_pokemon(client, run_response: dict, run_id: str, num_box: int, num_party: int, pokemon_id: str, pokemon_name: str, is_pokemon_in_party: bool, nickname: str, gender: str = None):
     assert len(run_response['run']['box']) == num_box
     assert len(run_response['run']['party']) == num_party
     assert pokemon_id in run_response['run']['box']
@@ -491,14 +570,31 @@ def _handle_caught_pokemon(client, run_response: dict, run_id: str, num_box: int
         nickname=nickname,
     )
 
+    if gender:
+        next_actions = get_next_actions(client, run_id, pokemon_id)
+        assert next_actions == ["Gender"]
+        gender_options = get_action_options(client, run_id, pokemon_id, "Gender")
+        assert gender_options["input_type"] == "One of"
+        assert gender in gender_options["input_options"]
+        execute_action(client, run_id, pokemon_id, "Gender", gender)
+        run_response = get_run(client, run_id)
+        assert_pokemon(
+            run_response=run_response,
+            pokemon_id=pokemon_id,
+            pokemon_name=pokemon_name,
+            nickname=nickname,
+            gender=gender,
+        )
 
-def assert_pokemon(run_response: dict, pokemon_id: str, pokemon_name: str, nickname: str = ''):
+
+def assert_pokemon(run_response: dict, pokemon_id: str, pokemon_name: str, nickname: str = '', gender: str = None):
     assert pokemon_id in run_response['pokemons']
     run_pokemon = run_response['pokemons'][pokemon_id]
     assert run_pokemon['name'] == pokemon_name
     assert run_pokemon['metadata']['id'] == pokemon_id
     assert run_pokemon['metadata']['nickname'] == nickname
     assert run_pokemon['status'] == 'alive'
+    assert run_pokemon['metadata']['gender'] == gender
 
 
 def evolve_pokemon(client, run_id, pokemon_id, evolution_name, nickname):
