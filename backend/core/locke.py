@@ -50,9 +50,8 @@ class Locke(ABC):
         """
         pass
 
-    @classproperty
     @abstractmethod
-    def rules(cls) -> List[str]:
+    def rules(self) -> List[str]:
         """Get the list of rules for this Locke challenge.
         Returns:
             List[str]: A list of rules that must be followed

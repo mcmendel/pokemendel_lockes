@@ -5,11 +5,13 @@ This module provides the core functionality for different types of Pokemon game 
 
 from core.lockes.run_creation_factory import get_run_creator_class
 from core.lockes.base.base_locke import BaseLocke
+from core.lockes.mono.mono_locke import MonoLocke
 from typing import List
 
 # Dictionary mapping locke names to their instances
 LOCKE_INSTANCES = {
     BaseLocke.name: BaseLocke(),
+    MonoLocke.name: MonoLocke(),
     # TODO: Add more locke instances as they are implemented
     # Example:
     # Nuzlocke.name: Nuzlocke(),

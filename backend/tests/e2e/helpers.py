@@ -227,3 +227,13 @@ def assert_saved_run(run_id, party_size, box_size, won_battles, num_encounters, 
 def assert_run_potential_pokemons(run_id: str, expected_num_pokemons: int):
     db_runs = list(fetch_documents_by_query("locke_manager", "runs_pokemons_options", {"run_id": run_id}))
     assert len(db_runs) == expected_num_pokemons
+
+
+def assert_pokemon(run_response: dict, pokemon_id: str, pokemon_name: str, nickname: str = '', gender: str = None):
+    assert pokemon_id in run_response['pokemons']
+    run_pokemon = run_response['pokemons'][pokemon_id]
+    assert run_pokemon['name'] == pokemon_name
+    assert run_pokemon['metadata']['id'] == pokemon_id
+    assert run_pokemon['metadata']['nickname'] == nickname
+    assert run_pokemon['status'] == 'alive'
+    assert run_pokemon['metadata']['gender'] == gender
