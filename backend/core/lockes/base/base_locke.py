@@ -103,5 +103,5 @@ class BaseLocke(Locke):
 
     def catch_pokemon(self, pokemon: Pokemon, run: Run):
         run.box.add_pokemon(pokemon)
-        if not run.party.is_party_full():
+        if self.auto_add_to_party and not run.party.is_party_full():
             run.party.add_pokemon(pokemon)

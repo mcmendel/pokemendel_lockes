@@ -31,6 +31,7 @@ class Locke(ABC):
     Cannot be instantiated directly. Subclasses must implement _mandatory_steps.
     """
     extra_info: Optional[Dict[str, Any]] = None
+    auto_add_to_party: bool = True
 
     @classproperty
     @abstractmethod
