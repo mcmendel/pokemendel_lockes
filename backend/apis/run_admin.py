@@ -25,6 +25,7 @@ def get_run_api(run_id: str) -> RunResponse:
     core_run = convert_db_run_to_core_run(db_run, run_id)
     game = get_game(db_run.game)
     locke = LOCKE_INSTANCES[db_run.locke]
+    locke.extra_info = db_run.locke_extra_info
     response_run = RunResponse.from_core_run(core_run, game, locke)
     return response_run
 
@@ -48,6 +49,7 @@ def load_run(run_id) -> RunResponse:
     core_run = convert_db_run_to_core_run(db_run_to_load, run_id)
     game = get_game(db_run_to_load.game)
     locke = LOCKE_INSTANCES[db_run_to_load.locke]
+    locke.extra_info = db_run_to_load.locke_extra_info
     response_run = RunResponse.from_core_run(core_run, game, locke)
     return response_run
 
@@ -78,6 +80,7 @@ def finish_run(run_id: str) -> RunResponse:
     core_run = convert_db_run_to_core_run(db_run, run_id)
     game = get_game(db_run.game)
     locke = LOCKE_INSTANCES[db_run.locke]
+    locke.extra_info = db_run.locke_extra_info
     response_run = RunResponse.from_core_run(core_run, game, locke)
     return response_run
 

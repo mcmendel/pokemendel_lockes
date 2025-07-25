@@ -72,7 +72,7 @@ class RunResponse:
             run_name=run.run_name,
             creation_date=run.creation_date,
             gen=run.gen,
-            rules=locke.rules,
+            rules=locke.rules(),
             main_battles=game.important_battles,
             party=[
                 pokemon.metadata.id for pokemon in run.party.pokemons

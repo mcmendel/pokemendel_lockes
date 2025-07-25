@@ -46,15 +46,14 @@ class BaseLocke(Locke):
         """
         return 1
 
-    @classproperty
-    def rules(cls) -> List[str]:
+    def rules(self) -> List[str]:
         """Get the list of rules for this Locke challenge.
         This method combines the default rules with any additional rules defined by the subclass.
         Subclasses can override this method to add their own rules while still including the defaults.
         Returns:
             List[str]: A list of rules that must be followed
         """
-        return cls._DEFAULT_RULES.copy()
+        return self._DEFAULT_RULES.copy()
 
     def steps(self, gen: int) -> List[StepInfo]:
         """Get all steps for this Locke challenge, including mandatory and optional steps.

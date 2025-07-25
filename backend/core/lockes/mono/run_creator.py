@@ -1,13 +1,7 @@
-from typing import List, Set
-from models.run_pokemons_options import RunPokemonsOptions, save_run_options
-from pokemendel_core.data import fetch_pokemon
-from core.lockes.base.base_locke import BaseLocke
 from games import get_game
 from pokemendel_core.utils.definitions.types import get_generation_types
 from core.lockes.base.run_creator import RunCreationProgress, RunCreator
-
-
-MONO_TYPE_KEY = "mono_type"
+from .utils import MONO_TYPE_KEY
 
 
 class MonoRunCreator(RunCreator):

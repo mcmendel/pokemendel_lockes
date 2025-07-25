@@ -125,6 +125,7 @@ def continue_run_creation(run_name: str, key: Optional[str] = None, val: Optiona
     # Get the current progress
     locke = LOCKE_INSTANCES[existing_run.locke]
     progress = creator.get_progress(locke.min_gen)
+    locke.extra_info = existing_run.extra_info
     
     # Return appropriate response based on progress
     if progress.has_all_info:
