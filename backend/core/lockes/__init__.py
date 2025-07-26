@@ -7,6 +7,7 @@ from core.lockes.run_creation_factory import get_run_creator_class
 from core.lockes.base.base_locke import BaseLocke
 from core.lockes.mono.mono_locke import MonoLocke
 from core.lockes.unique.unique_locke import UniqueLocke
+from core.lockes.category.category_locke import CategoryLocke
 from typing import List
 
 # Dictionary mapping locke names to their instances
@@ -14,6 +15,7 @@ LOCKE_INSTANCES = {
     BaseLocke.name: BaseLocke(),
     MonoLocke.name: MonoLocke(),
     UniqueLocke.name: UniqueLocke(),
+    CategoryLocke.name: CategoryLocke(),
     # TODO: Add more locke instances as they are implemented
     # Example:
     # Nuzlocke.name: Nuzlocke(),
