@@ -9,6 +9,8 @@ from typing import Type
 from core.lockes.base.run_creator import RunCreator
 from core.lockes.mono.mono_locke import MonoLocke
 from core.lockes.mono.run_creator import MonoRunCreator
+from core.lockes.category.run_creator import CategoryRunCreator
+from core.lockes.category.category_locke import CategoryLocke
 
 
 def get_run_creator_class(locke_name: str) -> Type[RunCreator]:
@@ -29,4 +31,6 @@ def get_run_creator_class(locke_name: str) -> Type[RunCreator]:
     # For now, all lockes use the base implementation
     if locke_name == MonoLocke.name:
         return MonoRunCreator
+    if locke_name == CategoryLocke.name:
+        return CategoryRunCreator
     return RunCreator 
