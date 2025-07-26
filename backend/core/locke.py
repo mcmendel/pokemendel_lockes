@@ -88,3 +88,7 @@ class Locke(ABC):
     @abstractmethod
     def catch_pokemon(self, pokemon: Pokemon, run: Run):
         pass
+
+    @property
+    def auto_add_to_party(self) -> bool:
+        return True
