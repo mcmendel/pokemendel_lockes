@@ -49,6 +49,47 @@ def test_base_gen2(client_fixture):
     """Test that the list_runs endpoint works with e2e_ prefixed collections."""
     # ==== CREATE RUN ====
     run_id = _create_run(client_fixture, GEN2_GAME_NAME)
+    starter_id = _choose_starter(
+        client_fixture=client_fixture,
+        run_id=run_id,
+        expected_starter_options=GEN2_STARTERS,
+        starter_name=PokemonGen2.TOTODILE,
+        starter_has_evolution=True,
+        num_encounters=GEN2_NUM_ENCOUNTERS - 1,
+        nickname="Eligabler",
+        gender="Male"
+    )
+    pidgey_id = _catch_pokemon1(client_fixture, run_id)
+    spearow_id = _catch_pokemon2(client_fixture, run_id)
+
+    # spearow can replace only pidgey
+    nickname_options = get_action_options(client_fixture, run_id, spearow_id, "Replace Pokemon with Party")
+    assert nickname_options == {
+        "input_options": [pidgey_id],
+        "input_type": "One of"
+    }
+    execute_action(client_fixture, run_id, spearow_id, "Replace Pokemon with Party", pidgey_id)
+    caterpie_id = _catch_pokemon3(client_fixture, run_id)
+
+    # caterpie can evolve to metapod
+    evolution_options = get_action_options(client_fixture, run_id, caterpie_id, "Evolve Pokemon")
+    assert evolution_options == {
+        "input_options": [PokemonGen2.METAPOD],
+        "input_type": "One of"
+    }
+    execute_action(client_fixture, run_id, caterpie_id, "Evolve Pokemon", PokemonGen2.METAPOD)
+
+    # metapod cannot evolve to butterfree since spearow is in party
+    next_actions = get_next_actions(client_fixture, run_id, caterpie_id)
+    assert next_actions == ["Remove from Party", "Kill Pokemon"]
+
+    # try to evolve butterfree after removing spearow
+    execute_action(client_fixture, run_id, spearow_id, "Remove from Party", "")
+    run_response = get_run(client_fixture, run_id)
+    assert len(run_response['run']['box']) == 4
+    assert len(run_response['run']['party']) == 2
+    next_actions = get_next_actions(client_fixture, run_id, caterpie_id)
+    assert next_actions == ["Remove from Party", "Evolve Pokemon", "Kill Pokemon"]
     print("TEST Finished")
 
 
@@ -97,6 +138,105 @@ def _choose_starter(client_fixture, run_id, expected_starter_options, starter_na
 
     assert next_actions == expected_next_actions
     return starter_id
+
+
+def _catch_pokemon1(client_fixture, run_id):
+    pokemon_name = PokemonGen2.PIDGEY
+    route = "Route 29"
+    potential_encounters = get_run_potential_encounters(client_fixture, run_id, route, 17)
+    assert pokemon_name in potential_encounters
+    assert PokemonGen1.PIKACHU not in potential_encounters
+    encounter_pokemon(client_fixture, run_id, route, pokemon_name)
+    run_response = get_run(client_fixture, run_id)
+    assert len(run_response['run']['box']) == 1
+    encounter = next(encounter for encounter in run_response['run']['encounters'] if encounter['route'] == route)
+    assert encounter['pokemon'] == pokemon_name
+    assert encounter['status'] == "Met"
+    update_encounter(client_fixture, run_id, route, "Caught")
+    run_response = get_run(client_fixture, run_id)
+    encounter = next(encounter for encounter in run_response['run']['encounters'] if encounter['route'] == route)
+    encounter_id = encounter['pokemon']
+    _handle_caught_pokemon(
+        client=client_fixture,
+        run_response=run_response,
+        run_id=run_id,
+        num_box=2,
+        num_party=2,
+        pokemon_id=encounter_id,
+        pokemon_name=pokemon_name,
+        is_pokemon_in_party=True,
+        nickname="Diara",
+        gender="Male"
+    )
+    next_actions = get_next_actions(client_fixture, run_id, encounter_id)
+    assert next_actions == ["Remove from Party", "Evolve Pokemon", "Kill Pokemon"]
+    return encounter_id
+
+
+def _catch_pokemon2(client_fixture, run_id):
+    pokemon_name = PokemonGen2.SPEAROW
+    route = "Route 46"
+    potential_encounters = get_run_potential_encounters(client_fixture, run_id, route, 12)
+    assert pokemon_name in potential_encounters
+    assert PokemonGen1.PIKACHU not in potential_encounters
+    encounter_pokemon(client_fixture, run_id, route, pokemon_name)
+    run_response = get_run(client_fixture, run_id)
+    assert len(run_response['run']['box']) == 2
+    encounter = next(encounter for encounter in run_response['run']['encounters'] if encounter['route'] == route)
+    assert encounter['pokemon'] == pokemon_name
+    assert encounter['status'] == "Met"
+    update_encounter(client_fixture, run_id, route, "Caught")
+    run_response = get_run(client_fixture, run_id)
+    encounter = next(encounter for encounter in run_response['run']['encounters'] if encounter['route'] == route)
+    encounter_id = encounter['pokemon']
+    _handle_caught_pokemon(
+        client=client_fixture,
+        run_response=run_response,
+        run_id=run_id,
+        num_box=3,
+        num_party=2,
+        pokemon_id=encounter_id,
+        pokemon_name=pokemon_name,
+        is_pokemon_in_party=False,
+        nickname="Sharp",
+        gender="Female"
+    )
+    next_actions = get_next_actions(client_fixture, run_id, encounter_id)
+    assert next_actions == ["Replace Pokemon with Party", "Kill Pokemon"]
+    return encounter_id
+
+
+def _catch_pokemon3(client_fixture, run_id):
+    pokemon_name = PokemonGen2.CATERPIE
+    route = "Route 30"
+    potential_encounters = get_run_potential_encounters(client_fixture, run_id, route, 21)
+    assert pokemon_name in potential_encounters
+    assert PokemonGen1.PIKACHU not in potential_encounters
+    encounter_pokemon(client_fixture, run_id, route, pokemon_name)
+    run_response = get_run(client_fixture, run_id)
+    assert len(run_response['run']['box']) == 3
+    encounter = next(encounter for encounter in run_response['run']['encounters'] if encounter['route'] == route)
+    assert encounter['pokemon'] == pokemon_name
+    assert encounter['status'] == "Met"
+    update_encounter(client_fixture, run_id, route, "Caught")
+    run_response = get_run(client_fixture, run_id)
+    encounter = next(encounter for encounter in run_response['run']['encounters'] if encounter['route'] == route)
+    encounter_id = encounter['pokemon']
+    _handle_caught_pokemon(
+        client=client_fixture,
+        run_response=run_response,
+        run_id=run_id,
+        num_box=4,
+        num_party=3,
+        pokemon_id=encounter_id,
+        pokemon_name=pokemon_name,
+        is_pokemon_in_party=True,
+        nickname="Twist",
+        gender="Female"
+    )
+    next_actions = get_next_actions(client_fixture, run_id, encounter_id)
+    assert next_actions == ["Remove from Party", "Evolve Pokemon", "Kill Pokemon"]
+    return encounter_id
 
 
 def _handle_caught_pokemon(client, run_response: dict, run_id: str, num_box: int, num_party: int, pokemon_id: str, pokemon_name: str, is_pokemon_in_party: bool, nickname: str, gender: str = None):
