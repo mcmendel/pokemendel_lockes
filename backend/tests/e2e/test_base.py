@@ -513,7 +513,7 @@ def _kill_pokemon(client_fixture, run_id, pokemon_id, num_party, num_box):
 def _catch_pokemon1_gen2(client_fixture, run_id):
     route = "Route 29"
     caught_pokemon = PokemonGen2.RATTATA
-    potential_encounters = get_run_potential_encounters(client_fixture, run_id, "Route 29", 17)
+    potential_encounters = get_run_potential_encounters(client_fixture, run_id, "Route 29", 20)
     assert caught_pokemon in potential_encounters
     assert PokemonGen2.PIKACHU not in potential_encounters
     encounter_pokemon(client_fixture, run_id, "Route 29", caught_pokemon)

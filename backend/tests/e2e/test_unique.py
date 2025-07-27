@@ -143,7 +143,7 @@ def _choose_starter(client_fixture, run_id, expected_starter_options, starter_na
 def _catch_pokemon1(client_fixture, run_id):
     pokemon_name = PokemonGen2.PIDGEY
     route = "Route 29"
-    potential_encounters = get_run_potential_encounters(client_fixture, run_id, route, 17)
+    potential_encounters = get_run_potential_encounters(client_fixture, run_id, route, 20)
     assert pokemon_name in potential_encounters
     assert PokemonGen1.PIKACHU not in potential_encounters
     encounter_pokemon(client_fixture, run_id, route, pokemon_name)
@@ -176,7 +176,7 @@ def _catch_pokemon1(client_fixture, run_id):
 def _catch_pokemon2(client_fixture, run_id):
     pokemon_name = PokemonGen2.SPEAROW
     route = "Route 46"
-    potential_encounters = get_run_potential_encounters(client_fixture, run_id, route, 12)
+    potential_encounters = get_run_potential_encounters(client_fixture, run_id, route, 15)
     assert pokemon_name in potential_encounters
     assert PokemonGen1.PIKACHU not in potential_encounters
     encounter_pokemon(client_fixture, run_id, route, pokemon_name)
@@ -209,7 +209,7 @@ def _catch_pokemon2(client_fixture, run_id):
 def _catch_pokemon3(client_fixture, run_id):
     pokemon_name = PokemonGen2.CATERPIE
     route = "Route 30"
-    potential_encounters = get_run_potential_encounters(client_fixture, run_id, route, 21)
+    potential_encounters = get_run_potential_encounters(client_fixture, run_id, route, 24)
     assert pokemon_name in potential_encounters
     assert PokemonGen1.PIKACHU not in potential_encounters
     encounter_pokemon(client_fixture, run_id, route, pokemon_name)
