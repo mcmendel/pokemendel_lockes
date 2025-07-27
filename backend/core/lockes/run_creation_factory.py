@@ -11,6 +11,8 @@ from core.lockes.mono.mono_locke import MonoLocke
 from core.lockes.mono.run_creator import MonoRunCreator
 from core.lockes.category.run_creator import CategoryRunCreator
 from core.lockes.category.category_locke import CategoryLocke
+from core.lockes.leg.run_creator import LegRunCreator
+from core.lockes.leg.leg_locke import LegLocke
 
 
 def get_run_creator_class(locke_name: str) -> Type[RunCreator]:
@@ -33,4 +35,6 @@ def get_run_creator_class(locke_name: str) -> Type[RunCreator]:
         return MonoRunCreator
     if locke_name == CategoryLocke.name:
         return CategoryRunCreator
+    if locke_name == LegLocke.name:
+        return LegRunCreator
     return RunCreator 
