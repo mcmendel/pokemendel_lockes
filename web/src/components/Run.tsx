@@ -48,6 +48,7 @@ function RunComponent() {
   const [actionInputText, setActionInputText] = useState<string>('');
   const [loadingActionInfo, setLoadingActionInfo] = useState(false);
   const [isBlackoutDialogOpen, setIsBlackoutDialogOpen] = useState(false);
+  const [lockeType, setLockeType] = useState<string | null>(null);
   const [snackbar, setSnackbar] = useState<{ open: boolean; message: string; severity: 'success' | 'error' }>({
     open: false,
     message: '',
@@ -67,6 +68,13 @@ function RunComponent() {
           const options = await lockeApi.getStarterOptions(runId);
           console.log('Starter options:', options);
           setStarterOptions(options);
+        }
+
+        // Fetch locke type from list runs API
+        const runs = await lockeApi.getRuns();
+        const currentRun = runs.find(run => run.run_id === runId);
+        if (currentRun) {
+          setLockeType(currentRun.locke_name);
         }
       } catch (e) {
         console.error('Error fetching data:', e);
@@ -445,17 +453,21 @@ function RunComponent() {
               pokemons={getPartyPokemons()}
               onPokemonClick={handlePokemonClick}
             />
-            <Starter 
-              starter={getStarterPokemon()}
-              onPokemonClick={handlePokemonClick}
-            />
-            <Encounters 
-              encounters={runData.run.encounters} 
-              runId={runId} 
-              runData={runData}
-              setRunData={setRunData}
-              setSnackbar={setSnackbar}
-            />
+            {lockeType !== "EeveeLocke" && (
+              <Starter 
+                starter={getStarterPokemon()}
+                onPokemonClick={handlePokemonClick}
+              />
+            )}
+            {lockeType !== "EeveeLocke" && (
+              <Encounters 
+                encounters={runData.run.encounters} 
+                runId={runId} 
+                runData={runData}
+                setRunData={setRunData}
+                setSnackbar={setSnackbar}
+              />
+            )}
             <Tabs runId={runId} runData={runData} onPokemonClick={handlePokemonClick} onGymClick={handleGymClick} />
           </div>
         )}

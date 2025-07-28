@@ -1,7 +1,7 @@
 from pokemendel_core.data import fetch_pokemon
 from models.run_pokemons_options import list_runs_options, mark_caught_pokemon
 from models.run import update_run
-from models.pokemon import save_pokemon, update_pokemon
+from models.pokemon import save_pokemon, update_pokemon, generate_locke_pokemon
 from dataclasses import dataclass, asdict
 from definitions.pokemons.pokemon import Pokemon, PokemonMetadata, PokemonStatus
 from core.locke import Locke, StepInfo, StepInterface
@@ -135,11 +135,9 @@ class RunManager:
         return returned_steps
 
     def _generate_locke_pokemon(self, pokemon_name: str) -> Pokemon:
-        core_pokemon = fetch_pokemon(pokemon_name, self.game.gen)
-        pokemon_core_attributes = asdict(core_pokemon)
-        locke_pokemon = Pokemon(**pokemon_core_attributes, metadata=PokemonMetadata(id=uuid4().hex),  status=PokemonStatus.ALIVE)
-        save_pokemon(locke_pokemon, self.run.id)
-        return locke_pokemon
+        return generate_locke_pokemon(
+            self.run.id, pokemon_name, self.game.gen
+        )
 
     def update_run(self):
         print("Saving run %s" % self.run.id)

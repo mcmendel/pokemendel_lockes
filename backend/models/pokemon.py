@@ -4,6 +4,7 @@ from typing import List, Optional, TypeAlias, Dict
 from dataclasses import asdict
 from definitions.pokemons.pokemon import Pokemon as PokemonDef
 from definitions.pokemons.pokemon_metadata import PokemonMetadata
+from definitions.pokemons.pokemon_status import PokemonStatus
 from pokemendel_core.utils.definitions.types import Types
 from pokemendel_core.utils.definitions.genders import Genders
 from pokemendel_core.data import fetch_pokemon as fetch_static_pokemon
@@ -13,6 +14,7 @@ from .db_helper import (
     fetch_documents_by_query,
     delete_documents_by_query
 )
+from uuid import uuid4
 
 # Type aliases
 Pokemon: TypeAlias = PokemonDef
@@ -125,3 +127,11 @@ def restore_pokemons(run_id: str):
     delete_run_pokemons(run_id, _COLLECTIONS_NAME)
     for pokemon in run_pokemons:
         save_pokemon(pokemon, run_id, [_COLLECTIONS_NAME])
+
+
+def generate_locke_pokemon(run_id: str, pokemon_name: str, gen: int) -> Pokemon:
+    core_pokemon = fetch_static_pokemon(pokemon_name, gen)
+    pokemon_core_attributes = asdict(core_pokemon)
+    locke_pokemon = Pokemon(**pokemon_core_attributes, metadata=PokemonMetadata(id=uuid4().hex),  status=PokemonStatus.ALIVE)
+    save_pokemon(locke_pokemon, run_id)
+    return locke_pokemon
