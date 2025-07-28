@@ -53,7 +53,7 @@ def continue_locke_creation_not_finished(client, key, val, expected_next_key, ex
     assert expected_optional_val in continue_response['potential_values']
 
 
-def continue_locke_creation_finished(client, key, val):
+def continue_locke_creation_finished(client, key, val, all_pokemons_caught = False):
     response = client.post('/locke_manager/run', json={
         'run_name': 'TestRun',
         'key': key,
@@ -72,7 +72,7 @@ def continue_locke_creation_finished(client, key, val):
     pokemon_indices = set()
     for db_run in db_runs:
         pokemon_indices.add(db_run['index'])
-        assert not db_run['caught']
+        assert db_run['caught'] is all_pokemons_caught
     assert len(pokemon_indices) == len(db_runs)
 
     return continue_response['id']

@@ -13,6 +13,8 @@ from core.lockes.category.run_creator import CategoryRunCreator
 from core.lockes.category.category_locke import CategoryLocke
 from core.lockes.leg.run_creator import LegRunCreator
 from core.lockes.leg.leg_locke import LegLocke
+from core.lockes.eevee.eevee_locke import EeveeLocke
+from core.lockes.eevee.run_creator import EeveeRunCreator
 
 
 def get_run_creator_class(locke_name: str) -> Type[RunCreator]:
@@ -37,4 +39,6 @@ def get_run_creator_class(locke_name: str) -> Type[RunCreator]:
         return CategoryRunCreator
     if locke_name == LegLocke.name:
         return LegRunCreator
+    if locke_name == EeveeLocke.name:
+        return EeveeRunCreator
     return RunCreator 

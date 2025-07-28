@@ -9,6 +9,7 @@ from core.lockes.mono.mono_locke import MonoLocke
 from core.lockes.unique.unique_locke import UniqueLocke
 from core.lockes.category.category_locke import CategoryLocke
 from core.lockes.leg.leg_locke import LegLocke
+from core.lockes.eevee.eevee_locke import EeveeLocke
 from typing import List
 
 # Dictionary mapping locke names to their instances
@@ -18,10 +19,7 @@ LOCKE_INSTANCES = {
     UniqueLocke.name: UniqueLocke(),
     CategoryLocke.name: CategoryLocke(),
     LegLocke.name: LegLocke(),
-    # TODO: Add more locke instances as they are implemented
-    # Example:
-    # Nuzlocke.name: Nuzlocke(),
-    # Soulocke.name: Soulocke(),
+    EeveeLocke.name: EeveeLocke(),
 }
 
 

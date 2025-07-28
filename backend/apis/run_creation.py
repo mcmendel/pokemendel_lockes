@@ -155,7 +155,7 @@ def continue_run_creation(run_name: str, key: Optional[str] = None, val: Optiona
             restarts=core_run.restarts,
             duplicate_clause=existing_run.duplicate_clause or False,
             finished=core_run.finished,
-            starter=str(core_run.starter) if core_run.starter else None
+            starter=str(core_run.starter.metadata.id) if core_run.starter else None
         )
         
         # Save the run to the database

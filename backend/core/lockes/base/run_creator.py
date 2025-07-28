@@ -183,15 +183,18 @@ class RunCreator:
                 if pokemon_name in stored_pokemons:
                     continue
                 stored_pokemons.add(pokemon_name)
-                run_options = RunPokemonsOptions(
-                    run_id=run_id,
-                    pokemon_name=pokemon_name,
-                    base_pokemon=evolution_line[-1],
-                    index=self._potential_pokemon_counter,
-                )
-                save_run_options(run_options)
+                self._save_pokemon_option(run_id, pokemon_name, evolution_line[-1], self._potential_pokemon_counter)
                 relevant_pokemons = True
                 self._potential_pokemon_counter += 1
+    def _save_pokemon_option(self, run_id: str, pokemon_name: str, base_pokemon: str, index: int, caught: bool = False):
+        run_options = RunPokemonsOptions(
+            run_id=run_id,
+            pokemon_name=pokemon_name,
+            base_pokemon=base_pokemon,
+            index=index,
+            caught=caught,
+        )
+        save_run_options(run_options)
 
     def _get_creation_missing_extra_info(self) -> RunCreationProgress:
         """Get any additional information needed for run creation.
