@@ -36,6 +36,7 @@ class WedLocke(BaseLocke):
         current_steps = super().steps(gen)
         mandatory_steps = self._mandatory_steps(gen)
         prerequisites = [step_info.step_name for step_info in mandatory_steps]
+        assert StepsNames.GENDER in prerequisites, "Gender must be prerequisite for pairing pokemons"
         current_steps.append(StepInfo(StepsNames.WEDLOCKE_PAIR, prerequisites=prerequisites))
         return current_steps
 
