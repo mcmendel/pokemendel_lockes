@@ -1,9 +1,7 @@
 from definitions import Pokemon
-from definitions.runs.steps_interface import ExecutionReturnValue, StepInterface
-from definitions.runs.inputs_options import InputOptions
-from pokemendel_core.utils.definitions.genders import Genders
+from definitions.runs.steps_interface import ExecutionReturnValue
 from core.run import Run
-from typing import Tuple, List, Optional
+from typing import Optional
 from core.steps.remove_from_party_step import RemoveFromPartyStep as RemoveFromPartyStepOg
 from core.lockes.wed.utils import get_party_pairs
 
