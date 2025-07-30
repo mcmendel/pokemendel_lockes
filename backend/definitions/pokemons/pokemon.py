@@ -15,3 +15,6 @@ class Pokemon(CorePokemon):
             raise ValueError("metadata cannot be None and must include a valid id")
         if self.status not in PokemonStatus.list_all():
             raise ValueError(f"Invalid status: {self.status}")
+
+    def compare_pokemon(self, pokemon) -> bool:
+        return pokemon and self.metadata.id == pokemon.metadata.id

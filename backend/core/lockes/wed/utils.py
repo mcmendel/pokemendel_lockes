@@ -9,6 +9,9 @@ class PairedPokemons:
     pokemon1: Pokemon
     pokemon2: Optional[Pokemon]
 
+    def is_pokemon_in_pair(self, pokemon: Pokemon):
+        return pokemon.compare_pokemon(self.pokemon1) or pokemon.compare_pokemon(self.pokemon2)
+
 
 def get_party_pairs(run: Run) -> Tuple[PairedPokemons, Optional[PairedPokemons], Optional[PairedPokemons]]:
     assert not run.party.is_empty(), "Can't extract pairs from empty party"
