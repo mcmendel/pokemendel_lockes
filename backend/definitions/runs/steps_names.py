@@ -20,3 +20,6 @@ class StepsNames(EnumList):
 
     # wedlocke
     WEDLOCKE_PAIR = "Pair Pokemon"
+
+    # chesslocke
+    CHESSLOCKE_SET_ROLE = "Set Role"
