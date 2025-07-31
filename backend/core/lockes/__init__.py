@@ -12,6 +12,7 @@ from core.lockes.leg.leg_locke import LegLocke
 from core.lockes.eevee.eevee_locke import EeveeLocke
 from core.lockes.wed.wed_locke import WedLocke
 from core.lockes.chess.chess_locke import ChessLocke
+from core.lockes.star.star_locke import StarLocke
 from typing import List
 
 # Dictionary mapping locke names to their instances
@@ -24,6 +25,7 @@ LOCKE_INSTANCES = {
     EeveeLocke.name: EeveeLocke(),
     WedLocke.name: WedLocke(),
     ChessLocke.name: ChessLocke(),
+    StarLocke.name: StarLocke(),
 }
 
 

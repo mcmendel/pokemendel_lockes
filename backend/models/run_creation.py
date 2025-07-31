@@ -32,7 +32,7 @@ class RunCreation:
     game: Optional[str] = None
     randomized: Optional[bool] = None
     duplicate_clause: Optional[bool] = None
-    extra_info: Dict[str, str] = field(default_factory=dict)
+    extra_info: Dict[str, Any] = field(default_factory=dict)
     finished: bool = False
 
     def __post_init__(self):

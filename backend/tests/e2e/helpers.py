@@ -49,8 +49,11 @@ def continue_locke_creation_not_finished(client, key, val, expected_next_key, ex
     assert response.status_code == 200
     continue_response = response.get_json()
     assert not continue_response['finished']
-    assert continue_response['next_key'] == expected_next_key
-    assert expected_optional_val in continue_response['potential_values']
+    if expected_next_key:
+        assert continue_response['next_key'] == expected_next_key, f"{continue_response['next_key']} is different than expected {expected_next_key}"
+        assert expected_optional_val in continue_response['potential_values'], f"{expected_optional_val} not in {continue_response['potential_values']}"
+
+    return continue_response['next_key'], continue_response['potential_values']
 
 
 def continue_locke_creation_finished(client, key, val, all_pokemons_caught = False):
