@@ -1,0 +1,160 @@
+.wedlocke-party-container {
+  background: linear-gradient(135deg, #fff5f5 0%, #ffe8e8 100%);
+  border-radius: 12px;
+  box-shadow: 0 4px 12px rgba(255, 182, 193, 0.3);
+  margin: 0 0 6px 0;
+  padding: 8px;
+  flex: 0 0 18%;
+  height: calc(100vh - 220px);
+  display: flex;
+  flex-direction: column;
+  border: 2px solid #ffb6c1;
+}
+
+.wedlocke-party-header {
+  font-size: 20px;
+  font-weight: bold;
+  color: #d63384;
+  padding: 12px 0;
+  flex-shrink: 0;
+  text-align: center;
+  background: linear-gradient(45deg, #ff69b4, #ff1493);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+  text-shadow: 0 2px 4px rgba(255, 105, 180, 0.2);
+}
+
+.wedlocke-heart {
+  margin: 0 8px;
+  animation: pulse 2s infinite;
+}
+
+@keyframes pulse {
+  0% { transform: scale(1); }
+  50% { transform: scale(1.1); }
+  100% { transform: scale(1); }
+}
+
+.wedlocke-party-content {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  overflow-y: auto;
+  padding: 8px;
+}
+
+.wedlocke-pair-row {
+  display: flex;
+  gap: 12px;
+  flex: 1;
+  min-height: 0;
+}
+
+.wedlocke-pair-slot {
+  flex: 1;
+  min-height: 0;
+  position: relative;
+}
+
+.wedlocke-pokemon-wrapper {
+  position: relative;
+  height: 100%;
+}
+
+.wedlocke-status {
+  position: absolute;
+  top: 8px;
+  right: 8px;
+  background: rgba(255, 255, 255, 0.9);
+  border-radius: 50%;
+  width: 24px;
+  height: 24px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 12px;
+  border: 2px solid #ffb6c1;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+}
+
+.wedlocke-empty-slot {
+  width: 100%;
+  height: 100%;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  background: linear-gradient(135deg, #fff0f5 0%, #ffe4e1 100%);
+  border: 2px dashed #ffb6c1;
+  border-radius: 8px;
+  color: #d63384;
+  font-size: 14px;
+  font-weight: 500;
+  transition: all 0.3s ease;
+}
+
+.wedlocke-empty-slot:hover {
+  background: linear-gradient(135deg, #ffe4e1 0%, #ffd1dc 100%);
+  border-color: #ff69b4;
+  transform: translateY(-2px);
+  box-shadow: 0 4px 8px rgba(255, 182, 193, 0.3);
+}
+
+.wedlocke-ring {
+  font-size: 20px;
+  margin-bottom: 4px;
+  animation: sparkle 1.5s infinite;
+}
+
+@keyframes sparkle {
+  0% { transform: rotate(0deg) scale(1); }
+  25% { transform: rotate(90deg) scale(1.1); }
+  50% { transform: rotate(180deg) scale(1); }
+  75% { transform: rotate(270deg) scale(1.1); }
+  100% { transform: rotate(360deg) scale(1); }
+}
+
+/* Override Pokemon button styling for WedLocke theme */
+.wedlocke-party-container .pokemon-button {
+  background: linear-gradient(135deg, #fff5f5 0%, #ffe8e8 100%);
+  border: 2px solid #ffb6c1;
+  border-radius: 8px;
+  transition: all 0.3s ease;
+}
+
+.wedlocke-party-container .pokemon-button:hover {
+  background: linear-gradient(135deg, #ffe4e1 0%, #ffd1dc 100%);
+  border-color: #ff69b4;
+  transform: translateY(-2px);
+  box-shadow: 0 4px 12px rgba(255, 182, 193, 0.4);
+}
+
+.wedlocke-party-container .pokemon-name {
+  color: #d63384;
+  font-weight: 600;
+}
+
+.wedlocke-party-container .pokemon-id {
+  color: #ff69b4;
+}
+
+/* Custom scrollbar for wedding theme */
+.wedlocke-party-content::-webkit-scrollbar {
+  width: 8px;
+}
+
+.wedlocke-party-content::-webkit-scrollbar-track {
+  background: #fff5f5;
+  border-radius: 4px;
+}
+
+.wedlocke-party-content::-webkit-scrollbar-thumb {
+  background: linear-gradient(45deg, #ffb6c1, #ff69b4);
+  border-radius: 4px;
+}
+
+.wedlocke-party-content::-webkit-scrollbar-thumb:hover {
+  background: linear-gradient(45deg, #ff69b4, #ff1493);
+} 

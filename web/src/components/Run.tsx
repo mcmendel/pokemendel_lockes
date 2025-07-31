@@ -5,6 +5,7 @@ import SaveIcon from '@mui/icons-material/Save';
 import UploadIcon from '@mui/icons-material/Upload';
 import FlagIcon from '@mui/icons-material/Flag';
 import Party from './Party';
+import WedLockeParty from './WedLockeParty';
 import Starter from './Starter';
 import Encounters from './Encounters';
 import Tabs from './Tabs';
@@ -449,10 +450,17 @@ function RunComponent() {
           </div>
         ) : (
           <div className="run-content">
-            <Party 
-              pokemons={getPartyPokemons()}
-              onPokemonClick={handlePokemonClick}
-            />
+            {lockeType === "WedLocke" ? (
+              <WedLockeParty 
+                pokemons={getPartyPokemons()}
+                onPokemonClick={handlePokemonClick}
+              />
+            ) : (
+              <Party 
+                pokemons={getPartyPokemons()}
+                onPokemonClick={handlePokemonClick}
+              />
+            )}
             {lockeType !== "EeveeLocke" && (
               <Starter 
                 starter={getStarterPokemon()}
