@@ -129,9 +129,9 @@ def restore_pokemons(run_id: str):
         save_pokemon(pokemon, run_id, [_COLLECTIONS_NAME])
 
 
-def generate_locke_pokemon(run_id: str, pokemon_name: str, gen: int) -> Pokemon:
+def generate_locke_pokemon(run_id: str, pokemon_name: str, gen: int, extra_metadata={}) -> Pokemon:
     core_pokemon = fetch_static_pokemon(pokemon_name, gen)
     pokemon_core_attributes = asdict(core_pokemon)
-    locke_pokemon = Pokemon(**pokemon_core_attributes, metadata=PokemonMetadata(id=uuid4().hex),  status=PokemonStatus.ALIVE)
+    locke_pokemon = Pokemon(**pokemon_core_attributes, metadata=PokemonMetadata(id=uuid4().hex, **extra_metadata),  status=PokemonStatus.ALIVE)
     save_pokemon(locke_pokemon, run_id)
     return locke_pokemon
