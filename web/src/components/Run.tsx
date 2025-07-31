@@ -476,7 +476,7 @@ function RunComponent() {
                 setSnackbar={setSnackbar}
               />
             )}
-            <Tabs runId={runId} runData={runData} onPokemonClick={handlePokemonClick} onGymClick={handleGymClick} />
+            <Tabs runId={runId} runData={runData} onPokemonClick={handlePokemonClick} onGymClick={handleGymClick} lockeType={lockeType} />
           </div>
         )}
       </div>
