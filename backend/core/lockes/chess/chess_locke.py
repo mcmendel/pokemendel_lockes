@@ -51,3 +51,6 @@ class ChessLocke(BaseLocke):
         locke_steps_map[StepsNames.CHESSLOCKE_SET_ROLE] = SetChessRoleStep()
         locke_steps_map[StepsNames.KILL] = KillPokemonStep()
         return locke_steps_map
+
+    def auto_add_to_party(self) -> bool:
+        return False

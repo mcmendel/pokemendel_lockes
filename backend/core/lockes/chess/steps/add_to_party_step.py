@@ -4,8 +4,9 @@ from definitions import Pokemon
 from definitions.runs.steps_interface import ExecutionReturnValue
 from core.run import Run
 from core.steps.add_to_party_step import AddToPartyStep as AddToPartyStepOg
-from core.lockes.wed.utils import get_party_pairs, get_pokemon_partner
+from core.lockes.chess.utils import get_party_roles
 
 
 class AddToPartyStep(AddToPartyStepOg):
-    pass
+    def is_step_relevant(self, run: Run, pokemon: Pokemon) -> bool:
+        return super().is_step_relevant(run, pokemon) and pokemon.metadata.chesslocke_role not in get_party_roles(run)

@@ -1,4 +1,6 @@
 from pokemendel_core.utils.enum_list import EnumList
+from core.run import Run
+from typing import Set
 
 
 class ChessRoles(EnumList):
@@ -8,3 +10,9 @@ class ChessRoles(EnumList):
     KNIGHT = "Knight"  # A Knight may not use any moves with a Base Power greater than 60.
     ROOK = "Rook"      # A Rook may not use any damaging moves with secondary effects
     PAWN = "Pawn"      # A Pawn may never evolve, and must be its line’s lowest evolution
+
+
+def get_party_roles(run: Run) -> Set[str]:
+    return {
+        pokemon.metadata.chesslocke_role for pokemon in run.party.pokemons
+    }
