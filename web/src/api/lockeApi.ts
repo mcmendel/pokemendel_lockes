@@ -52,6 +52,7 @@ export interface PokemonMetadata {
     starlocke_type: string | null;
     gender: string | null;
     paired: string | null;
+    chesslocke_role_og: string | null;
 }
 
 export interface Pokemon {

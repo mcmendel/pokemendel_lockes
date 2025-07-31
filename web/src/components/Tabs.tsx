@@ -3,6 +3,7 @@ import { Tabs as MuiTabs, Tab, Box, Typography, Grid, TextField, CircularProgres
 import lockeApi from '../api/lockeApi';
 import ImportantBattles from './ImportantBattles';
 import RunBox from './RunBox';
+import ChessLockeBox from './ChessLockeBox';
 import Graveyard from './Graveyard';
 import Gyms from './Gyms';
 import './Tabs.css';
@@ -45,9 +46,10 @@ interface TabsProps {
   runData?: any; // Add runData prop to access statistics
   onPokemonClick?: (id: string) => void;
   onGymClick?: (id: string) => void;
+  lockeType?: string | null;
 }
 
-function Tabs({ runId, runData, onPokemonClick, onGymClick }: TabsProps) {
+function Tabs({ runId, runData, onPokemonClick, onGymClick, lockeType }: TabsProps) {
   const [value, setValue] = useState(0);
   const [searchTerm, setSearchTerm] = useState('');
   const [supportedSearchTerm, setSupportedSearchTerm] = useState('');
@@ -218,7 +220,14 @@ function Tabs({ runId, runData, onPokemonClick, onGymClick }: TabsProps) {
             </Grid>
           </TabPanel>
           <TabPanel value={value} index={1}>
-            <RunBox runData={runData} onPokemonClick={onPokemonClick || (() => {})} />
+            {lockeType === "ChessLocke" ? (
+              <ChessLockeBox 
+                pokemons={runData?.run?.box?.map((id: string) => runData.pokemons[id]) || []}
+                onPokemonClick={onPokemonClick || (() => {})} 
+              />
+            ) : (
+              <RunBox runData={runData} onPokemonClick={onPokemonClick || (() => {})} />
+            )}
           </TabPanel>
           <TabPanel value={value} index={2}>
             <Graveyard runData={runData} onPokemonClick={onPokemonClick || (() => {})} />
