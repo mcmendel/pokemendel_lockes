@@ -14,6 +14,7 @@ class StepsNames(EnumList):
     # pokemon attributes
     NICKNAME = "Nickname Pokemon"
     GENDER = "Gender"
+    NATURE = "Nature"
 
     # starlocke
     STARLOCKE_CHOOSE_TYPE = "Choose Type"
