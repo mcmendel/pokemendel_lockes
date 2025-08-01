@@ -34,7 +34,7 @@ class RemoveFromPartyStep(StepInterface):
         """
         return not run.party.is_last_pokemon_in_party() and run.party.is_pokemon_in_party(pokemon)
 
-    def step_options(self, run: Run, pokemon: Pokemon) -> Tuple[InputOptions, List[str]]:
+    def step_options(self, run: Run, pokemon: Pokemon, is_randomized: bool) -> Tuple[InputOptions, List[str]]:
         """Get the options for removing a Pokemon from the party.
         
         Args:

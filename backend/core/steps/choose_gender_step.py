@@ -31,7 +31,7 @@ class ChooseGenderStep(StepInterface):
         """
         return not pokemon.metadata.gender
 
-    def step_options(self, run: Run, pokemon: Pokemon) -> Tuple[InputOptions, List[str]]:
+    def step_options(self, run: Run, pokemon: Pokemon, is_randomized: bool) -> Tuple[InputOptions, List[str]]:
         """Get the options for pokemon's gender
 
         Args:

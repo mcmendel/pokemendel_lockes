@@ -67,6 +67,7 @@ def _db_dict_to_pokemon(data: dict) -> Pokemon:
         categories=core_pokemon.categories,
         num_legs=core_pokemon.num_legs,
         nature=data.get("nature"),
+        supported_abilities=core_pokemon.supported_abilities,
     )
 
 def save_pokemon(pokemon: Pokemon, run_id: str, collections: List[str] = None) -> None:

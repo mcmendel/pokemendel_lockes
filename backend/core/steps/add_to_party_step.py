@@ -33,7 +33,7 @@ class AddToPartyStep(StepInterface):
         """
         return not run.party.is_party_full() and not run.party.is_pokemon_in_party(pokemon)
 
-    def step_options(self, run: Run, pokemon: Pokemon) -> Tuple[InputOptions, List[str]]:
+    def step_options(self, run: Run, pokemon: Pokemon, is_randomized: bool) -> Tuple[InputOptions, List[str]]:
         """Get the options for adding a Pokemon to the party.
         
         Args:

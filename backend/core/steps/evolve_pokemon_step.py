@@ -11,7 +11,7 @@ class EvolvePokemonStep(StepInterface):
     def is_step_relevant(self, run: Run, pokemon: Pokemon) -> bool:
         return bool(self._get_pokemon_potential_evolutions(run, pokemon))
 
-    def step_options(self, run: Run, pokemon: Pokemon) -> Tuple[InputOptions, List[str]]:
+    def step_options(self, run: Run, pokemon: Pokemon, is_randomized: bool) -> Tuple[InputOptions, List[str]]:
         return InputOptions.ONE_OF, self._get_pokemon_potential_evolutions(run, pokemon)
 
     def execute_step(self, run: Run, pokemon: Pokemon, value: Optional[str]) -> ExecutionReturnValue:

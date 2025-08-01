@@ -12,6 +12,7 @@ from core.steps.choose_gender_step import ChooseGenderStep
 from core.steps.evolve_pokemon_step import EvolvePokemonStep
 from core.steps.kill_pokemon_step import KillPokemonStep
 from core.steps.choose_nature_step import ChooseNatureStep
+from core.steps.choose_ability_step import ChooseAbilityStep
 
 __all__ = [
     'AddToPartyStep',
@@ -22,4 +23,5 @@ __all__ = [
     'EvolvePokemonStep',
     'KillPokemonStep',
     'ChooseNatureStep',
+    'ChooseAbilityStep',
 ]

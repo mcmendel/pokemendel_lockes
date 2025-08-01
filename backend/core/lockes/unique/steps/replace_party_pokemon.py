@@ -21,7 +21,7 @@ class ReplacePartyPokemon(ReplacePartyPokemonOg):
         """
         return super().is_step_relevant(run,pokemon) and len(get_party_pokemons_with_intersected_types(set(pokemon.types), run)) < 2
 
-    def step_options(self, run: Run, pokemon: Pokemon) -> Tuple[InputOptions, List[str]]:
+    def step_options(self, run: Run, pokemon: Pokemon, is_randomized: bool) -> Tuple[InputOptions, List[str]]:
         intersected_porty_pokemons = get_party_pokemons_with_intersected_types(set(pokemon.types), run)
         assert len(intersected_porty_pokemons) < 2, "Can't replace pokemon if there are more than one pokemon in party with same type"
         return InputOptions.ONE_OF, (
