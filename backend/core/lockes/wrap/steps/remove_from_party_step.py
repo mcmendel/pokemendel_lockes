@@ -1,10 +1,9 @@
 from definitions import Pokemon
-from definitions.runs.steps_interface import ExecutionReturnValue
 from core.run import Run
-from typing import Optional
 from core.steps.remove_from_party_step import RemoveFromPartyStep as RemoveFromPartyStepOg
-from core.lockes.wed.utils import get_party_pairs
+from core.lockes.wrap.utils import is_pokemon_in_wrap
 
 
 class RemoveFromPartyStep(RemoveFromPartyStepOg):
-    pass
+    def is_step_relevant(self, run: Run, pokemon: Pokemon) -> bool:
+        return super().is_step_relevant(run, pokemon) and not is_pokemon_in_wrap(run, pokemon)

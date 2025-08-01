@@ -16,6 +16,16 @@ def get_sorted_party(run: Run) -> List[Pokemon]:
     return sorted(run.party.pokemons, key=lambda x: x.metadata.caught_index)
 
 
+def is_pokemon_in_wrap(run: Run, pokemon: Pokemon) -> bool:
+    sorted_party = get_sorted_party(run)
+    return len(sorted_party) <= 4 or any([
+        sorted_party[0].compare_pokemon(pokemon),
+        sorted_party[1].compare_pokemon(pokemon),
+        sorted_party[-1].compare_pokemon(pokemon),
+        sorted_party[-2].compare_pokemon(pokemon),
+    ])
+
+
 def refresh_pokemons_in_party(run: Run) -> List[Pokemon]:
     alive_pokemons = sorted(run.box.get_alive_pokemons(), key=lambda x: x.metadata.caught_index)
     party_pokemons = get_sorted_party(run)
