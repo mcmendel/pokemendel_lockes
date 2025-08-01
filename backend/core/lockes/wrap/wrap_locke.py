@@ -9,7 +9,6 @@ from core.run import Run
 from .utils import get_pokemon_max_index, get_sorted_party
 from .steps import (
     ReplacePartyPokemon,
-    AddToPartyStep,
     KillPokemonStep,
     RemoveFromPartyStep,
 )
@@ -33,7 +32,6 @@ class WrapLocke(BaseLocke):
             Dict[StepsNames, StepInterface]: A dictionary mapping step names to their implementations
         """
         locke_steps_map = copy(super().steps_mapper)
-        locke_steps_map[StepsNames.ADD_TO_PARTY] = AddToPartyStep()
         locke_steps_map[StepsNames.SWITCH_PARTY_POKEMONS] = ReplacePartyPokemon()
         locke_steps_map[StepsNames.REMOVE_FROM_PARTY] = RemoveFromPartyStep()
         locke_steps_map[StepsNames.KILL] = KillPokemonStep()
