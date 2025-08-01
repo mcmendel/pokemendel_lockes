@@ -2,7 +2,8 @@
 This class implements the abstract _mandatory_steps property and provides a base for all Locke challenges.
 """
 
-from core.locke import Locke, Pokemon
+from core.locke import Locke
+from definitions.pokemons.pokemon import Pokemon
 from definitions.runs.steps_info import StepInfo
 from definitions.runs.steps_names import StepsNames
 from definitions.runs.steps_interface import StepInterface

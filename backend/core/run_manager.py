@@ -157,6 +157,7 @@ class RunManager:
     def _catch_pokemon(self, pokemon_name: str) -> Pokemon:
         new_pokemon = self._generate_locke_pokemon(pokemon_name)
         self.locke.catch_pokemon(new_pokemon, self.run)
+        update_pokemon(new_pokemon, self.run.id)
         mark_caught_pokemon(self.run.id, new_pokemon.name)
         return new_pokemon
 
