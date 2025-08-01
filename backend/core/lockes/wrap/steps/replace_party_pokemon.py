@@ -11,7 +11,7 @@ class ReplacePartyPokemon(ReplacePartyPokemonOg):
     def is_step_relevant(self, run: Run, pokemon: Pokemon) -> bool:
         return super().is_step_relevant(run, pokemon) and len(run.party.pokemons) > 4
 
-    def step_options(self, run: Run, pokemon: Pokemon) -> Tuple[InputOptions, List[str]]:
+    def step_options(self, run: Run, pokemon: Pokemon, is_randomized: bool) -> Tuple[InputOptions, List[str]]:
         sorted_party = get_sorted_party(run)
         assert len(sorted_party) >= 4, "Can't replace wrap pokemons. Must have at least one meat pokemon"
         relevant_party_members = [

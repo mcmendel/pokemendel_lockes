@@ -10,7 +10,7 @@ class PairPokemonStep(StepInterface):
     def is_step_relevant(self, run: Run, pokemon: Pokemon) -> bool:
         return not pokemon.metadata.paired and pokemon.metadata.gender in [Genders.MALE, Genders.FEMALE]
 
-    def step_options(self, run: Run, pokemon: Pokemon) -> Tuple[InputOptions, List[str]]:
+    def step_options(self, run: Run, pokemon: Pokemon, is_randomized: bool) -> Tuple[InputOptions, List[str]]:
         partner_gender = self._get_opposite_gender(pokemon)
         relevant_pokemons = [box_pokemon.metadata.id for box_pokemon in run.box.pokemons if not box_pokemon.metadata.paired and box_pokemon.metadata.gender == partner_gender]
         return InputOptions.ONE_OF, relevant_pokemons

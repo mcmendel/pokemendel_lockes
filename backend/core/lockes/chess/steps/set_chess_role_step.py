@@ -16,7 +16,7 @@ class SetChessRoleStep(StepInterface):
             or not self._is_promoted_pawn(pokemon)
         ) and pokemon.metadata.gender
 
-    def step_options(self, run: Run, pokemon: Pokemon) -> Tuple[InputOptions, List[str]]:
+    def step_options(self, run: Run, pokemon: Pokemon, is_randomized: bool) -> Tuple[InputOptions, List[str]]:
         if pokemon.compare_pokemon(run.starter):
             return InputOptions.ONE_OF, [ChessRoles.KING]
 

@@ -16,6 +16,7 @@ from core.steps import (
     EvolvePokemonStep,
     KillPokemonStep,
     ChooseNatureStep,
+    ChooseAbilityStep,
 )
 from core.run import Run
 from pokemendel_core.utils.class_property import classproperty
@@ -87,6 +88,7 @@ class BaseLocke(Locke):
             mandatory_steps.append(StepInfo(StepsNames.GENDER, prerequisites=[StepsNames.NICKNAME]))
         if gen >= 3:
             mandatory_steps.append(StepInfo(StepsNames.NATURE, prerequisites=[StepsNames.NICKNAME]))
+            mandatory_steps.append(StepInfo(StepsNames.ABILITY, prerequisites=[StepsNames.NICKNAME]))
         return mandatory_steps
 
     @classproperty
@@ -103,6 +105,8 @@ class BaseLocke(Locke):
             StepsNames.GENDER: ChooseGenderStep(),
             StepsNames.EVOLVE: EvolvePokemonStep(),
             StepsNames.KILL: KillPokemonStep(),
+            StepsNames.NATURE: ChooseNatureStep(),
+            StepsNames.ABILITY: ChooseAbilityStep(),
         }
 
     def catch_pokemon(self, pokemon: Pokemon, run: Run):

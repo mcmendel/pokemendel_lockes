@@ -35,7 +35,7 @@ class ReplacePartyPokemon(StepInterface):
         """
         return not run.party.is_pokemon_in_party(pokemon)
 
-    def step_options(self, run: Run, pokemon: Pokemon) -> Tuple[InputOptions, List[str]]:
+    def step_options(self, run: Run, pokemon: Pokemon, is_randomized: bool) -> Tuple[InputOptions, List[str]]:
         """Get the options for replacing a Pokemon in the party.
         
         Args:

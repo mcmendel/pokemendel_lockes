@@ -87,7 +87,7 @@ class RunManager:
         step: StepInterface = self.locke.steps_mapper[action]
         pokemon = self.run.get_pokemon_by_id(pokemon_id, verify_alive=True)
         assert step.is_step_relevant(self.run, pokemon), f"Step {action} is not relevant for pokemon {pokemon_id}"
-        return step.step_options(self.run, pokemon)
+        return step.step_options(self.run, pokemon, self.randomized)
 
     def execute_action(self, pokemon_id: str, action: str, value: str):
         assert action in self.locke.steps_mapper, f"Step {action} is not relevant for pokemon {pokemon_id}"

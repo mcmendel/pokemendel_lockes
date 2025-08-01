@@ -31,7 +31,7 @@ class NicknamePokemonStep(StepInterface):
         """
         return not pokemon.metadata.nickname
 
-    def step_options(self, run: Run, pokemon: Pokemon) -> Tuple[InputOptions, List[str]]:
+    def step_options(self, run: Run, pokemon: Pokemon, is_randomized: bool) -> Tuple[InputOptions, List[str]]:
         """Get the options for nicknaming a pokemon.
         
         Args:

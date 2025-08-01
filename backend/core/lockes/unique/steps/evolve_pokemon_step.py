@@ -13,7 +13,7 @@ class EvolvePokemonStep(EvolvePokemonStepOg):
             return False
         return bool(self._get_empty_intersection_evolutions(pokemon, run))
 
-    def step_options(self, run: Run, pokemon: Pokemon) -> Tuple[InputOptions, List[str]]:
+    def step_options(self, run: Run, pokemon: Pokemon, is_randomized: bool) -> Tuple[InputOptions, List[str]]:
         return InputOptions.ONE_OF, self._get_empty_intersection_evolutions(pokemon, run)
 
     def _get_empty_intersection_evolutions(self, pokemon: Pokemon, run: Run) -> List[str]:
