@@ -50,7 +50,7 @@ TEST_LOCKE = "CategoryLocke"
     (Categories.BEAR, {PokemonGen2.SNORLAX, PokemonGen2.TEDDIURSA}, PokemonGen2.SNORLAX, 2, False),
     (Categories.BIRD, {PokemonGen2.HO_OH, PokemonGen2.DELIBIRD, PokemonGen2.NATU, PokemonGen2.HOOTHOOT, PokemonGen2.MOLTRES, PokemonGen2.MURKROW, PokemonGen2.PIDGEY, PokemonGen2.SPEAROW, PokemonGen2.ARTICUNO, PokemonGen2.ZAPDOS, PokemonGen2.MAGBY, PokemonGen2.FARFETCHD, PokemonGen2.DODUO, PokemonGen2.PSYDUCK}, PokemonGen2.PIDGEY, 12, True),
     (Categories.BUG, {PokemonGen2.SLUGMA, PokemonGen2.HERACROSS, PokemonGen2.GLIGAR, PokemonGen2.YANMA, PokemonGen2.SPINARAK, PokemonGen2.LEDYBA, PokemonGen2.PSYDUCK, PokemonGen2.CATERPIE, PokemonGen2.WEEDLE, PokemonGen2.SCYTHER, PokemonGen2.PINSIR, PokemonGen2.VENONAT, PokemonGen2.DIGLETT}, PokemonGen2.CATERPIE, 14, True),
-    (Categories.BUNNY, {PokemonGen2.NIDORAN_F, PokemonGen2.NIDORAN_M}, PokemonGen2.NIDORAN_F, 0, True),
+    (Categories.BUNNY, {PokemonGen2.NIDORAN_F, PokemonGen2.NIDORAN_M}, PokemonGen2.NIDORAN_M, 0, True),
     (Categories.CAT, {PokemonGen2.MEOWTH, PokemonGen2.RAIKOU, PokemonGen2.ENTEI, PokemonGen2.SUICUNE}, PokemonGen2.MEOWTH, 3, True),
     (Categories.CATTLE, {PokemonGen2.MILTANK, PokemonGen2.MAREEP, PokemonGen2.TAUROS}, PokemonGen2.TAUROS, 1, False),
     (Categories.COW, {PokemonGen2.TAUROS, PokemonGen2.MILTANK}, PokemonGen2.TAUROS, 1, False),
