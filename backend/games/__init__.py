@@ -1,7 +1,12 @@
 from .gen1 import Game, BLUE, RED, YELLOW
 from .gen2 import GOLD, SILVER, CRYSTAL
+from .gen3 import RUBY, SAPPHIRE
 from typing import List
-GAMES = [BLUE, RED, YELLOW, GOLD, SILVER, CRYSTAL]
+GAMES = [
+    BLUE, RED, YELLOW,
+    GOLD, SILVER, CRYSTAL,
+    RUBY, SAPPHIRE,
+]
 
 
 def get_game(game_name: str) -> Game:
