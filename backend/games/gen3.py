@@ -725,3 +725,259 @@ EMERALD = _BaseRSGame(
         "Victory Road": {PokemonGen3.GOLBAT, PokemonGen3.HARIYAMA, PokemonGen3.ZUBAT, PokemonGen3.LOUDRED, PokemonGen3.MAKUHITA, PokemonGen3.LAIRON, PokemonGen3.WHISMUR, PokemonGen3.ARON, PokemonGen3.MEDICHAM, PokemonGen3.MEDITITE, PokemonGen3.GRAVELER, PokemonGen3.GEODUDE, PokemonGen3.BARBOACH, PokemonGen3.WHISCASH, PokemonGen3.GOLDEEN, PokemonGen3.MAWILE},
     },
 )
+
+
+@dataclass
+class _BaseKantoGame(Game):
+    def __init__(self, **kwargs):
+        assert 'name' in kwargs
+        for override_field, default_value in [
+            ('gen', _GENERATION),
+            ('region', Regions.KANTO),
+            ('gyms', [GymTrainer(
+            leader="Brock",
+            type=Types.ROCK,
+            pokemons=[
+                TrainerPokemon(PokemonGen3.GEODUDE, 12),
+                TrainerPokemon(PokemonGen3.ONIX, 14),
+            ],
+            location="Pewter City",
+            badge="Boulder Badge"
+        ),
+        GymTrainer(
+            leader="Misty",
+            type=Types.WATER,
+            pokemons=[
+                TrainerPokemon(PokemonGen3.STARYU, 18),
+                TrainerPokemon(PokemonGen3.STARMIE, 21),
+            ],
+            location="Cerulean City",
+            badge="Cascade Badge"
+        ),
+        GymTrainer(
+            leader="Lt. Surge",
+            type=Types.ELECTRIC,
+            pokemons=[
+                TrainerPokemon(PokemonGen3.VOLTORB, 21),
+                TrainerPokemon(PokemonGen3.PIKACHU, 18),
+                TrainerPokemon(PokemonGen3.RAICHU, 24),
+            ],
+            location="Vermillion City",
+            badge="Thunder Badge"
+        ),
+        GymTrainer(
+            leader="Erika",
+            type=Types.GRASS,
+            pokemons=[
+                TrainerPokemon(PokemonGen3.VICTREEBEL, 29),
+                TrainerPokemon(PokemonGen3.TANGELA, 24),
+                TrainerPokemon(PokemonGen3.VILEPLUME, 29),
+            ],
+            location="Celadon City",
+            badge="Rainbow Badge"
+        ),
+        GymTrainer(
+            leader="Koga",
+            type=Types.POISON,
+            pokemons=[
+                TrainerPokemon(PokemonGen3.KOFFING, 37),
+                TrainerPokemon(PokemonGen3.KOFFING, 37),
+                TrainerPokemon(PokemonGen3.MUK, 39),
+                TrainerPokemon(PokemonGen3.WEEZING, 43),
+            ],
+            location="Fuchsia City",
+            badge="Soul Badge"
+        ),
+        GymTrainer(
+            leader="Sabrina",
+            type=Types.PSYCHIC,
+            pokemons=[
+                TrainerPokemon(PokemonGen3.KADABRA, 38),
+                TrainerPokemon(PokemonGen3.MR_MIME, 37),
+                TrainerPokemon(PokemonGen3.VENOMOTH, 38),
+                TrainerPokemon(PokemonGen3.ALAKAZAM, 43),
+            ],
+            location="Saffron City",
+            badge="Marsh Badge"
+        ),
+        GymTrainer(
+            leader="Blaine",
+            type=Types.FIRE,
+            pokemons=[
+                TrainerPokemon(PokemonGen3.GROWLITHE, 42),
+                TrainerPokemon(PokemonGen3.PONYTA, 40),
+                TrainerPokemon(PokemonGen3.RAPIDASH, 42),
+                TrainerPokemon(PokemonGen3.ARCANINE, 47),
+            ],
+            location="Cinnabar Island",
+            badge="Volcano Badge"
+        ),
+        GymTrainer(
+            leader="Giovanni",
+            type=Types.GROUND,
+            pokemons=[
+                TrainerPokemon(PokemonGen3.RHYHORN, 45),
+                TrainerPokemon(PokemonGen3.DUGTRIO, 42),
+                TrainerPokemon(PokemonGen3.NIDOQUEEN, 44),
+                TrainerPokemon(PokemonGen3.NIDOKING, 45),
+                TrainerPokemon(PokemonGen3.RHYDON, 50),
+            ],
+            location="Viridian City",
+            badge="Earth Badge"
+        )]),
+            ('elite4', [
+        EliteTrainer(
+            leader="Lorelei", type=Types.ICE, pokemons=[
+                TrainerPokemon(PokemonGen3.DEWGONG, 52),
+                TrainerPokemon(PokemonGen3.CLOYSTER, 51),
+                TrainerPokemon(PokemonGen3.SLOWBRO, 52),
+                TrainerPokemon(PokemonGen3.JYNX, 54),
+                TrainerPokemon(PokemonGen3.LAPRAS, 54),
+            ]
+        ),
+        EliteTrainer(
+            leader="Bruno", type=Types.FIGHTING, pokemons=[
+                TrainerPokemon(PokemonGen3.ONIX, 51),
+                TrainerPokemon(PokemonGen3.HITMONCHAN, 53),
+                TrainerPokemon(PokemonGen3.HITMONLEE, 53),
+                TrainerPokemon(PokemonGen3.ONIX, 54),
+                TrainerPokemon(PokemonGen3.MACHAMP, 56),
+            ]
+        ),
+        EliteTrainer(
+            leader="Agatha", type=Types.POISON, pokemons=[
+                TrainerPokemon(PokemonGen3.GENGAR, 54),
+                TrainerPokemon(PokemonGen3.GOLBAT, 54),
+                TrainerPokemon(PokemonGen3.HAUNTER, 53),
+                TrainerPokemon(PokemonGen3.ARBOK, 56),
+                TrainerPokemon(PokemonGen3.GENGAR, 58),
+            ]
+        ),
+        EliteTrainer(
+            leader="Lance", type=Types.DRAGON, pokemons=[
+                TrainerPokemon(PokemonGen3.GYARADOS, 56),
+                TrainerPokemon(PokemonGen3.DRAGONAIR, 54),
+                TrainerPokemon(PokemonGen3.DRAGONAIR, 54),
+                TrainerPokemon(PokemonGen3.AERODACTYL, 58),
+                TrainerPokemon(PokemonGen3.DRAGONITE, 60),
+            ]
+        ),
+    ]),
+            ('routes', [
+                "Route 1",
+"Route 2",
+"Route 3",
+"Route 4",
+"Route 5",
+"Route 6",
+"Route 7",
+"Route 8",
+"Route 9",
+"Route 10",
+"Route 11",
+"Route 12",
+"Route 13",
+"Route 14",
+"Route 15",
+"Route 16",
+"Route 17",
+"Route 18",
+"Route 19",
+"Route 20",
+"Route 21",
+"Route 22",
+"Route 23",
+"Route 24",
+"Route 25",
+"Route 26",
+"Route 27",
+"Route 28",
+"Berry Forest",
+"Bond Bridge",
+"Canyon Entrance",
+"Cape Brink",
+"Celadon City",
+"Cerulean Cave",
+"Cerulean City",
+"Cinnabar Island",
+"Diglett's Cave",
+"Dotted Hole",
+"Five Island",
+"Five Isle Meadow",
+"Four Island",
+"Fuchsia City",
+"Green Path",
+"Icefall Cave",
+"Indigo Plateau",
+"Kindle Road",
+"Lavender Town",
+"Lost Cave",
+"Memorial Pillar",
+"Mt. Ember",
+"Mt. Moon",
+"Navel Rock",
+"One Island",
+"Outcast Island",
+"Pallet Town",
+"Pattern Bush",
+"Pewter City",
+"Pokémon Mansion",
+"Pokémon Tower",
+"Power Plant",
+"Resort Gorgeous",
+"Roaming Kanto",
+"Rock Tunnel",
+"Rocket Hideout",
+"Rocket Warehouse",
+"Ruin Valley",
+"Safari Zone",
+"Saffron City",
+"Seafoam Islands",
+"Sevault Canyon",
+"Seven Island",
+"Silph Co.",
+"Six Island",
+"SS Anne",
+"Tanoby Ruins",
+"Three Island",
+"Three Isle Path",
+"Three Isle Port",
+"Tohjo Falls",
+"Trainer Tower",
+"Treasure Beach",
+"Two Island",
+"Underground Path 5-6",
+"Underground Path 7-8",
+"Vermilion City",
+"Victory Road",
+"Viridian City",
+"Viridian Forest",
+"Water Labyrinth",
+"Water Path",
+            ]),
+            ('starters', [
+        fetch_pokemon(PokemonGen3.BULBASAUR, _GENERATION),
+        fetch_pokemon(PokemonGen3.CHARMANDER, _GENERATION),
+        fetch_pokemon(PokemonGen3.SQUIRTLE, _GENERATION),
+    ]),
+            ('important_battles', [
+        "Route 22 - Rival (9)",
+        "Pewter City - GymTrainer (14)",
+        "Nugget Bridge - Rival (18)",
+        "SS Anne - Rival (20)",
+        "Cerulean City - GymTrainer (21)",
+        "Vermillion City - GymTrainer (24)",
+        "Pokemon Tower - Rival (25)",
+        "Game Corner - Boss (29)",
+        "Celadon City - GymTrainer (29)",
+        "Silph Co - Rival (40)",
+        "Silph Co - Boss (41)",
+        "Saffron City - GymTrainer (43)",
+        "Fuchia City - GymTrainer (43)",
+        "Cinnabar Island - GymTrainer (47)",
+        "Viridian City - GymTrainer (50)",
+        "Route 22 - Rival (53)",
+    ]),
+        ]:
+            kwargs[override_field] = kwargs.get(override_field, default_value)
+        super().__init__(**kwargs)
