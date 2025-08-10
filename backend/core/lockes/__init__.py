@@ -15,6 +15,7 @@ from core.lockes.chess.chess_locke import ChessLocke
 from core.lockes.star.star_locke import StarLocke
 from core.lockes.wrap.wrap_locke import WrapLocke
 from core.lockes.color.color_locke import ColorLocke
+from core.lockes.castform.castform_locke import CastformLocke
 from typing import List
 
 # Dictionary mapping locke names to their instances
@@ -30,6 +31,7 @@ LOCKE_INSTANCES = {
     StarLocke.name: StarLocke(),
     WrapLocke.name: WrapLocke(),
     ColorLocke.name: ColorLocke(),
+    CastformLocke.name: CastformLocke(),
 }
 
 

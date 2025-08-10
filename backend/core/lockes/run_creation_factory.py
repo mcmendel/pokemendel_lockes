@@ -19,6 +19,8 @@ from core.lockes.star.run_creator import StarRunCreator
 from core.lockes.star.star_locke import StarLocke
 from core.lockes.color.color_locke import ColorLocke
 from core.lockes.color.run_creator import ColorRunCreator
+from core.lockes.castform.castform_locke import CastformLocke
+from core.lockes.castform.run_creator import CastformRunCreator
 
 
 def get_run_creator_class(locke_name: str) -> Type[RunCreator]:
@@ -49,4 +51,6 @@ def get_run_creator_class(locke_name: str) -> Type[RunCreator]:
         return StarRunCreator
     if locke_name == ColorLocke.name:
         return ColorRunCreator
+    if locke_name == CastformLocke.name:
+        return CastformRunCreator
     return RunCreator 
