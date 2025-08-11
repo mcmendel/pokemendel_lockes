@@ -4,11 +4,11 @@ from core.locke import Pokemon
 from typing import List
 
 
-class CastformLocke(BaseLocke):
+class DeoxysLocke(BaseLocke):
 
     def rules(self) -> List[str]:
         locke_rules = super().rules()
-        locke_rules.append("Only Castform and its forms can be in the team")
+        locke_rules.append("Only Deoxys and its forms can be in the team")
         return locke_rules
 
     @classproperty
