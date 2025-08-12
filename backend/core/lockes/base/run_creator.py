@@ -89,6 +89,9 @@ class RunCreator:
         if self.run_creation.finished:
             return RunCreationProgress(run_creation=self.run_creation, has_all_info=True)
 
+        return self._get_unfinished_progress(locke_min_gen)
+
+    def _get_unfinished_progress(self, locke_min_gen: int) -> RunCreationProgress:
         if self.run_creation.game is None:
             return RunCreationProgress(run_creation=self.run_creation, missing_key=InfoKeys.GAME, missing_key_options=[
                 game.name for game in get_games_from_gen(locke_min_gen)

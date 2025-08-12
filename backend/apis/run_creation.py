@@ -2,7 +2,7 @@
 
 from models.run_creation import RunCreation, fetch_run_creation, update_run_creation
 from models.run import Run as DBRun, save_run
-from core.lockes import LOCKE_INSTANCES, get_run_creator_class
+from core.lockes import LOCKE_INSTANCES, get_run_creator_class, GenLocke, list_all_lockes
 from games import get_games_from_gen, get_game
 from .exceptions import RunAlreadyExistsError, InvalidLockeTypeError, RunNotFoundError, InvalidGameError
 from typing import TypedDict, Optional
@@ -84,6 +84,9 @@ def start_run_creation(run_name: str, locke_type: str, duplicate_clause: bool, i
     )
     
     update_run_creation(run_creation)
+
+    if locke.name == GenLocke.name:
+        return [locke for locke in list_all_lockes() if locke != GenLocke.name]
     
     # Get available games based on locke's minimum generation
     available_games = get_games_from_gen(locke.min_gen)

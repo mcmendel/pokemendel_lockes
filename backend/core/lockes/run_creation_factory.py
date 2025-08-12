@@ -23,6 +23,8 @@ from core.lockes.castform.castform_locke import CastformLocke
 from core.lockes.castform.run_creator import CastformRunCreator
 from core.lockes.deoxys.run_creator import DeoxysRunCreator
 from core.lockes.deoxys.deoxys_locke import DeoxysLocke
+from core.lockes.genlocke.gen_locke import GenLocke
+from core.lockes.genlocke.run_creator import GenRunCreator
 
 
 def get_run_creator_class(locke_name: str) -> Type[RunCreator]:
@@ -57,4 +59,6 @@ def get_run_creator_class(locke_name: str) -> Type[RunCreator]:
         return CastformRunCreator
     if locke_name == DeoxysLocke.name:
         return DeoxysRunCreator
+    if locke_name == GenLocke.name:
+        return GenRunCreator
     return RunCreator 

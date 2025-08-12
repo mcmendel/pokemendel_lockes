@@ -37,7 +37,7 @@ def start_locke_creation(client, test_locke, test_game, duplicate_clause, is_ran
     })
     assert response.status_code == 200
     potential_games = response.get_json()
-    assert test_game in potential_games
+    assert test_game in potential_games, f"Failed to continue run creation with game {test_game}"
 
 
 def continue_locke_creation_not_finished(client, key, val, expected_next_key, expected_optional_val):
