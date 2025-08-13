@@ -73,9 +73,9 @@ class Locke(ABC):
         """Abstract property. Must be implemented by subclasses."""
         pass
 
-    @classproperty
+    @property
     @abstractmethod
-    def steps_mapper(cls) -> Dict[StepsNames, StepInterface]:
+    def steps_mapper(self) -> Dict[StepsNames, StepInterface]:
         """Get a mapping of step names to their implementations.
         Returns:
             Dict[StepsNames, StepInterface]: A dictionary mapping step names to their implementations

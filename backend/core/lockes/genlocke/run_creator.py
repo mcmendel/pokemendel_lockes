@@ -1,11 +1,10 @@
 from core.lockes.base.run_creator import RunCreator, RunCreationProgress, List, BaseLocke, Run
 from core.lockes.lockes_factory import list_all_lockes, GenLocke, LOCKE_INSTANCES
+from core.lockes.genlocke.utils import SELECTED_LOCKE as _SELECTED_LOCKE
 from core.lockes.run_creation_factory import get_run_creator_class
 from games import Game, get_games_from_gen
 from pokemendel_core.utils.definitions.regions import Regions
 
-
-_SELECTED_LOCKE = "_selected_locke"
 _GAME_PREFIX = "_game_"
 
 _GEN_TO_REGION = {

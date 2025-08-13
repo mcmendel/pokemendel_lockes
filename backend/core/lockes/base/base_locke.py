@@ -91,8 +91,8 @@ class BaseLocke(Locke):
             mandatory_steps.append(StepInfo(StepsNames.ABILITY, prerequisites=[StepsNames.NICKNAME]))
         return mandatory_steps
 
-    @classproperty
-    def steps_mapper(cls) -> Dict[StepsNames, StepInterface]:
+    @property
+    def steps_mapper(self) -> Dict[StepsNames, StepInterface]:
         """Get a mapping of step names to their implementations.
         Returns:
             Dict[StepsNames, StepInterface]: A dictionary mapping step names to their implementations

@@ -39,8 +39,8 @@ class ChessLocke(BaseLocke):
         mandatory_steps.append(StepInfo(step_name=StepsNames.CHESSLOCKE_SET_ROLE, prerequisites=[StepsNames.GENDER]))
         return mandatory_steps
 
-    @classproperty
-    def steps_mapper(cls) -> Dict[StepsNames, StepInterface]:
+    @property
+    def steps_mapper(self) -> Dict[StepsNames, StepInterface]:
         """Get a mapping of step names to their implementations.
         Returns:
             Dict[StepsNames, StepInterface]: A dictionary mapping step names to their implementations
