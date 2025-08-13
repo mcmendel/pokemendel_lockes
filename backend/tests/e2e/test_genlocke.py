@@ -39,27 +39,27 @@ _GEN_TO_GAME = {
 }
 
 
-@pytest.mark.parametrize("locke,extra_info,relevant_games_gens", [
-    (BaseLocke.name, False, [2, 3]),
-    (CastformLocke.name, False, [3]),
-    (CategoryLocke.name, True, [2, 3]),
-    (ChessLocke.name, False, [2, 3]),
-    (ColorLocke.name, True, [2, 3]),
-    (DeoxysLocke.name, False, [1, 3]),
-    (EeveeLocke.name, False, [2, 3]),
-    (LegLocke.name, True, [2, 3]),
-    (MonoLocke.name, True, [2, 3]),
-    (StarLocke.name, True, [2, 3]),
-    (UniqueLocke.name, False, [2, 3]),
-    (WedLocke.name, False, [2, 3]),
-    (WrapLocke.name, False, [2, 3]),
+@pytest.mark.parametrize("locke,extra_info,specific_pokemons", [
+    (BaseLocke.name, False, False),
+    (CastformLocke.name, False, True),
+    (CategoryLocke.name, True, False),
+    (ChessLocke.name, False, False),
+    (ColorLocke.name, True, False),
+    (DeoxysLocke.name, False, True),
+    (EeveeLocke.name, False, True),
+    (LegLocke.name, True, False),
+    (MonoLocke.name, True, False),
+    (StarLocke.name, True, False),
+    (UniqueLocke.name, False, False),
+    (WedLocke.name, False, False),
+    (WrapLocke.name, False, False),
 ])
-def test_base_gen(client_fixture, locke, extra_info, relevant_games_gens):
-    run_id = _create_run(client_fixture, GEN3_GAME_NAME, locke, extra_info, relevant_games_gens)
+def test_base_gen(client_fixture, locke, extra_info, specific_pokemons):
+    run_id = _create_run(client_fixture, GEN3_GAME_NAME, locke, extra_info, specific_pokemons)
     assert run_id
 
 
-def _create_run(client_fixture, game_name, locke, extra_info, relevant_games_gens):
+def _create_run(client_fixture, game_name, locke, extra_info, specific_pokemons):
     list_runs(client_fixture, None)
     list_lockes(client_fixture, TEST_LOCKE)
     with pytest.raises(AssertionError, match=f"Failed to continue run creation with game {game_name}"):
@@ -70,7 +70,7 @@ def _create_run(client_fixture, game_name, locke, extra_info, relevant_games_gen
     if extra_info:
         continue_locke_creation_not_finished(client_fixture, "GAME", "Fire Red", None, None)
         return "run_id"
-    return continue_locke_creation_finished(client_fixture, "GAME", "Fire Red")
+    return continue_locke_creation_finished(client_fixture, "GAME", "Fire Red", all_pokemons_caught=specific_pokemons)
 
 
 if __name__ == '__main__':
