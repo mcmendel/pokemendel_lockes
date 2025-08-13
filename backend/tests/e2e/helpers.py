@@ -232,7 +232,15 @@ def assert_run_potential_pokemons(run_id: str, expected_num_pokemons: int):
     assert len(db_runs) == expected_num_pokemons
 
 
-def assert_pokemon(run_response: dict, pokemon_id: str, pokemon_name: str, nickname: str = '', gender: str = None):
+def assert_pokemon(
+    run_response: dict,
+    pokemon_id: str,
+    pokemon_name: str,
+    nickname: str = '',
+    gender: str = None,
+    nature: str = None,
+    ability: str = None,
+):
     assert pokemon_id in run_response['pokemons']
     run_pokemon = run_response['pokemons'][pokemon_id]
     assert run_pokemon['name'] == pokemon_name
@@ -240,3 +248,5 @@ def assert_pokemon(run_response: dict, pokemon_id: str, pokemon_name: str, nickn
     assert run_pokemon['metadata']['nickname'] == nickname
     assert run_pokemon['status'] == 'alive'
     assert run_pokemon['metadata']['gender'] == gender
+    assert run_pokemon['nature'] == nature
+    assert run_pokemon['metadata']['ability'] == ability
