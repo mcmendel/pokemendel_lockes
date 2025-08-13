@@ -24,7 +24,6 @@ from core.lockes.castform.run_creator import CastformRunCreator
 from core.lockes.deoxys.run_creator import DeoxysRunCreator
 from core.lockes.deoxys.deoxys_locke import DeoxysLocke
 from core.lockes.genlocke.gen_locke import GenLocke
-from core.lockes.genlocke.run_creator import GenRunCreator
 
 
 def get_run_creator_class(locke_name: str) -> Type[RunCreator]:
@@ -41,7 +40,7 @@ def get_run_creator_class(locke_name: str) -> Type[RunCreator]:
         >>> creator_class = get_run_creator_class('nuzlocke')
         >>> creator = creator_class('my_run')
     """
-    # TODO: Add specific implementations for different locke types
+    from core.lockes.genlocke.run_creator import GenRunCreator
     # For now, all lockes use the base implementation
     if locke_name == MonoLocke.name:
         return MonoRunCreator

@@ -20,7 +20,7 @@ from core.lockes.base.base_locke import BaseLocke
 from core.run import Run
 from core.party import Party
 from core.box import Box
-from games import get_games_from_gen, get_game
+from games import get_games_from_gen, get_game, Game
 from datetime import datetime
 from uuid import uuid4
 
@@ -94,10 +94,13 @@ class RunCreator:
     def _get_unfinished_progress(self, locke_min_gen: int) -> RunCreationProgress:
         if self.run_creation.game is None:
             return RunCreationProgress(run_creation=self.run_creation, missing_key=InfoKeys.GAME, missing_key_options=[
-                game.name for game in get_games_from_gen(locke_min_gen)
+                game.name for game in self._get_games_from_gen(locke_min_gen)
             ])
         
         return self._get_creation_missing_extra_info()
+
+    def _get_games_from_gen(self, locke_min_gen: int) -> List[Game]:
+        return get_games_from_gen(locke_min_gen)
     
     def update_progress(self, key: str, value: Any) -> None:
         """Update the run creation with new information.
