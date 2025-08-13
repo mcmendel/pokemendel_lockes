@@ -1,5 +1,6 @@
-from core.lockes.base.run_creator import RunCreator, RunCreationProgress, List, Game
+from core.lockes.base.run_creator import RunCreator, RunCreationProgress, List
 from core.lockes.lockes_factory import list_all_lockes, GenLocke, LOCKE_INSTANCES
+from core.lockes.run_creation_factory import get_run_creator_class
 from games import Game, get_games_from_gen
 from pokemendel_core.utils.definitions.regions import Regions
 
@@ -15,6 +16,12 @@ _GEN_TO_REGION = {
 
 
 class GenRunCreator(RunCreator):
+    def __init__(self, *args, **kwargs):
+        super().__init__(*args, **kwargs)
+        self._internal_run_creator = None
+        if self.run_creation and _SELECTED_LOCKE in self.run_creation.extra_info:
+            creator_cls = get_run_creator_class(self.run_creation.extra_info[_SELECTED_LOCKE])
+            self._internal_run_creator = creator_cls(self.run_creation)
     def _get_unfinished_progress(self, locke_min_gen: int) -> RunCreationProgress:
         if _SELECTED_LOCKE not in self.run_creation.extra_info:
             return RunCreationProgress(
@@ -38,7 +45,7 @@ class GenRunCreator(RunCreator):
                 missing_key=f"{_GAME_PREFIX}{supported_gens}",
                 missing_key_options=[game.name for game in gen_games]
             )
-        return super()._get_unfinished_progress(locke_min_gen)
+        return self._internal_run_creator.get_progress(locke_min_gen)
 
     def _get_games_from_gen(self, locke_min_gen: int) -> List[Game]:
         locke_name = self.run_creation.extra_info[_SELECTED_LOCKE]
