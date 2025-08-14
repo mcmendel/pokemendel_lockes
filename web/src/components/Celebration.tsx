@@ -11,6 +11,32 @@ function Celebration() {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
 
+  const getGenderSymbol = (gender: string) => {
+    switch (gender) {
+      case 'Male':
+        return '♂';
+      case 'Female':
+        return '♀';
+      case 'Genderless':
+        return '⚪';
+      default:
+        return null;
+    }
+  };
+
+  const getGenderColor = (gender: string) => {
+    switch (gender) {
+      case 'Male':
+        return '#4A90E2';
+      case 'Female':
+        return '#E91E63';
+      case 'Genderless':
+        return '#9E9E9E';
+      default:
+        return '#9E9E9E';
+    }
+  };
+
   useEffect(() => {
     if (!runId) return;
     
@@ -104,7 +130,28 @@ function Celebration() {
               {survivingPokemon.map((pokemon) => (
                 <Grid item xs={12} sm={6} md={4} lg={3} key={pokemon.metadata.id}>
                   <Paper elevation={2} className="pokemon-card survivor-card">
-                    <Box className="pokemon-image-container">
+                    <Box className="pokemon-image-container" sx={{ position: 'relative' }}>
+                      {pokemon.metadata.gender && (
+                        <Box
+                          sx={{
+                            position: 'absolute',
+                            top: '8px',
+                            left: '8px',
+                            zIndex: 1,
+                            width: '20px',
+                            height: '20px',
+                            display: 'flex',
+                            alignItems: 'center',
+                            justifyContent: 'center',
+                            fontSize: '14px',
+                            fontWeight: 'bold',
+                            color: getGenderColor(pokemon.metadata.gender),
+                            textShadow: '1px 1px 1px rgba(0,0,0,0.5)'
+                          }}
+                        >
+                          {getGenderSymbol(pokemon.metadata.gender)}
+                        </Box>
+                      )}
                       <img 
                         src={lockeApi.getPokemonImageUrl(pokemon.name)}
                         alt={pokemon.name}
@@ -197,7 +244,29 @@ function Celebration() {
                   <Paper 
                     elevation={1} 
                     className={`pokemon-mini-card ${pokemon.status === 'dead' ? 'dead-pokemon' : 'alive-pokemon'}`}
+                    sx={{ position: 'relative' }}
                   >
+                    {pokemon.metadata.gender && (
+                      <Box
+                        sx={{
+                          position: 'absolute',
+                          top: '4px',
+                          left: '4px',
+                          zIndex: 1,
+                          width: '16px',
+                          height: '16px',
+                          display: 'flex',
+                          alignItems: 'center',
+                          justifyContent: 'center',
+                          fontSize: '10px',
+                          fontWeight: 'bold',
+                          color: getGenderColor(pokemon.metadata.gender),
+                          textShadow: '1px 1px 1px rgba(0,0,0,0.5)'
+                        }}
+                      >
+                        {getGenderSymbol(pokemon.metadata.gender)}
+                      </Box>
+                    )}
                     <img 
                       src={lockeApi.getPokemonImageUrl(pokemon.name)}
                       alt={pokemon.name}
