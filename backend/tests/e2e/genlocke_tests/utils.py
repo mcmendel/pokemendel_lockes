@@ -6,10 +6,15 @@ from tests.e2e.helpers import (
     continue_locke_creation_finished,
     get_starter_options,
     choose_starter,
+    get_run_potential_encounters,
+    encounter_pokemon,
+    update_encounter,
     get_run,
     get_next_actions,
     get_action_options,
     execute_action,
+    win_battle,
+    save_run,
     assert_pokemon,
 )
 from typing import Optional
@@ -58,6 +63,41 @@ def choose_gen_starter(client, run_id, expected_starter_options, starter_pokemon
         nature=nature,
     )
     return starter_id
+
+
+def catch_pokemon(
+    client, run_id,
+    route, encounter_name, num_expected_encounters,
+    num_current_box, num_new_party, is_pokemon_in_party,
+    nickname, gender=None, ability=None, nature=None,
+):
+    potential_encounters = get_run_potential_encounters(client, run_id, route, num_expected_encounters)
+    assert encounter_name in potential_encounters
+    encounter_pokemon(client, run_id, route, encounter_name)
+    run_response = get_run(client, run_id)
+    assert len(run_response['run']['box']) == num_current_box
+    encounter = next(encounter for encounter in run_response['run']['encounters'] if encounter['route'] == route)
+    assert encounter['pokemon'] == encounter_name
+    assert encounter['status'] == "Met"
+    update_encounter(client, run_id, route, "Caught")
+    run_response = get_run(client, run_id)
+    encounter = next(encounter for encounter in run_response['run']['encounters'] if encounter['route'] == route)
+    encounter_id = encounter['pokemon']
+    handle_caught_pokemon(
+        client=client,
+        run_response=run_response,
+        run_id=run_id,
+        num_box=num_current_box + 1,
+        num_party=num_new_party,
+        pokemon_id=encounter_id,
+        pokemon_name=encounter_name,
+        is_pokemon_in_party=is_pokemon_in_party,
+        nickname=nickname,
+        gender=gender,
+        ability=ability,
+        nature=nature,
+    )
+    return encounter_id
 
 
 def handle_caught_pokemon(
@@ -145,6 +185,16 @@ def handle_caught_pokemon(
             nature=nature,
             ability=ability,
         )
+
+
+def kill_pokemon(client, run_id, pokemon_id, num_party, num_box):
+    execute_action(client, run_id, pokemon_id, "Kill Pokemon", "")
+    run_response = get_run(client, run_id)
+    assert pokemon_id in run_response['pokemons']
+    run_pokemon = run_response['pokemons'][pokemon_id]
+    assert run_pokemon['status'] == 'dead'
+    assert len(run_response['run']['party']) == num_party
+    assert len(run_response['run']['box']) == num_box
 
 
 def _build_next_actions(gender: bool, nature: bool, ability: bool):
