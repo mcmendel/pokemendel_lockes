@@ -62,8 +62,8 @@ def generate_showdown_format(gen, name, nickname=None, item=None, set_gender=Tru
 if __name__ == "__main__":
     output = generate_showdown_format(
         gen=2,
-        name=PokemonGen3.AERODACTYL,
-        nickname="JT",
-        # item="Moon Stone",
+        name=PokemonGen3.TANGELA,
+        nickname="Dan",
+        # item="Leaf Stone",
     )
     print(output)
