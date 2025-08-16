@@ -1,9 +1,10 @@
 from pokemendel_core.data.gen3 import PokemonGen3
 from pokemendel_core.data import fetch_pokemon
 from pokemendel_core.utils.definitions.genders import Genders
+from scripts.showdown_movesets import MOVESETS
+from typing import List
 import random
 
-LATEST_GEN = 3
 
 
 def choose_gender(pokemon) -> str:
@@ -18,11 +19,19 @@ def choose_gender(pokemon) -> str:
     return "(M)" if selected_gender == Genders.MALE else "(F)"
 
 
-def generate_showdown_format(name, moves, nickname=None, item=None, set_gender=True):
-    if not (1 <= len(moves) <= 4):
-        raise ValueError("A Pokémon must have between 1 and 4 moves.")
+def get_moveset(gen: int, pokemon_name: str) -> List[str]:
+    assert gen in MOVESETS, "Generation was not supported in movesets"
+    gen_movesets = MOVESETS[gen]
+    assert pokemon_name, f"Pokemon {pokemon_name} is not in gen {gen} moveset"
+    pokemon_moves = gen_movesets[pokemon_name]
+    assert 1 <= len(pokemon_moves) <= 4, f"Pokemon {pokemon_name} in gen {gen} is not between 1 and 4"
+    return pokemon_moves
 
-    pokemon = fetch_pokemon(name, LATEST_GEN)
+
+def generate_showdown_format(gen, name, nickname=None, item=None, set_gender=True):
+    moves = get_moveset(gen, name)
+
+    pokemon = fetch_pokemon(name, gen)
 
     # Format the Pokémon name and optional nickname
     header = f"{name} ({nickname})" if nickname else name
@@ -52,13 +61,9 @@ def generate_showdown_format(name, moves, nickname=None, item=None, set_gender=T
 
 if __name__ == "__main__":
     output = generate_showdown_format(
+        gen=2,
         name=PokemonGen3.AERODACTYL,
-        nickname="Monica",
-        item="Moon Stone",
-        moves=[
-            "Wing Attack",
-            # "Tail Whip",
-            # "Encore",
-        ],
+        nickname="JT",
+        # item="Moon Stone",
     )
     print(output)
