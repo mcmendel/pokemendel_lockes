@@ -15,6 +15,7 @@ from tests.e2e.helpers import (
     execute_action,
     win_battle,
     save_run,
+    finish_run,
     assert_pokemon,
 )
 from typing import Optional
@@ -195,6 +196,14 @@ def kill_pokemon(client, run_id, pokemon_id, num_party, num_box):
     assert run_pokemon['status'] == 'dead'
     assert len(run_response['run']['party']) == num_party
     assert len(run_response['run']['box']) == num_box
+
+
+def finish_gen_run(client, run_id, last_gen):
+    if last_gen:
+        finish_run(client, run_id)
+    else:
+        with pytest.raises(AssertionError, match="Expected status code 200, but got 322"):
+            finish_run(client, run_id)
 
 
 def _build_next_actions(gender: bool, nature: bool, ability: bool):

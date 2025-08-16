@@ -5,6 +5,8 @@ from games import get_game
 from core.lockes import LOCKE_INSTANCES
 from core.run import convert_db_run_to_core_run
 from core.run_manager import RunManager
+from apis.run_admin import finish_run as finish_run_admin, RunResponse
+from responses.exceptions import ContinueCreationException
 import random
 
 
@@ -85,3 +87,11 @@ def execute_action(run_id: str, pokemon_id: str, action: str, value: str):
 def win_battle(run_id: str, leader: str):
     run_manager = _get_run_manager(run_id)
     run_manager.win_battle(leader)
+
+
+def finish_run(run_id: str) -> RunResponse:
+    run_manager = _get_run_manager(run_id)
+    if run_manager.locke.finish_locke(run_manager.game.name):
+        return finish_run_admin(run_id)
+
+    raise ContinueCreationException()

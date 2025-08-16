@@ -92,3 +92,6 @@ class Locke(ABC):
     @property
     def auto_add_to_party(self) -> bool:
         return True
+
+    def finish_locke(self, game_name: str) -> bool:
+        return True

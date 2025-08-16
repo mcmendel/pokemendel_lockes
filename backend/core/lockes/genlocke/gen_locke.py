@@ -1,13 +1,12 @@
 from core.lockes.base.base_locke import BaseLocke
-from core.lockes.genlocke.utils import SELECTED_LOCKE
+from core.lockes.genlocke.utils import SELECTED_LOCKE, get_game_locke_gen
 from core.lockes.lockes_factory_no_gen import LOCKE_INSTANCES
 from definitions.runs.steps_info import StepInfo
 from definitions.runs.steps_names import StepsNames
 from definitions.runs.steps_interface import StepInterface
-from pokemendel_core.utils.class_property import classproperty
 from pokemendel_core.models.pokemon import Pokemon
-from dataclasses import dataclass
-from typing import List, Dict, Optional, Any
+from pokemendel_core.utils.definitions.regions import Regions
+from typing import List, Dict
 from core.run import Run
 
 
@@ -45,3 +44,9 @@ class GenLocke(BaseLocke):
     def _get_inner_locke(self) -> BaseLocke:
         inner_locke_name = self.extra_info[SELECTED_LOCKE]
         return LOCKE_INSTANCES[inner_locke_name]
+
+    def finish_locke(self, game_name: str) -> bool:
+        gen = get_game_locke_gen(game_name)
+        if gen == len(Regions.list_all()):
+            return True
+        return False

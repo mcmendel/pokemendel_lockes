@@ -18,6 +18,10 @@ def test_base_genlocke(client_fixture):
         extra_info=False,
         specific_pokemons=False,
     )
+    _first_gen_run(client_fixture, run_id)
+    finish_gen_run(client_fixture, run_id, False)
+
+def _first_gen_run(client_fixture, run_id):
     charmander_id = choose_gen_starter(
         client=client_fixture,
         run_id=run_id,

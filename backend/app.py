@@ -3,11 +3,11 @@
 from flask import Flask, jsonify, send_file, request
 from flask_cors import CORS
 from dotenv import load_dotenv
-from responses.exceptions import BlackoutException
+from responses.exceptions import BlackoutException, ContinueCreationException
 from apis.main import list_runs_api
 from apis.resources import get_pokemon_info, get_gym_leader_info, get_type_info
 from apis.run_creation import start_run_creation, continue_run_creation
-from apis.run_admin import get_run_api, save_run, load_run, finish_run
+from apis.run_admin import get_run_api, save_run, load_run
 from apis.run import (
     get_starter_options,
     choose_starter,
@@ -19,6 +19,7 @@ from apis.run import (
     get_next_actions,
     get_action_options,
     execute_action,
+    finish_run,
 )
 from core.lockes import list_all_lockes
 from functools import wraps
@@ -46,6 +47,9 @@ def locke_route(path, *args, **kwargs):
             except BlackoutException:
                 print("Blackout happened")
                 return jsonify({"status": "error", "message": "blackout"}), 522
+            except ContinueCreationException:
+                print("Continue run after finish")
+                return jsonify({"status": "in_progress", "message": "continue run"}), 322
             except Exception as e:
                 status = getattr(e, "status_code", 500)
                 print(f"ERROR: {e}\n{traceback.format_exc()}")

@@ -184,7 +184,7 @@ def win_battle(client, run_id, leader):
 
 def finish_run(client, run_id):
     response = client.post('/locke_manager/run/' + run_id + '/finish')
-    assert response.status_code == 200
+    assert response.status_code == 200, f"Expected status code 200, but got {response.status_code}"
     run_response = get_run(client, run_id)
     assert run_response['run']['finished']
 
