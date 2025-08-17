@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from "react";
-import { useParams, Navigate } from "react-router-dom";
+import { useParams, Navigate, useNavigate } from "react-router-dom";
 import lockeApi, { RunResponse, Pokemon, StatusResponse } from "../api/lockeApi";
 import SaveIcon from '@mui/icons-material/Save';
 import UploadIcon from '@mui/icons-material/Upload';
@@ -31,6 +31,7 @@ import './Run.css';
 
 function RunComponent() {
   const { runId } = useParams<{ runId: string }>();
+  const navigate = useNavigate();
   const [runData, setRunData] = useState<RunResponse | null>(null);
   const [starterOptions, setStarterOptions] = useState<string[]>([]);
   const [error, setError] = useState<string | null>(null);
@@ -153,6 +154,12 @@ function RunComponent() {
           break;
       }
     } catch (e) {
+      if (e instanceof Error && (e as any).status === 322) {
+        // Redirect to ContinueRun page when status 322 is received
+        navigate(`/locke_manager/continue/${runId}`);
+        return;
+      }
+      
       setSnackbar({
         open: true,
         message: `Failed to ${action.toLowerCase()} run: ${e instanceof Error ? e.message : 'Unknown error'}`,

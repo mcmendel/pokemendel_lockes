@@ -3,6 +3,7 @@ import { BrowserRouter as Router, Routes, Route, Navigate } from 'react-router-d
 import HomePage from './components/HomePage';
 import NewRunPage from './components/NewRunPage';
 import RunConfiguration from './components/RunConfiguration';
+import ContinueRun from './components/ContinueRun';
 import Run from './components/Run';
 import Celebration from './components/Celebration';
 import Layout from './components/Layout';
@@ -16,6 +17,7 @@ function App() {
           <Route path="/locke_manager" element={<HomePage />} />
           <Route path="/locke_manager/new" element={<NewRunPage />} />
           <Route path="/new/:runName" element={<RunConfiguration />} />
+          <Route path="/locke_manager/continue/:runId" element={<ContinueRun />} />
           <Route path="/locke_manager/run/:runId" element={<Run />} />
           <Route path="/locke_manager/celebration/:runId" element={<Celebration />} />
           <Route path="*" element={<Navigate to="/locke_manager" replace />} />

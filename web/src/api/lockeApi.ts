@@ -94,6 +94,11 @@ export interface ContinueRunRequest {
     val?: string;
 }
 
+export interface ContinueRunWithIdRequest {
+    key?: string;
+    val?: string;
+}
+
 export interface Locke {
     name: string;
     description: string;
@@ -202,6 +207,14 @@ const lockeApi = {
             },
         });
 
+        if (response.status === 322) {
+            // Throw a specific error that can be caught to redirect to ContinueRun page
+            const error = new Error('Run continuation required');
+            (error as any).status = 322;
+            (error as any).runId = runId;
+            throw error;
+        }
+
         if (!response.ok) {
             throw new Error(`Failed to finish run: ${response.statusText}`);
         }
@@ -209,6 +222,16 @@ const lockeApi = {
         const data: RunResponse = await response.json();
         console.log('Finish run response:', data);
         return data;
+    },
+
+    async continueRun(runId: string, request?: ContinueRunWithIdRequest): Promise<RunUpdateResponse> {
+        try {
+            const response = await axios.post<RunUpdateResponse>(`${API_BASE_URL}/run/${runId}/continue_run`, request || {});
+            return response.data;
+        } catch (error) {
+            console.error('Error continuing run:', error);
+            throw error;
+        }
     },
 
     async getStarterOptions(runId: string): Promise<string[]> {
