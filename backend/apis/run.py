@@ -15,6 +15,7 @@ def _get_run_manager(run_id: str) -> RunManager:
     run = convert_db_run_to_core_run(db_run, run_id)
     game = get_game(db_run.game)
     locke = LOCKE_INSTANCES[db_run.locke]
+    locke.extra_info = db_run.locke_extra_info
     run_manager = RunManager(
         run=run,
         locke=locke,
