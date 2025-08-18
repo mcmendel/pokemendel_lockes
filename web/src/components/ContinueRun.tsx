@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { useNavigate, useParams } from 'react-router-dom';
-import lockeApi, { RunUpdateResponse } from '../api/lockeApi';
+import lockeApi from '../api/lockeApi';
 import './ContinueRun.css';
 
 interface SuccessPopupProps {
@@ -13,7 +13,7 @@ const SuccessPopup: React.FC<SuccessPopupProps> = ({ runId, onClose }) => {
     <div className="continue-run-popup-overlay">
       <div className="continue-run-popup">
         <h2>Success!</h2>
-        <p>Run continued successfully</p>
+        <p>Next generation selected successfully</p>
         <button 
           className="continue-run-popup-button"
           onClick={onClose}
@@ -29,69 +29,64 @@ const ContinueRun: React.FC = () => {
   const navigate = useNavigate();
   const { runId } = useParams<{ runId: string }>();
   const [error, setError] = useState<string | null>(null);
-  const [nextKey, setNextKey] = useState<string | null>(null);
-  const [potentialValues, setPotentialValues] = useState<string[]>([]);
-  const [selectedValue, setSelectedValue] = useState<string | null>(null);
+  const [gameOptions, setGameOptions] = useState<string[]>([]);
+  const [selectedGame, setSelectedGame] = useState<string | null>(null);
   const [isLoading, setIsLoading] = useState(true);
   const [showSuccess, setShowSuccess] = useState(false);
 
   useEffect(() => {
-    const continueRun = async () => {
+    const getNextGenOptions = async () => {
       if (!runId) {
         navigate('/locke_manager');
         return;
       }
 
       try {
-        const response = await lockeApi.continueRun(runId);
+        const response = await lockeApi.nextGen(runId);
         
         if (response.finished) {
-          // If the run is finished, redirect to the run page
+          // If the next generation is finished, redirect to the run page
           navigate(`/locke_manager/run/${runId}`);
         } else {
-          setNextKey(response.next_key);
-          setPotentialValues(response.potential_values);
+          setGameOptions(response.options);
         }
       } catch (err) {
-        setError(err instanceof Error ? err.message : 'Failed to continue run');
+        setError(err instanceof Error ? err.message : 'Failed to get next generation options');
       } finally {
         setIsLoading(false);
       }
     };
 
-    continueRun();
+    getNextGenOptions();
   }, [runId, navigate]);
 
-  const handleValueSelect = async (value: string) => {
-    if (!runId || !nextKey) return;
-    setSelectedValue(value);
+  const handleGameSelect = async (game: string) => {
+    if (!runId) return;
+    setSelectedGame(game);
   };
 
   const handleNext = async () => {
-    if (!runId || !nextKey || !selectedValue) return;
+    if (!runId || !selectedGame) return;
 
     try {
-      const response = await lockeApi.continueRun(runId, {
-        key: nextKey,
-        val: selectedValue
-      });
+      const response = await lockeApi.nextGen(runId, selectedGame);
       
       if (response.finished) {
         setShowSuccess(true);
       } else {
-        setNextKey(response.next_key);
-        setPotentialValues(response.potential_values);
-        setSelectedValue(null);
+        // If not finished, update the options (though this shouldn't happen in normal flow)
+        setGameOptions(response.options);
+        setSelectedGame(null);
       }
     } catch (err) {
-      setError(err instanceof Error ? err.message : 'Failed to continue run');
+      setError(err instanceof Error ? err.message : 'Failed to select next generation');
     }
   };
 
   const handleRandomSelect = () => {
-    if (potentialValues.length === 0) return;
-    const randomIndex = Math.floor(Math.random() * potentialValues.length);
-    setSelectedValue(potentialValues[randomIndex]);
+    if (gameOptions.length === 0) return;
+    const randomIndex = Math.floor(Math.random() * gameOptions.length);
+    setSelectedGame(gameOptions[randomIndex]);
   };
 
   const handleSuccessClose = () => {
@@ -104,7 +99,7 @@ const ContinueRun: React.FC = () => {
   if (isLoading) {
     return (
       <div className="continue-run-container">
-        <div className="continue-run-loading">Loading run continuation...</div>
+        <div className="continue-run-loading">Loading next generation options...</div>
       </div>
     );
   }
@@ -114,20 +109,20 @@ const ContinueRun: React.FC = () => {
       {showSuccess && runId && (
         <SuccessPopup runId={runId} onClose={handleSuccessClose} />
       )}
-      <h1 className="continue-run-title">Continue Run:</h1>
+      <h1 className="continue-run-title">Select Next Generation:</h1>
       <h1 className="continue-run-id">Run ID: {runId}</h1>
       {error && <div className="continue-run-error">{error}</div>}
-      {nextKey && (
+      {gameOptions.length > 0 && (
         <div className="continue-run-step">
-          <h2>Next Step: {nextKey}</h2>
+          <h2>Choose your next game:</h2>
           <div className="continue-run-values">
-            {potentialValues.map((value) => (
+            {gameOptions.map((game) => (
               <button
-                key={value}
-                onClick={() => handleValueSelect(value)}
-                className={`continue-run-value-button ${selectedValue === value ? 'selected' : ''}`}
+                key={game}
+                onClick={() => handleGameSelect(game)}
+                className={`continue-run-value-button ${selectedGame === game ? 'selected' : ''}`}
               >
-                {value}
+                {game}
               </button>
             ))}
           </div>
@@ -135,14 +130,14 @@ const ContinueRun: React.FC = () => {
             <button 
               className="continue-run-next-button"
               onClick={handleNext}
-              disabled={!selectedValue}
+              disabled={!selectedGame}
             >
-              Next
+              Continue to Next Generation
             </button>
             <button 
               className="continue-run-refresh-button"
               onClick={handleRandomSelect}
-              title="Randomly select an option"
+              title="Randomly select a game"
             >
               <svg 
                 xmlns="http://www.w3.org/2000/svg" 
@@ -159,6 +154,7 @@ const ContinueRun: React.FC = () => {
                 <path d="M1 20v-6h6"/>
                 <path d="M3.51 9a9 9 0 0 1 14.85-3.36L23 10M1 14l4.64 4.36A9 9 0 0 0 20.49 15"/>
               </svg>
+              Randomized
             </button>
           </div>
         </div>

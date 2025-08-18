@@ -234,6 +234,21 @@ const lockeApi = {
         }
     },
 
+    async nextGen(runId: string, gameName?: string): Promise<{finished: boolean, options: string[]}> {
+        try {
+            const url = new URL(`${API_BASE_URL}/run/${runId}/next_gen`);
+            if (gameName) {
+                url.searchParams.append('game_name', gameName);
+            }
+            
+            const response = await axios.post<{finished: boolean, options: string[]}>(url.toString());
+            return response.data;
+        } catch (error) {
+            console.error('Error getting next generation options:', error);
+            throw error;
+        }
+    },
+
     async getStarterOptions(runId: string): Promise<string[]> {
         try {
             const response = await fetch(`${API_BASE_URL}/run/${runId}/starter_options`);

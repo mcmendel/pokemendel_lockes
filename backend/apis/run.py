@@ -1,4 +1,4 @@
-from typing import List, Dict, Optional, Union
+from typing import List, Dict, Optional, Union, Tuple
 from models.run import fetch_run
 from models.run_pokemons_options import list_runs_options, list_runs_options_by_query
 from games import get_game
@@ -96,3 +96,7 @@ def finish_run(run_id: str) -> RunResponse:
         return finish_run_admin(run_id)
 
     raise ContinueCreationException()
+
+
+def jump_to_next_gen(run_id: str, game_name: Optional[str]) -> Tuple[bool, List[str]]:
+    return False, []

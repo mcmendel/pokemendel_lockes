@@ -20,6 +20,7 @@ from apis.run import (
     get_action_options,
     execute_action,
     finish_run,
+    jump_to_next_gen,
 )
 from core.lockes import list_all_lockes
 from functools import wraps
@@ -235,6 +236,16 @@ def continue_run_creation_api():
     else:
         print("Creating run %s in progress. Next key to be filled: %s" % (data['run_name'], response['next_key']))
     return jsonify(response), 200
+
+
+@locke_route('run/<run_id>/next_gen', methods=['POST'])
+def jump_to_next_gen_api(run_id):
+    data = request.get_json()
+    finished, list_of_games = jump_to_next_gen(run_id, data.get('game_name'))
+    return {
+        'finished': finished,
+        'options': list_of_games,
+    }
 
 @locke_route('run/<run_id>', methods=['GET'])
 def get_run(run_id):
