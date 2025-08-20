@@ -1,4 +1,4 @@
-from core.lockes.base.run_creator import RunCreator, RunCreationProgress, List, BaseLocke, Run
+from core.lockes.base.run_creator import RunCreator, RunCreationProgress, List, BaseLocke, Run, InfoKeys
 from core.lockes.lockes_factory import list_all_lockes, GenLocke, LOCKE_INSTANCES
 from core.lockes.genlocke.utils import (
     SELECTED_LOCKE as _SELECTED_LOCKE,
@@ -26,6 +26,10 @@ class GenRunCreator(RunCreator):
             )
         self._init_internal_run_creation()
         locke = LOCKE_INSTANCES[self.run_creation.extra_info[_SELECTED_LOCKE]]
+        if self.run_creation.game is None:
+            return RunCreationProgress(run_creation=self.run_creation, missing_key=InfoKeys.GAME, missing_key_options=[
+                game.name for game in self._get_games_from_gen(locke_min_gen)
+            ])
         creation_progress = self._internal_run_creator.get_progress(locke.min_gen)
         return creation_progress
 

@@ -240,7 +240,7 @@ def continue_run_creation_api():
 
 @locke_route('run/<run_id>/next_gen', methods=['POST'])
 def jump_to_next_gen_api(run_id):
-    data = request.get_json()
+    data = request.get_json() or {}
     finished, list_of_games = jump_to_next_gen(run_id, data.get('game_name'))
     return {
         'finished': finished,
