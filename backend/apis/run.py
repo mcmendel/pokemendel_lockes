@@ -99,4 +99,4 @@ def finish_run(run_id: str) -> RunResponse:
 
 
 def jump_to_next_gen(run_id: str, game_name: Optional[str]) -> Tuple[bool, List[str]]:
-    return False, ["Crystal", "Gold", "Silver"]
+    return False, [game_name] if game_name else ["Crystal", "Gold", "Silver"]

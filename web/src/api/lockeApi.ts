@@ -236,12 +236,8 @@ const lockeApi = {
 
     async nextGen(runId: string, gameName?: string): Promise<{finished: boolean, options: string[]}> {
         try {
-            const url = new URL(`${API_BASE_URL}/run/${runId}/next_gen`);
-            if (gameName) {
-                url.searchParams.append('game_name', gameName);
-            }
-            
-            const response = await axios.post<{finished: boolean, options: string[]}>(url.toString());
+            const requestBody = gameName ? { game_name: gameName } : {};
+            const response = await axios.post<{finished: boolean, options: string[]}>(`${API_BASE_URL}/run/${runId}/next_gen`, requestBody);
             return response.data;
         } catch (error) {
             console.error('Error getting next generation options:', error);
