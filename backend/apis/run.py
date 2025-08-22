@@ -3,6 +3,7 @@ from models.run import fetch_run
 from models.run_pokemons_options import list_runs_options, list_runs_options_by_query
 from games import get_game
 from core.lockes import LOCKE_INSTANCES
+from core.lockes.genlocke.utils import get_generation_potential_games, REGION_TO_GEN, SELECTED_LOCKE
 from core.run import convert_db_run_to_core_run
 from core.run_manager import RunManager
 from apis.run_admin import finish_run as finish_run_admin, RunResponse
@@ -99,4 +100,13 @@ def finish_run(run_id: str) -> RunResponse:
 
 
 def jump_to_next_gen(run_id: str, game_name: Optional[str]) -> Tuple[bool, List[str]]:
-    return False, [game_name] if game_name else ["Crystal", "Gold", "Silver"]
+    run_manager = _get_run_manager(run_id)
+    if not game_name:
+        current_gen = REGION_TO_GEN[run_manager.game.region]
+        next_gen = current_gen + 1
+        print("Move run", run_id, "to gen", next_gen)
+        gen_inner_locke = run_manager.locke.extra_info[SELECTED_LOCKE]
+        return False, [
+            game.name for game in get_generation_potential_games(next_gen, gen_inner_locke)
+        ]
+    return False, [game_name]

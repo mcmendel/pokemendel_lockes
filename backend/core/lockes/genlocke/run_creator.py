@@ -2,11 +2,10 @@ from core.lockes.base.run_creator import RunCreator, RunCreationProgress, List, 
 from core.lockes.lockes_factory import list_all_lockes, GenLocke, LOCKE_INSTANCES
 from core.lockes.genlocke.utils import (
     SELECTED_LOCKE as _SELECTED_LOCKE,
-    _REGION_TO_GEN,
-    _GEN_TO_REGION,
+    get_generation_potential_games,
 )
 from core.lockes.run_creation_factory import get_run_creator_class
-from games import Game, get_games_from_gen
+from games import Game
 
 _GAME_PREFIX = "_game_"
 
@@ -35,11 +34,7 @@ class GenRunCreator(RunCreator):
 
     def _get_games_from_gen(self, locke_min_gen: int) -> List[Game]:
         locke_name = self.run_creation.extra_info[_SELECTED_LOCKE]
-        locke = LOCKE_INSTANCES[locke_name]
-        return [
-            game for game in get_games_from_gen(locke.min_gen)
-            if game.region == _GEN_TO_REGION[locke_min_gen]
-        ]
+        return get_generation_potential_games(locke_min_gen, locke_name)
 
     def _init_internal_run_creation(self):
         if not self._internal_run_creator and self.run_creation and _SELECTED_LOCKE in self.run_creation.extra_info:
