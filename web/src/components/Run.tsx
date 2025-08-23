@@ -10,6 +10,7 @@ import Starter from './Starter';
 import Encounters from './Encounters';
 import Tabs from './Tabs';
 import Rules from './Rules';
+import SupportedPokemonList from './SupportedPokemonList';
 import { 
     Tooltip, 
     Snackbar, 
@@ -454,6 +455,9 @@ function RunComponent() {
             ) : (
               <div>Loading starter options...</div>
             )}
+            
+            {/* Show supported Pokemon list when no starter is selected */}
+            <SupportedPokemonList runId={runId!} />
           </div>
         ) : (
           <div className="run-content">
