@@ -1,5 +1,5 @@
 from core.lockes.lockes_factory import *
-from core.lockes.genlocke.run_creator import _GEN_TO_REGION
+from core.lockes.genlocke.utils import _GEN_TO_REGION
 from tests.e2e.gen3_helpers import GAME_NAME as GEN3_GAME_NAME
 from tests.e2e.helpers import (
     client_fixture,

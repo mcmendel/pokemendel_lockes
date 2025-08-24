@@ -20,6 +20,7 @@ def test_base_genlocke(client_fixture):
     )
     _first_gen_run(client_fixture, run_id)
     finish_gen_run(client_fixture, run_id, False)
+    skip_to_next_gen(client_fixture, run_id, "Crystal", False)
 
 def _first_gen_run(client_fixture, run_id):
     charmander_id = choose_gen_starter(
