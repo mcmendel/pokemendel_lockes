@@ -1,5 +1,3 @@
-from pokemendel_core.utils.definitions.abilities import Abilities
-from pokemendel_core.utils.definitions.natures import Natures
 from core.lockes.lockes_factory import *
 from tests.e2e.genlocke_tests.utils import *
 from tests.e2e.helpers import client_fixture
@@ -21,6 +19,8 @@ def test_base_genlocke(client_fixture):
     _first_gen_run(client_fixture, run_id)
     finish_gen_run(client_fixture, run_id, False)
     skip_to_next_gen(client_fixture, run_id, "Crystal", False)
+    skip_to_next_gen(client_fixture, run_id, "Crystal", True)
+
 
 def _first_gen_run(client_fixture, run_id):
     charmander_id = choose_gen_starter(

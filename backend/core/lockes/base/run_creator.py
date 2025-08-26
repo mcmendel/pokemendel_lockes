@@ -192,6 +192,7 @@ class RunCreator:
                 self._save_pokemon_option(run_id, pokemon_name, evolution_line[-1], self._potential_pokemon_counter)
                 relevant_pokemons = True
                 self._potential_pokemon_counter += 1
+
     def _save_pokemon_option(self, run_id: str, pokemon_name: str, base_pokemon: str, index: int, caught: bool = False):
         run_options = RunPokemonsOptions(
             run_id=run_id,

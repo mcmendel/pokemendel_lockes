@@ -4,6 +4,7 @@ from flask import Flask, jsonify, send_file, request
 from flask_cors import CORS
 from dotenv import load_dotenv
 from responses.exceptions import BlackoutException, ContinueCreationException
+from apis.generation import jump_to_next_gen
 from apis.main import list_runs_api
 from apis.resources import get_pokemon_info, get_gym_leader_info, get_type_info
 from apis.run_creation import start_run_creation, continue_run_creation
@@ -20,7 +21,6 @@ from apis.run import (
     get_action_options,
     execute_action,
     finish_run,
-    jump_to_next_gen,
 )
 from core.lockes import list_all_lockes
 from functools import wraps

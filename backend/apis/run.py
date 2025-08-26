@@ -97,16 +97,3 @@ def finish_run(run_id: str) -> RunResponse:
         return finish_run_admin(run_id)
 
     raise ContinueCreationException()
-
-
-def jump_to_next_gen(run_id: str, game_name: Optional[str]) -> Tuple[bool, List[str]]:
-    run_manager = _get_run_manager(run_id)
-    if not game_name:
-        current_gen = REGION_TO_GEN[run_manager.game.region]
-        next_gen = current_gen + 1
-        print("Move run", run_id, "to gen", next_gen)
-        gen_inner_locke = run_manager.locke.extra_info[SELECTED_LOCKE]
-        return False, [
-            game.name for game in get_generation_potential_games(next_gen, gen_inner_locke)
-        ]
-    return False, [game_name]
