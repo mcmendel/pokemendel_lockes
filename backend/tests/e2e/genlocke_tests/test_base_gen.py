@@ -20,6 +20,14 @@ def test_base_genlocke(client_fixture):
     finish_gen_run(client_fixture, run_id, False)
     skip_to_next_gen(client_fixture, run_id, "Crystal", False)
     skip_to_next_gen(client_fixture, run_id, "Crystal", True)
+    runs_reports = list(fetch_documents_by_query("locke_manager", "runs_reports", {"run_id": run_id}))
+    assert len(runs_reports) == 1
+    gen1_report = runs_reports[0]
+    assert gen1_report["run_id"] == run_id
+    assert gen1_report["game_name"] == "Blue"
+    assert len(gen1_report["party"]) == 6
+    assert len(gen1_report["caught"]) == 8
+    assert len(gen1_report["dead"]) == 1
 
 
 def _first_gen_run(client_fixture, run_id):
