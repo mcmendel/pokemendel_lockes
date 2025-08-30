@@ -4,6 +4,10 @@ from tests.e2e.helpers import client_fixture
 from tests.e2e.gen1_helpers import (
     PokemonGen1,
     STARTERS as GEN1_STARTERS,
+    NUM_POKEMONS as GEN1_NUM_POKEMONS,
+)
+from tests.e2e.gen2_helpers import (
+    NUM_POKEMONS as GEN2_NUM_POKEMONS
 )
 import pytest
 
@@ -16,6 +20,8 @@ def test_base_genlocke(client_fixture):
         extra_info=False,
         specific_pokemons=False,
     )
+    pokemons_options = list(fetch_documents_by_query("locke_manager", "runs_pokemons_options", {"run_id": run_id}))
+    assert len(pokemons_options)  == GEN1_NUM_POKEMONS
     _first_gen_run(client_fixture, run_id)
     finish_gen_run(client_fixture, run_id, False)
     skip_to_next_gen(client_fixture, run_id, "Crystal", False)
@@ -28,6 +34,9 @@ def test_base_genlocke(client_fixture):
     assert len(gen1_report["party"]) == 6
     assert len(gen1_report["caught"]) == 8
     assert len(gen1_report["dead"]) == 1
+
+    pokemons_options = list(fetch_documents_by_query("locke_manager", "runs_pokemons_options", {"run_id": run_id}))
+    assert len(pokemons_options) == GEN2_NUM_POKEMONS
 
 
 def _first_gen_run(client_fixture, run_id):

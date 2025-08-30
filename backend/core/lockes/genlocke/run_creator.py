@@ -1,10 +1,12 @@
-from core.lockes.base.run_creator import RunCreator, RunCreationProgress, List, BaseLocke, Run, InfoKeys
+from core.lockes.base.run_creator import RunCreator, RunCreationProgress, List, BaseLocke, InfoKeys
 from core.lockes.lockes_factory import list_all_lockes, GenLocke, LOCKE_INSTANCES
 from core.lockes.genlocke.utils import (
     SELECTED_LOCKE as _SELECTED_LOCKE,
     get_generation_potential_games,
 )
 from core.lockes.run_creation_factory import get_run_creator_class
+from core.run import Run, convert_db_run_to_core_run
+from models.run import fetch_run
 from games import Game
 
 _GAME_PREFIX = "_game_"
@@ -45,3 +47,13 @@ class GenRunCreator(RunCreator):
         self._init_internal_run_creation()
         locke = LOCKE_INSTANCES[self.run_creation.extra_info[_SELECTED_LOCKE]]
         return self._internal_run_creator.finish_creation(locke)
+
+    def finish_creation_existing_run(self, run_id: str, new_game: str) -> Run:
+        self.run_creation.game = new_game
+        self._internal_run_creator = None
+        self._init_internal_run_creation()
+        locke = LOCKE_INSTANCES[self.run_creation.extra_info[_SELECTED_LOCKE]]
+        self._internal_run_creator._populate_run_optional_pokemons(run_id=run_id, locke=locke)
+        db_run = fetch_run(run_id)
+        run = convert_db_run_to_core_run(db_run, run_id)
+        return run

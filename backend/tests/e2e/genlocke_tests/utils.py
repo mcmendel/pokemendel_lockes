@@ -219,7 +219,7 @@ def skip_to_next_gen(client, run_id, game_name, send_game):
         assert game_name in skip_results['options']
     else:
         db_runs = list(fetch_documents_by_query("locke_manager", "runs_pokemons_options", {"run_id": run_id}))
-        assert not db_runs
+        assert db_runs
 
 
 def _build_next_actions(gender: bool, nature: bool, ability: bool):
