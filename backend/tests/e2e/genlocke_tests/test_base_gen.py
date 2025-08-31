@@ -37,6 +37,13 @@ def test_base_genlocke(client_fixture):
 
     pokemons_options = list(fetch_documents_by_query("locke_manager", "runs_pokemons_options", {"run_id": run_id}))
     assert len(pokemons_options) == GEN2_NUM_POKEMONS
+    pokemons_options = list(fetch_documents_by_query("locke_manager", "runs_pokemons_options", {"run_id": run_id, "caught": False}))
+    assert len(pokemons_options) < GEN2_NUM_POKEMONS
+    assert PokemonGen1.CHARMANDER not in {option['base_pokemon'] for option in pokemons_options}
+
+    # TODO: clear run data
+    run_response = get_run(client_fixture, run_id)
+    print("Finish Gen test")
 
 
 def _first_gen_run(client_fixture, run_id):

@@ -1,6 +1,6 @@
 from typing import List, Dict, Optional, Union, Tuple, Set
 from models.run import fetch_run
-from models.run_pokemons_options import list_runs_options, list_runs_options_by_query, delete_run_pokemons
+from models.run_pokemons_options import mark_caught_pokemon, list_runs_options_by_query, delete_run_pokemons
 from models.report import save_report, Report
 from games import get_game, Game
 from core.lockes import LOCKE_INSTANCES, BaseLocke
@@ -41,11 +41,13 @@ def _jump_to_next_gen(run: Run, origin_game: Game, new_game: Game) -> Tuple[bool
     run_id = run.id
     game_gen = REGION_TO_GEN[new_game.region]
     print("Move run", run_id, "to game", new_game.name, "in gen", game_gen)
+    base_caught_pokemons = {pokemon_option.base_pokemon for pokemon_option in list_runs_options_by_query(run_id, query={'caught': True})}
     delete_run_pokemons(run_id)
     _generate_report(run, origin_game)
     original_run_creator = fetch_run_creation(run.run_name)
     gen_creator = GenRunCreator(run_creation=original_run_creator)
     gen_creator.finish_creation_existing_run(run_id, new_game.name)
+    _remark_caught_pokemons(run_id, list(base_caught_pokemons))
     return False, [new_game.name]
 
 
@@ -58,3 +60,8 @@ def _generate_report(run: Run, game: Game):
         died=run.box.get_dead_pokemons(),
     )
     save_report(report, create=True)
+
+
+def _remark_caught_pokemons(run_id: str, base_pokemons: List[str]):
+    for pokemon_name in base_pokemons:
+        mark_caught_pokemon(run_id, pokemon_name)

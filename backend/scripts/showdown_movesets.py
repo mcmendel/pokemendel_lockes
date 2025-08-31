@@ -20,6 +20,7 @@ MOVESETS = {
         PokemonGen3.MAGIKARP: ["Splash"],
         PokemonGen3.MAGNEMITE: ["Tackle"],
         PokemonGen3.MEW: ["Pound"],
+        PokemonGen3.NIDORAN_F: ["Growl", "Tackle"],
         PokemonGen3.NIDORAN_M: ["Leer", "Tackle"],
         PokemonGen3.PARAS: ["Scratch"],
         PokemonGen3.PICHU: ["Thunder Shock", "Charm"],
