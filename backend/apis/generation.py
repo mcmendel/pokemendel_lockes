@@ -1,18 +1,14 @@
-from typing import List, Dict, Optional, Union, Tuple, Set
-from models.run import fetch_run
+from typing import List, Optional, Tuple
+from models.run import fetch_run, update_run
 from models.run_pokemons_options import mark_caught_pokemon, list_runs_options_by_query, delete_run_pokemons
 from models.report import save_report, Report
 from games import get_game, Game
 from core.lockes import LOCKE_INSTANCES, BaseLocke
 from core.lockes.genlocke.utils import get_generation_potential_games, REGION_TO_GEN, SELECTED_LOCKE
 from core.lockes.genlocke.run_creator import GenRunCreator
+from core.lockes.genlocke.gen_locke import GenLocke
 from core.run import convert_db_run_to_core_run, Run
-from models.pokemon import Pokemon
 from models.run_creation import fetch_run_creation
-from core.run_manager import RunManager
-from apis.run_admin import finish_run as finish_run_admin, RunResponse
-from responses.exceptions import ContinueCreationException
-import random
 
 
 def jump_to_next_gen(run_id: str, game_name: Optional[str]) -> Tuple[bool, List[str]]:
@@ -41,12 +37,21 @@ def _jump_to_next_gen(run: Run, origin_game: Game, new_game: Game) -> Tuple[bool
     run_id = run.id
     game_gen = REGION_TO_GEN[new_game.region]
     print("Move run", run_id, "to game", new_game.name, "in gen", game_gen)
+    current_db_run = fetch_run(run_id)
     base_caught_pokemons = {pokemon_option.base_pokemon for pokemon_option in list_runs_options_by_query(run_id, query={'caught': True})}
     delete_run_pokemons(run_id)
     _generate_report(run, origin_game)
     original_run_creator = fetch_run_creation(run.run_name)
     gen_creator = GenRunCreator(run_creation=original_run_creator)
-    gen_creator.finish_creation_existing_run(run_id, new_game.name)
+    created_run = gen_creator.finish_creation_existing_run(run_id, new_game.name)
+    update_run(created_run.to_db_run(
+        gen=new_game.gen,
+        locke_name=GenLocke.name,
+        game_name=new_game.name,
+        is_randomize=current_db_run.randomized,
+        duplicate_clause=current_db_run.duplicate_clause,
+        extra_info=current_db_run.locke_extra_info,
+    ))
     _remark_caught_pokemons(run_id, list(base_caught_pokemons))
     return False, [new_game.name]
 

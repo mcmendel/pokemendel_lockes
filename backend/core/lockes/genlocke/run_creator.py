@@ -5,9 +5,9 @@ from core.lockes.genlocke.utils import (
     get_generation_potential_games,
 )
 from core.lockes.run_creation_factory import get_run_creator_class
-from core.run import Run, convert_db_run_to_core_run
+from core.run import Run, convert_db_run_to_core_run, Party, Box
 from models.run import fetch_run
-from games import Game
+from games import Game, get_game
 
 _GAME_PREFIX = "_game_"
 
@@ -53,7 +53,15 @@ class GenRunCreator(RunCreator):
         self._internal_run_creator = None
         self._init_internal_run_creation()
         locke = LOCKE_INSTANCES[self.run_creation.extra_info[_SELECTED_LOCKE]]
+        game = get_game(new_game)
         self._internal_run_creator._populate_run_optional_pokemons(run_id=run_id, locke=locke)
         db_run = fetch_run(run_id)
         run = convert_db_run_to_core_run(db_run, run_id)
-        return run
+        return Run(
+            id=run_id,
+            run_name=run.run_name,
+            creation_date=run.creation_date,
+            party=Party(pokemons=[]),
+            box=Box(pokemons=[]),
+            gen=game.gen,
+        )
