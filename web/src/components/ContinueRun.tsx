@@ -45,7 +45,8 @@ const ContinueRun: React.FC = () => {
         const response = await lockeApi.nextGen(runId);
         
         if (response.finished) {
-          // If the next generation is finished, redirect to the run page
+          // If the next generation is finished, call getRun API and then redirect to the run page
+          await lockeApi.getRun(runId);
           navigate(`/locke_manager/run/${runId}`);
         } else {
           setGameOptions(response.options);
@@ -163,4 +164,4 @@ const ContinueRun: React.FC = () => {
   );
 };
 
-export default ContinueRun; 
+export default ContinueRun;

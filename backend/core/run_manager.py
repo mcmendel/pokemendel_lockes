@@ -60,7 +60,7 @@ class RunManager:
         self.update_run()
 
     def update_encounter(self, route: str, encounter_status: str):
-        assert encounter_status in [EncounterStatus.CAUGHT, EncounterStatus.RAN, EncounterStatus.RAN], f"Encounter status {encounter_status} is invalid"
+        assert encounter_status in [EncounterStatus.CAUGHT, EncounterStatus.RAN, EncounterStatus.KILLED], f"Encounter status {encounter_status} is invalid"
         route_encounters = [encounter for encounter in self.run.encounters if encounter.route == route]
         assert len(route_encounters) == 1
         route_encounter = route_encounters[0]

@@ -58,7 +58,7 @@ def _jump_to_next_gen(run: Run, origin_game: Game, new_game: Game) -> Tuple[bool
         extra_info=current_db_run.locke_extra_info,
     ))
     _remark_caught_pokemons(run_id, list(base_caught_pokemons))
-    return False, [new_game.name]
+    return True, []
 
 
 def _generate_report(run: Run, game: Game):
