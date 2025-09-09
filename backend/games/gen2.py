@@ -545,7 +545,7 @@ CRYSTAL = _BaseGame(
         "Route 29": {"Sentret", "Pidgey", "Rattata", "Hoothoot", "Hoppip", "Exeggcute", "Spinarak", "Ledyba", "Pineco"},
         "Route 30": {"Caterpie", "Ledyba", "Spinarak", "Pidgey", "Hoothoot", "Weedle", "Zubat", "Marill", "Hoppip", "Pidgey", "Poliwag", "Poliwhirl", "Magikarp", "Exeggcute", "Pineco"},
         "Route 31": {"Ledyba", "Spinarak", "Caterpie", "Pidgey", "Poliwag", "Weedle", "Zubat", "Gastly", "Hoppip", "Hoothoot", "Bellsprout", "Poliwhirl", "Magikarp", "Exeggcute", "Pineco"},
-        "Route 32": {"Ekans", "Rattata", "Wooper", "Pidgey", "Gastly", "Hoothoot", "Zubat", "Bellsprout", "Hoppip", "Tentacool", "Quagsire", "Tentacruel", "Magikarp", "Quilfish", "Exeggcute", "Ekans", "Pineco"},
+        "Route 32": {PokemonGen2.QWILFISH, "Ekans", "Rattata", "Wooper", "Pidgey", "Gastly", "Hoothoot", "Zubat", "Bellsprout", "Hoppip", "Tentacool", "Quagsire", "Tentacruel", "Magikarp", "Quilfish", "Exeggcute", "Ekans", "Pineco"},
         "Route 33": {"Rattata", "Spearow", "Zubat", "Ekans", "Geodude", "Hoppip", "Aipom", "Heracross"},
         "Route 34": {"Rattata", "Drowzee", "Snubbull", "Ditto", "Jigglypuff", "Abra", "Pidgey", "Hoothoot", "Tentacool", "Tentacruel", "Krabby", "Staryu", "Corsola", "Kingler", "Magikarp", "Pichu", "Cleffa", "Igglybuff", "Tyrogue", "Smoochum", "Elekid", "Magby", "Exeggcute", "Ledyba", "Spinarak", "Pineco"},
         "Route 35": {"Pidgey", "Drowzee", "Hoothoot", "Snubbull", "Ditto", "Yanma", "Jigglypuff", "Abra", "Psyduck", "Growlithe", "Nidoran-F", "Nidoran-M", "Noctowl", "Golduck", "Poliwag", "Poliwhirl", "Magikarp", "Spearow", "Exeggcute", "Spinarak", "Ledyba", "Pineco"},

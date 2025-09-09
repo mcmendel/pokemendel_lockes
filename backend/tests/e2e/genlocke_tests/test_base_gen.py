@@ -42,7 +42,8 @@ def test_base_genlocke(client_fixture):
     assert PokemonGen1.CHARMANDER not in {option['base_pokemon'] for option in pokemons_options}
 
     run_response = get_run(client_fixture, run_id)
-    assert not run_response['run']['box']
+    assert len(run_response['run']['box']) == 6
+    assert len(run_response['run']['party']) == 6
     print("Finish Gen test")
 
 
