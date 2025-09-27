@@ -207,14 +207,14 @@ def finish_gen_run(client, run_id, last_gen):
             finish_run(client, run_id)
 
 
-def skip_to_next_gen(client, run_id, game_name, send_game):
+def skip_to_next_gen(client, run_id, game_name, send_game, finished=False):
     game_data = {
         'game_name': game_name
     } if send_game else {}
     response = client.post('/locke_manager/run/' + run_id + '/next_gen', json=game_data)
     assert response.status_code == 200, f"Expected status code 200, but got {response.status_code}"
     skip_results = response.get_json()
-    assert skip_results['finished']
+    assert skip_results['finished'] == finished
     if not send_game:
         assert game_name in skip_results['options']
     else:

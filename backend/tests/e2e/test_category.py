@@ -59,7 +59,7 @@ TEST_LOCKE = "CategoryLocke"
     (Categories.DRAGON, {PokemonGen2.YANMA, PokemonGen2.LUGIA, PokemonGen2.DRATINI, PokemonGen2.MAGIKARP, PokemonGen2.CHARMANDER, PokemonGen2.HORSEA}, PokemonGen2.CHARMANDER, 8, True),
     (Categories.DUCK, {PokemonGen2.MAGBY, PokemonGen2.PSYDUCK, PokemonGen2.FARFETCHD}, PokemonGen2.PSYDUCK, 2, True),
     (Categories.FANTASY, {PokemonGen2.DELIBIRD, PokemonGen2.CELEBI, PokemonGen2.LAPRAS, PokemonGen2.SMOOCHUM, PokemonGen2.LARVITAR, PokemonGen2.MURKROW, PokemonGen2.CLEFFA, PokemonGen2.DRATINI}, PokemonGen2.CLEFFA, 7, True),
-    (Categories.FISH, {PokemonGen2.MANTINE, PokemonGen2.CHINCHOU, PokemonGen2.HORSEA, PokemonGen2.REMORAID, PokemonGen2.QWILFISH, PokemonGen2.GOLDEEN, PokemonGen2.MAGIKARP}, PokemonGen2.HORSEA, 6, True),
+    (Categories.FISH, {PokemonGen2.MANTINE, PokemonGen2.CHINCHOU, PokemonGen2.HORSEA, PokemonGen2.REMORAID, PokemonGen2.QWILFISH, PokemonGen2.GOLDEEN, PokemonGen2.MAGIKARP}, PokemonGen2.HORSEA, 7, True),
     (Categories.FOOD, {PokemonGen2.MANTINE, PokemonGen2.SLUGMA, PokemonGen2.STANTLER, PokemonGen2.MILTANK, PokemonGen2.MAREEP, PokemonGen2.SWINUB, PokemonGen2.TOGEPI, PokemonGen2.SHUCKLE, PokemonGen2.UNOWN, PokemonGen2.DITTO, PokemonGen2.GOLDEEN, PokemonGen2.TANGELA, PokemonGen2.KABUTO, PokemonGen2.OMANYTE, PokemonGen2.TAUROS, PokemonGen2.MAGBY, PokemonGen2.MAGIKARP, PokemonGen2.CHANSEY, PokemonGen2.EXEGGCUTE, PokemonGen2.NIDORAN_M, PokemonGen2.KRABBY, PokemonGen2.PARAS, PokemonGen2.SHELLDER, PokemonGen2.TENTACOOL, PokemonGen2.FARFETCHD, PokemonGen2.GEODUDE, PokemonGen2.PSYDUCK, PokemonGen2.IGGLYBUFF, PokemonGen2.ODDISH, PokemonGen2.SQUIRTLE, PokemonGen2.SPEAROW, PokemonGen2.REMORAID, PokemonGen2.POLIWAG, PokemonGen2.NIDORAN_F, PokemonGen2.PIDGEY, PokemonGen2.EKANS}, PokemonGen2.ODDISH, 37, False),
     (Categories.FROG, {PokemonGen2.WOOPER, PokemonGen2.BULBASAUR, PokemonGen2.POLIWAG, PokemonGen2.LICKITUNG}, PokemonGen2.BULBASAUR, 5, True),
     (Categories.HORSE, {PokemonGen2.PONYTA}, PokemonGen2.PONYTA, 0, True),
@@ -75,7 +75,7 @@ TEST_LOCKE = "CategoryLocke"
     (Categories.SLOTH, {PokemonGen2.SLOWPOKE}, PokemonGen2.SLOWPOKE, 0, True),
     (Categories.SNAKE, {PokemonGen2.ONIX, PokemonGen2.EKANS, PokemonGen2.DRATINI, PokemonGen2.DUNSPARCE}, PokemonGen2.EKANS, 4, True),
     (Categories.TURTLE, {PokemonGen2.SHUCKLE, PokemonGen2.SQUIRTLE, PokemonGen2.LAPRAS, PokemonGen2.GEODUDE,}, PokemonGen2.SQUIRTLE, 4, True),
-    (Categories.WATERMON, {PokemonGen2.TOTODILE}, PokemonGen2.TOTODILE, 35, True),
+    (Categories.WATERMON, {PokemonGen2.TOTODILE}, PokemonGen2.TOTODILE, 36, True),
     (Categories.WEAPON, {PokemonGen2.SKARMORY, PokemonGen2.SQUIRTLE, PokemonGen2.SCYTHER, PokemonGen2.WEEDLE, PokemonGen2.KABUTO, PokemonGen2.NIDORAN_M, PokemonGen2.CUBONE, PokemonGen2.FARFETCHD}, PokemonGen2.FARFETCHD, 7, False),
     (Categories.WING, {PokemonGen2.CELEBI, PokemonGen2.HO_OH, PokemonGen2.LUGIA, PokemonGen2.SKARMORY, PokemonGen2.HERACROSS, PokemonGen2.NATU, PokemonGen2.MANTINE, PokemonGen2.TOGEPI, PokemonGen2.MURKROW, PokemonGen2.YANMA, PokemonGen2.LEDYBA, PokemonGen2.HOOTHOOT, PokemonGen2.DODUO, PokemonGen2.SCYTHER, PokemonGen2.DRATINI, PokemonGen2.ARTICUNO, PokemonGen2.PSYDUCK, PokemonGen2.ZAPDOS, PokemonGen2.MOLTRES, PokemonGen2.AERODACTYL, PokemonGen2.VENONAT, PokemonGen2.CHARMANDER, PokemonGen2.FARFETCHD, PokemonGen2.CATERPIE, PokemonGen2.ZUBAT, PokemonGen2.SPEAROW, PokemonGen2.CLEFFA, PokemonGen2.WEEDLE, PokemonGen2.PIDGEY}, PokemonGen2.CHARMANDER, 35, True),
 ])

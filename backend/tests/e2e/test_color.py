@@ -35,9 +35,9 @@ TEST_LOCKE = "ColorLocke"
 
 @pytest.mark.parametrize("test_color,potential_starters,starter_name,num_encounters,starter_has_evolution", [
     (Colors.RED, {PokemonGen2.CYNDAQUIL}, PokemonGen2.CYNDAQUIL, 30, True),
-    (Colors.BLUE, {PokemonGen2.CYNDAQUIL, PokemonGen2.TOTODILE}, PokemonGen2.CYNDAQUIL, 40, True),
+    (Colors.BLUE, {PokemonGen2.CYNDAQUIL, PokemonGen2.TOTODILE}, PokemonGen2.CYNDAQUIL, 41, True),
     (Colors.GREEN, {PokemonGen2.CHIKORITA}, PokemonGen2.CHIKORITA, 22, True),
-    (Colors.YELLOW, {PokemonGen2.CHIKORITA, PokemonGen2.CYNDAQUIL, PokemonGen2.TOTODILE}, PokemonGen2.CHIKORITA, 37, True),
+    (Colors.YELLOW, {PokemonGen2.CHIKORITA, PokemonGen2.CYNDAQUIL, PokemonGen2.TOTODILE}, PokemonGen2.CHIKORITA, 38, True),
     (Colors.PURPLE, {PokemonGen2.ZUBAT, PokemonGen2.STARYU, PokemonGen2.SNEASEL, PokemonGen2.VENONAT, PokemonGen2.SMOOCHUM, PokemonGen2.SUICUNE, PokemonGen2.MEWTWO, PokemonGen2.SHELLDER, PokemonGen2.AERODACTYL, PokemonGen2.RATTATA, PokemonGen2.NIDORAN_M, PokemonGen2.EKANS, PokemonGen2.KOFFING, PokemonGen2.MANTINE, PokemonGen2.AIPOM, PokemonGen2.TYROGUE, PokemonGen2.GASTLY, PokemonGen2.GRIMER, PokemonGen2.CATERPIE}, PokemonGen2.AERODACTYL, 23, False),
     (Colors.BROWN, {PokemonGen2.WEEDLE, PokemonGen2.VULPIX, PokemonGen2.TEDDIURSA, PokemonGen2.TAUROS, PokemonGen2.SWINUB, PokemonGen2.SUNKERN, PokemonGen2.STARYU, PokemonGen2.STANTLER, PokemonGen2.SUDOWOODO, PokemonGen2.SQUIRTLE, PokemonGen2.SPEAROW, PokemonGen2.SANDSHREW, PokemonGen2.SENTRET, PokemonGen2.SMEARGLE, PokemonGen2.RATTATA, PokemonGen2.PINSIR, PokemonGen2.PIDGEY, PokemonGen2.OMANYTE, PokemonGen2.MANKEY, PokemonGen2.TYROGUE, PokemonGen2.KANGASKHAN, PokemonGen2.KABUTO, PokemonGen2.GIRAFARIG, PokemonGen2.HOOTHOOT, PokemonGen2.FARFETCHD, PokemonGen2.EXEGGCUTE, PokemonGen2.ENTEI, PokemonGen2.ABRA, PokemonGen2.CUBONE, PokemonGen2.DIGLETT, PokemonGen2.EEVEE, PokemonGen2.DODUO, PokemonGen2.DROWZEE}, PokemonGen2.DROWZEE, 31, False),
     (Colors.BLACK, {PokemonGen2.WEEDLE, PokemonGen2.SPINARAK, PokemonGen2.SHELLDER, PokemonGen2.UNOWN, PokemonGen2.RAIKOU, PokemonGen2.PICHU, PokemonGen2.PHANPY, PokemonGen2.MAREEP, PokemonGen2.KABUTO, PokemonGen2.HOUNDOUR, PokemonGen2.MURKROW, PokemonGen2.LEDYBA, PokemonGen2.GROWLITHE, PokemonGen2.GASTLY, PokemonGen2.EEVEE, PokemonGen2.GOLDEEN, PokemonGen2.ELEKID}, PokemonGen2.EEVEE, 18, True),

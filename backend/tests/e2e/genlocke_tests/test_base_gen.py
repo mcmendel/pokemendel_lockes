@@ -21,11 +21,11 @@ def test_base_genlocke(client_fixture):
         specific_pokemons=False,
     )
     pokemons_options = list(fetch_documents_by_query("locke_manager", "runs_pokemons_options", {"run_id": run_id}))
-    assert len(pokemons_options)  == GEN1_NUM_POKEMONS
+    assert len(pokemons_options) == GEN1_NUM_POKEMONS
     _first_gen_run(client_fixture, run_id)
     finish_gen_run(client_fixture, run_id, False)
-    skip_to_next_gen(client_fixture, run_id, "Crystal", False)
-    skip_to_next_gen(client_fixture, run_id, "Crystal", True)
+    skip_to_next_gen(client_fixture, run_id, "Crystal", False, finished=False)
+    skip_to_next_gen(client_fixture, run_id, "Crystal", True, finished=True)
     runs_reports = list(fetch_documents_by_query("locke_manager", "runs_reports", {"run_id": run_id}))
     assert len(runs_reports) == 1
     gen1_report = runs_reports[0]

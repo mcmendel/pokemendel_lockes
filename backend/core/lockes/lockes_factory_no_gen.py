@@ -11,7 +11,7 @@ from core.lockes.wrap.wrap_locke import WrapLocke
 from core.lockes.color.color_locke import ColorLocke
 from core.lockes.castform.castform_locke import CastformLocke
 from core.lockes.deoxys.deoxys_locke import DeoxysLocke
-from typing import List
+from core.lockes.starter.starter_locke import StarterLocke
 
 # Dictionary mapping locke names to their instances
 LOCKE_INSTANCES = {
@@ -28,4 +28,5 @@ LOCKE_INSTANCES = {
     ColorLocke.name: ColorLocke(),
     CastformLocke.name: CastformLocke(),
     DeoxysLocke.name: DeoxysLocke(),
+    StarterLocke.name: StarterLocke(),
 }
