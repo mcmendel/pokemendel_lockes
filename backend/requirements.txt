@@ -1,8 +1,7 @@
---find-links /Users/nirmendel/work/local_pypi
 Flask==2.0.1
 python-dotenv==0.19.0
 flask-cors==3.0.10
-pokemendel_core==0.4.4
+git+https://github.com/mcmendel/pokemendel_core.git@main#egg=pokemendel_core
 pymongo==4.6.2
 pytest==8.3.5
 iniconfig==2.1.0
