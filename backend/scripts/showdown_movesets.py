@@ -1,6 +1,11 @@
 from pokemendel_core.data.gen3 import PokemonGen3
 
 MOVESETS = {
+    1: {
+        PokemonGen3.FLAREON: ["Quick Attack", "Sand Attack", "Tackle", "Ember"],
+        PokemonGen3.JOLTEON: ["Quick Attack", "Sand Attack", "Tackle", "Thunder Shock"],
+        PokemonGen3.VAPOREON: ["Quick Attack", "Sand Attack", "Tackle", "Water Gun"],
+    },
     2: {
         PokemonGen3.AERODACTYL: ["Wing Attack"],
         PokemonGen3.ARTICUNO: ["Gust", "Powder Snow"],
@@ -13,13 +18,16 @@ MOVESETS = {
         PokemonGen3.DODUO: ["Growl", "Peck"],
         PokemonGen3.DRATINI: ["Leer", "Wrap"],
         PokemonGen3.EEVEE: ["Tackle", "Tail Whip"],
+        PokemonGen3.ESPEON: ["Tackle", "Tail Whip"],
         PokemonGen3.EXEGGCUTE: ["Barrage", "Hypnosis"],
         PokemonGen3.FARFETCHD: ["Peck"],
+        PokemonGen3.FLAREON: ["Tackle", "Tail Whip"],
         PokemonGen3.GASTLY: ["Hypnosis", "Lick"],
         PokemonGen3.GEODUDE: ["Tackle"],
         PokemonGen3.GRIMER: ["Poison Gas", "Pound", "Harden"],
         PokemonGen3.GROWLITHE: ["Roar", "Bite"],
         PokemonGen3.HORSEA: ["Bubble"],
+        PokemonGen3.JOLTEON: ["Tackle", "Tail Whip"],
         PokemonGen3.KABUTO: ["Harden", "Scratch"],
         PokemonGen3.KRABBY: ["Bubble", "Leer"],
         PokemonGen3.LAPRAS: ["Growl", "Sing", "Water Gun"],
@@ -50,6 +58,8 @@ MOVESETS = {
         PokemonGen3.TANGELA: ["Constrict", "Sleep Powder"],
         PokemonGen3.TENTACOOL: ["Poison Sting"],
         PokemonGen3.TYROGUE: ["Tackle"],
+        PokemonGen3.UMBREON: ["Tackle", "Tail Whip"],
+        PokemonGen3.VAPOREON: ["Tackle", "Tail Whip"],
         PokemonGen3.VENONAT: ["Disable", "Foresight", "Tackle"],
         PokemonGen3.VOLTORB: ["Tackle"],
         PokemonGen3.VULPIX: ["Ember", "Tail Whip"],

@@ -2,6 +2,7 @@ import React, { useState, useEffect } from 'react';
 import { Tabs as MuiTabs, Tab, Box, Typography, Grid, TextField, CircularProgress, Paper } from '@mui/material';
 import lockeApi from '../api/lockeApi';
 import ImportantBattles from './ImportantBattles';
+import Bachelors from './Bachelors';
 import RunBox from './RunBox';
 import ChessLockeBox from './ChessLockeBox';
 import Graveyard from './Graveyard';
@@ -137,6 +138,9 @@ function Tabs({ runId, runData, onPokemonClick, onGymClick, lockeType }: TabsPro
               <Tab label="Supported Pokemons" {...a11yProps(4)} />
               <Tab label="Potential Encounters" {...a11yProps(5)} />
               <Tab label="Important Battles" {...a11yProps(6)} />
+              {lockeType === 'WedLocke' && (
+                <Tab label="Bachelors" {...a11yProps(7)} />
+              )}
             </MuiTabs>
           </Box>
           <TabPanel value={value} index={0}>
@@ -360,6 +364,14 @@ function Tabs({ runId, runData, onPokemonClick, onGymClick, lockeType }: TabsPro
           <TabPanel value={value} index={6}>
             <ImportantBattles runData={runData} />
           </TabPanel>
+          {lockeType === 'WedLocke' && (
+            <TabPanel value={value} index={7}>
+              <Bachelors
+                pokemons={Object.values(runData?.pokemons || {}) as any}
+                onPokemonClick={onPokemonClick || (() => {})}
+              />
+            </TabPanel>
+          )}
         </Box>
       </div>
     </div>

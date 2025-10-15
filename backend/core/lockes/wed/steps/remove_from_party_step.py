@@ -22,6 +22,6 @@ class RemoveFromPartyStep(RemoveFromPartyStepOg):
         return_value = super().execute_step(run, pokemon, value)
         if pokemon.metadata.paired:
             partner = run.box.get_pokemon_by_id(pokemon.metadata.paired)
-            partner_return_value = super().execute_step(run, partner)
+            partner_return_value = super().execute_step(run, partner, value)
             return_value.pokemons_to_update.extend(partner_return_value.pokemons_to_update)
         return return_value

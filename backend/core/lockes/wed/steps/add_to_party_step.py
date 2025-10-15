@@ -9,7 +9,7 @@ from core.lockes.wed.utils import get_party_pairs, get_pokemon_partner
 
 class AddToPartyStep(AddToPartyStepOg):
     def is_step_relevant(self, run: Run, pokemon: Pokemon) -> bool:
-        all_pairs = get_party_pairs(run)
+        all_pairs = get_party_pairs(run, check_emptiness=False)
         return super().is_step_relevant(run, pokemon) and any(pair is None for pair in all_pairs)
 
     def execute_step(self, run: Run, pokemon: Pokemon, value: Optional[str]) -> ExecutionReturnValue:

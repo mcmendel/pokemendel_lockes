@@ -38,7 +38,7 @@ def generate_showdown_format(gen, name, nickname=None, item=None, set_gender=Tru
 
     # Default values (can be expanded based on user input)
     item = f"@ {item}" if item else ""
-    gender = choose_gender(pokemon)
+    gender = choose_gender(pokemon) if gen > 1 else ""
     ability = ""  # "Ability: Unknown"
     level = "Level: 5"  # Default level
     evs = "EVs: 0 HP / 0 Atk / 0 Def / 0 SpA / 0 SpD / 1 Spe"
@@ -62,8 +62,9 @@ def generate_showdown_format(gen, name, nickname=None, item=None, set_gender=Tru
 if __name__ == "__main__":
     output = generate_showdown_format(
         gen=2,
-        name=PokemonGen3.ARTICUNO,
-        nickname="Steve",
-        # item="Leaf Stone",
+        name=PokemonGen3.ESPEON,
+        nickname="Andy",
+        # item="Fire Stone",
+        # set_gender=False,
     )
     print(output)
