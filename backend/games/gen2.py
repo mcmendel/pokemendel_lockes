@@ -550,7 +550,7 @@ CRYSTAL = _BaseGame(
         "Route 34": {"Rattata", "Drowzee", "Snubbull", "Ditto", "Jigglypuff", "Abra", "Pidgey", "Hoothoot", "Tentacool", "Tentacruel", "Krabby", "Staryu", "Corsola", "Kingler", "Magikarp", "Pichu", "Cleffa", "Igglybuff", "Tyrogue", "Smoochum", "Elekid", "Magby", "Exeggcute", "Ledyba", "Spinarak", "Pineco"},
         "Route 35": {"Pidgey", "Drowzee", "Hoothoot", "Snubbull", "Ditto", "Yanma", "Jigglypuff", "Abra", "Psyduck", "Growlithe", "Nidoran-F", "Nidoran-M", "Noctowl", "Golduck", "Poliwag", "Poliwhirl", "Magikarp", "Spearow", "Exeggcute", "Spinarak", "Ledyba", "Pineco"},
         "Route 36": {"Pidgey", "Hoothoot", "Ledyba", "Spinarak", "Gastly", "Growlithe", "Bellsprout", "Sudowoodo", "Exeggcute", "Pineco"},
-        "Route 37": {"Pidgey", "Growlithe", "Ledyba", "Spinarak", "Stantlar", "Pidgeotto", "Noctowl", "Ledian", "Ariados", "Exeggcute", "Pineco"},
+        "Route 37": {"Pidgey", "Growlithe", "Ledyba", "Spinarak", PokemonGen2.STANTLER, "Pidgeotto", "Noctowl", "Ledian", "Ariados", "Exeggcute", "Pineco"},
         "Route 38": {"Rattata", "Raticate", "Meowth", "Tauros", "Miltank", "Magnemite", "Pidgeotto", "Noctowl", "Hoothoot", "Exeggcute", "Ledyba", "Spinarak", "Pineco"},
         "Route 39": {"Rattata", "Meowth", "Raticate", "Tauros", "Miltank", "Magnemite", "Pidgeotto", "Noctowl", "Exeggcute", "Ledyba", "Spinarak", "Hoothoot", "Pineco"},
         "Route 40": {"Tentacool", "Tentacruel", "Krabby", "Staryu", "Corsola", "Kingler", "Magikarp", "Shuckle"},

@@ -13,8 +13,8 @@ function Bachelors({ pokemons, onPokemonClick }: BachelorsProps) {
 
   const bachelors = (pokemons || [])
     .filter((p): p is PokemonType => !!p)
-    // must have gender and not be paired
-    .filter(p => !!toNormalizedGender(p.metadata.gender) && !p.metadata.paired);
+    // must have gender, not be paired, and not be dead
+    .filter(p => !!toNormalizedGender(p.metadata.gender) && !p.metadata.paired && p.status !== 'dead');
 
   const maleBachelors = bachelors.filter(p => toNormalizedGender(p.metadata.gender) === 'male');
   const femaleBachelors = bachelors.filter(p => toNormalizedGender(p.metadata.gender) === 'female');
