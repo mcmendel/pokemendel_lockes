@@ -9,7 +9,7 @@ DEFAULT_PORT = 27017
 DEFAULT_DB_NAME = "locke_manager"
 
 # Remote MongoDB configuration
-REMOTE_CONNECTION_STRING_TEMPLATE = "mongodb+srv://mcmendel_db_user:{password}@mcmendel-locke-manager.3ynuh71.mongodb.net/"
+REMOTE_CONNECTION_STRING_TEMPLATE = "mongodb+srv://mcmendel_db_user:{password}@mcmendel-locke-manager.3ynuh71.mongodb.net/?retryWrites=true&w=majority"
 
 _client: Optional[MongoClient] = None
 
@@ -49,22 +49,31 @@ def get_client() -> MongoClient:
         else:
             # Use remote MongoDB
             password = os.getenv("MONGODB_PASSWORD")
+            print(f"DEBUG: LOCAL env var: {os.getenv('LOCAL')}")
+            print(f"DEBUG: MONGODB_PASSWORD length: {len(password) if password else 'None'}")
+            print(f"DEBUG: MONGODB_PASSWORD first 3 chars: {password[:3] if password else 'None'}")
+            
             if not password:
                 raise ConnectionFailure("MONGODB_PASSWORD environment variable is required for remote MongoDB connection")
             
             connection_string = REMOTE_CONNECTION_STRING_TEMPLATE.format(password=password)
+            print(f"DEBUG: Connection string (masked): {connection_string[:50]}...")
+            
             try:
                 _client = MongoClient(
                     connection_string,
                     maxPoolSize=50,
                     minPoolSize=10,
-                    serverSelectionTimeoutMS=10000  # Longer timeout for remote
+                    serverSelectionTimeoutMS=15000,  # Longer timeout for remote
+                    connectTimeoutMS=15000,
+                    socketTimeoutMS=15000
                 )
                 # Verify the connection
                 _client.admin.command('ping')
                 print("Connected to REMOTE MongoDB cluster")
             except ConnectionFailure as e:
-                raise ConnectionFailure(f"Failed to connect to REMOTE MongoDB cluster") from e
+                print(f"DEBUG: Connection error details: {e}")
+                raise ConnectionFailure(f"Failed to connect to REMOTE MongoDB cluster: {e}") from e
     return _client
 
 def get_db(db_name: str = None):
