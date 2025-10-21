@@ -9,7 +9,7 @@ DEFAULT_PORT = 27017
 DEFAULT_DB_NAME = "locke_manager"
 
 # Remote MongoDB configuration
-REMOTE_CONNECTION_STRING_TEMPLATE = "mongodb://mcmendel_db_user:{password}@ac-oelahdo-shard-00-00.3ynuh71.mongodb.net:27017,ac-oelahdo-shard-00-01.3ynuh71.mongodb.net:27017,ac-oelahdo-shard-00-02.3ynuh71.mongodb.net:27017/?ssl=true&replicaSet=atlas-14b8a8-shard-0&authSource=admin&retryWrites=true&w=majority"
+REMOTE_CONNECTION_STRING_TEMPLATE = "mongodb+srv://mcmendel_db_user:{password}@mcmendel-locke-manager.3ynuh71.mongodb.net/?retryWrites=true&w=majority"
 
 _client: Optional[MongoClient] = None
 
