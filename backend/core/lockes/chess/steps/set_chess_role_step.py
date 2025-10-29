@@ -11,9 +11,14 @@ from collections import defaultdict
 
 class SetChessRoleStep(StepInterface):
     def is_step_relevant(self, run: Run, pokemon: Pokemon) -> bool:
+        has_role = bool(pokemon.metadata.chesslocke_role)
+        is_pawn = pokemon.metadata.chesslocke_role == ChessRoles.PAWN
+        promoted_pawn = bool(
+            pokemon.metadata.chesslocke_role_og == ChessRoles.PAWN and
+            self._is_promoted_pawn(pokemon)
+        )
         return (
-            not pokemon.metadata.chesslocke_role
-            or not self._is_promoted_pawn(pokemon)
+            not has_role or all([is_pawn, not promoted_pawn])
         ) and pokemon.metadata.gender
 
     def step_options(self, run: Run, pokemon: Pokemon, is_randomized: bool) -> Tuple[InputOptions, List[str]]:
@@ -43,7 +48,10 @@ class SetChessRoleStep(StepInterface):
         return ExecutionReturnValue(pokemons_to_update=[pokemon.metadata.id])
 
     def _is_promoted_pawn(self, pokemon: Pokemon) -> bool:
-        return pokemon.metadata.chesslocke_role == ChessRoles.PAWN
+        return (
+            pokemon.metadata.chesslocke_role_og == ChessRoles.PAWN and
+            pokemon.metadata.chesslocke_role != ChessRoles.PAWN
+        )
 
     def _get_open_roles(self, run: Run) -> Set[str]:
         current_roles_mapping = self._map_current_roles(run)

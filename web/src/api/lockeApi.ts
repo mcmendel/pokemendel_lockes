@@ -1,6 +1,8 @@
 import axios from 'axios';
 
-const API_BASE_URL = 'http://localhost:5222/locke_manager';
+const API_BASE_URL = process.env.NODE_ENV === 'test' 
+  ? 'https://pokemendel-lockes.onrender.com/locke_manager'
+  : 'http://localhost:5222/locke_manager';
 
 // Types
 export interface ListRun {
