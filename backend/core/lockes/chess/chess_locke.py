@@ -9,6 +9,7 @@ from .steps import (
     AddToPartyStep,
     KillPokemonStep,
     SetChessRoleStep,
+    EvolvePokemonStep,
 )
 
 
@@ -50,6 +51,7 @@ class ChessLocke(BaseLocke):
         locke_steps_map[StepsNames.SWITCH_PARTY_POKEMONS] = ReplacePartyPokemon()
         locke_steps_map[StepsNames.CHESSLOCKE_SET_ROLE] = SetChessRoleStep()
         locke_steps_map[StepsNames.KILL] = KillPokemonStep()
+        locke_steps_map[StepsNames.EVOLVE] = EvolvePokemonStep()
         return locke_steps_map
 
     def auto_add_to_party(self) -> bool:

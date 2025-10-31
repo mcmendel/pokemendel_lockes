@@ -11,6 +11,24 @@ interface PokemonProps {
 }
 
 function Pokemon({ pokemon, onClick, height, isEnabled = true }: PokemonProps) {
+  const getChessRoleSymbol = (role: string) => {
+    switch (role.toLowerCase()) {
+      case 'king':
+        return '♔';
+      case 'queen':
+        return '♕';
+      case 'rook':
+        return '♖';
+      case 'bishop':
+        return '♗';
+      case 'knight':
+        return '♘';
+      case 'pawn':
+        return '♙';
+      default:
+        return null;
+    }
+  };
   const getGenderSymbol = (gender: string) => {
     switch (gender) {
       case 'Male':
@@ -25,6 +43,7 @@ function Pokemon({ pokemon, onClick, height, isEnabled = true }: PokemonProps) {
   };
 
   const genderSymbol = pokemon.metadata.gender ? getGenderSymbol(pokemon.metadata.gender) : null;
+  const chessRoleSymbol = pokemon.metadata.chesslocke_role ? getChessRoleSymbol(pokemon.metadata.chesslocke_role) : null;
 
   return (
     <Box sx={{ 
@@ -56,6 +75,28 @@ function Pokemon({ pokemon, onClick, height, isEnabled = true }: PokemonProps) {
           {genderSymbol}
         </Box>
       )}
+      {chessRoleSymbol && (
+        <Box
+          sx={{
+            position: 'absolute',
+            top: '4px',
+            right: '4px',
+            zIndex: 1,
+            width: '20px',
+            height: '20px',
+            display: 'flex',
+            alignItems: 'center',
+            justifyContent: 'center',
+            fontSize: '14px',
+            fontWeight: 'bold',
+            color: '#FFD54F',
+            textShadow: '1px 1px 1px rgba(0,0,0,0.6)'
+          }}
+          title={`Chess role: ${pokemon.metadata.chesslocke_role}`}
+        >
+          {chessRoleSymbol}
+        </Box>
+      )}
       <Button 
         onClick={() => onClick(pokemon.metadata.id)}
         disabled={!isEnabled}
@@ -64,7 +105,11 @@ function Pokemon({ pokemon, onClick, height, isEnabled = true }: PokemonProps) {
         <img 
           src={lockeApi.getPokemonImageUrl(pokemon.name)}
           alt={pokemon.name}
-          style={{ maxHeight: '100%' }}
+          style={{ 
+            maxHeight: '100%',
+            filter: pokemon.status === 'dead' || pokemon.status === 'Dead' ? 'grayscale(100%) brightness(0.7)' : 'none',
+            opacity: pokemon.status === 'dead' || pokemon.status === 'Dead' ? 0.6 : 1
+          }}
           onError={(e) => {
             const target = e.target as HTMLImageElement;
             target.src = `https://placehold.co/120x120/1976d2/ffffff?text=${pokemon.name}`;

@@ -13,12 +13,8 @@ class SetChessRoleStep(StepInterface):
     def is_step_relevant(self, run: Run, pokemon: Pokemon) -> bool:
         has_role = bool(pokemon.metadata.chesslocke_role)
         is_pawn = pokemon.metadata.chesslocke_role == ChessRoles.PAWN
-        promoted_pawn = bool(
-            pokemon.metadata.chesslocke_role_og == ChessRoles.PAWN and
-            self._is_promoted_pawn(pokemon)
-        )
         return (
-            not has_role or all([is_pawn, not promoted_pawn])
+            not has_role or all([is_pawn, not self._is_promoted_pawn(pokemon)])
         ) and pokemon.metadata.gender
 
     def step_options(self, run: Run, pokemon: Pokemon, is_randomized: bool) -> Tuple[InputOptions, List[str]]:

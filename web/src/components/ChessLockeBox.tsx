@@ -122,12 +122,15 @@ function ChessLockeBox({ pokemons, onPokemonClick }: ChessLockeBoxProps) {
                 className={`chess-square ${position.isBlackSquare ? 'black' : 'white'}`}
               >
                 {position.pokemon ? (
-                  <div className="chess-pokemon-wrapper">
+                  <div className={`chess-pokemon-wrapper ${position.pokemon.status === 'dead' || position.pokemon.status === 'Dead' ? 'dead-pokemon' : ''}`}>
                     <Pokemon 
                       pokemon={position.pokemon}
                       onClick={onPokemonClick}
                       height={120}
                     />
+                    {(position.pokemon.status === 'dead' || position.pokemon.status === 'Dead') && (
+                      <div className="chess-dead-indicator">💀</div>
+                    )}
                     <div className="chess-role">
                       {position.pokemon.metadata.chesslocke_role_og}
                     </div>
@@ -154,12 +157,15 @@ function ChessLockeBox({ pokemons, onPokemonClick }: ChessLockeBoxProps) {
           </div>
           <div className="unassigned-grid">
             {unassignedPokemons.map((pokemon, index) => (
-              <div key={index} className="unassigned-pokemon">
+              <div key={index} className={`unassigned-pokemon ${pokemon.status === 'dead' || pokemon.status === 'Dead' ? 'dead-pokemon' : ''}`}>
                 <Pokemon 
                   pokemon={pokemon}
                   onClick={onPokemonClick}
                   height={80}
                 />
+                {(pokemon.status === 'dead' || pokemon.status === 'Dead') && (
+                  <div className="chess-dead-indicator-small">💀</div>
+                )}
                 <div className="unassigned-label">Unassigned</div>
               </div>
             ))}
