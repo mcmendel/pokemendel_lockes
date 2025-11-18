@@ -478,7 +478,7 @@ function RunComponent() {
                 onPokemonClick={handlePokemonClick}
               />
             )}
-            {lockeType !== "EeveeLocke" && (
+            {lockeType !== "EeveeLocke" && lockeType !== "StarterLocke" && (
               <Encounters 
                 encounters={runData.run.encounters} 
                 runId={runId} 

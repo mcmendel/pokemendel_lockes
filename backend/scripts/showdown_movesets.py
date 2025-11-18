@@ -2,8 +2,10 @@ from pokemendel_core.data.gen3 import PokemonGen3
 
 MOVESETS = {
     1: {
+        PokemonGen3.CHARMANDER: ["Growl", "Scratch"],
         PokemonGen3.FLAREON: ["Quick Attack", "Sand Attack", "Tackle", "Ember"],
         PokemonGen3.JOLTEON: ["Quick Attack", "Sand Attack", "Tackle", "Thunder Shock"],
+        PokemonGen3.SQUIRTLE: ["Tackle", "Tail Whip"],
         PokemonGen3.VAPOREON: ["Quick Attack", "Sand Attack", "Tackle", "Water Gun"],
     },
     2: {
@@ -12,8 +14,10 @@ MOVESETS = {
         PokemonGen3.BELLSPROUT: ["Vine Whip"],
         PokemonGen3.BULBASAUR: ["Tackle", "Growl"],
         PokemonGen3.CHARMANDER: ["Growl", "Scratch"],
+        PokemonGen3.CHIKORITA: ["Growl", "Tackle"],
         PokemonGen3.CLEFFA: ["Charm", "Pound", "Encore"],
         PokemonGen3.CUBONE: ["Growl", "Tail Whip"],
+        PokemonGen3.CYNDAQUIL: ["Leer", "Tackle"],
         PokemonGen3.DIGLETT: ["Scratch", "Growl"],
         PokemonGen3.DODUO: ["Growl", "Peck"],
         PokemonGen3.DRATINI: ["Leer", "Wrap"],
