@@ -1,12 +1,17 @@
 """Flask application for the Locke Manager API."""
 
-from flask import Flask, jsonify, send_file, request
+from flask import Flask, jsonify, send_file, request, Response
 from flask_cors import CORS
 from dotenv import load_dotenv
 from responses.exceptions import BlackoutException, ContinueCreationException
 from apis.generation import jump_to_next_gen
 from apis.main import list_runs_api
-from apis.resources import get_pokemon_info, get_gym_leader_info, get_type_info
+from apis.resources import (
+    get_pokemon_info, 
+    get_gym_leader_info, 
+    get_type_info
+)
+from core.r2 import download_file, is_s3_path
 from apis.run_creation import start_run_creation, continue_run_creation
 from apis.run_admin import get_run_api, save_run, load_run
 from apis.run import (
@@ -102,6 +107,21 @@ def get_pokemon_resource(pokemon_name):
             "message": f"Pokemon '{pokemon_name}' not found"
         }), 404
     
+    # If it's an S3 path, download from R2 and serve
+    if is_s3_path(image_path):
+        file_data = download_file(image_path)
+        if file_data is None:
+            return jsonify({
+                "status": "error",
+                "message": f"Pokemon '{pokemon_name}' not found in R2"
+            }), 404
+        return Response(
+            file_data,
+            mimetype='image/jpeg',
+            headers={'Content-Disposition': 'inline'}
+        )
+    
+    # Otherwise, it's a local path
     return send_file(
         image_path,
         mimetype='image/jpeg',
@@ -126,6 +146,21 @@ def get_gym_leader_resource(game_name, gym_name):
             "message": f"Gym leader '{gym_name}' from game '{game_name}' not found"
         }), 404
     
+    # If it's an S3 path, download from R2 and serve
+    if is_s3_path(image_path):
+        file_data = download_file(image_path)
+        if file_data is None:
+            return jsonify({
+                "status": "error",
+                "message": f"Gym leader '{gym_name}' from game '{game_name}' not found in R2"
+            }), 404
+        return Response(
+            file_data,
+            mimetype='image/jpeg',
+            headers={'Content-Disposition': 'inline'}
+        )
+    
+    # Otherwise, it's a local path
     return send_file(
         image_path,
         mimetype='image/jpeg',
@@ -149,6 +184,21 @@ def get_type_resource(type_name):
             "message": f"Type '{type_name}' not found"
         }), 404
     
+    # If it's an S3 path, download from R2 and serve
+    if is_s3_path(image_path):
+        file_data = download_file(image_path)
+        if file_data is None:
+            return jsonify({
+                "status": "error",
+                "message": f"Type '{type_name}' not found in R2"
+            }), 404
+        return Response(
+            file_data,
+            mimetype='image/jpeg',
+            headers={'Content-Disposition': 'inline'}
+        )
+    
+    # Otherwise, it's a local path
     return send_file(
         image_path,
         mimetype='image/jpeg',
