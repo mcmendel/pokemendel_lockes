@@ -1,6 +1,7 @@
 from pokemendel_core.data.gen3 import PokemonGen3
 from pokemendel_core.data import fetch_pokemon
 from pokemendel_core.utils.definitions.genders import Genders
+from pokemendel_core.utils.definitions.natures import Natures
 from scripts.showdown_movesets import MOVESETS
 from typing import List
 import random
@@ -28,6 +29,10 @@ def get_moveset(gen: int, pokemon_name: str) -> List[str]:
     return pokemon_moves
 
 
+def get_random_nature() -> str:
+    return random.choice(Natures.list_all())
+
+
 def generate_showdown_format(gen, name, nickname=None, item=None, set_gender=True):
     moves = get_moveset(gen, name)
 
@@ -42,8 +47,8 @@ def generate_showdown_format(gen, name, nickname=None, item=None, set_gender=Tru
     ability = ""  # "Ability: Unknown"
     level = "Level: 5"  # Default level
     evs = "EVs: 0 HP / 0 Atk / 0 Def / 0 SpA / 0 SpD / 1 Spe"
-    nature = ""  # "Adamant Nature"
     happiness = "Friendship: 50"
+    nature = "" if gen < 3 else f"{get_random_nature()} Nature"
 
     # Format moves
     move_list = "\n".join(f"- {move}" for move in moves)
@@ -61,9 +66,9 @@ def generate_showdown_format(gen, name, nickname=None, item=None, set_gender=Tru
 
 if __name__ == "__main__":
     output = generate_showdown_format(
-        gen=2,
-        name=PokemonGen3.ESPEON,
-        nickname="Andy",
+        gen=3,
+        name=PokemonGen3.MUDKIP,
+        nickname="Carina",
         # item="Fire Stone",
         # set_gender=False,
     )

@@ -70,6 +70,7 @@ export interface Pokemon {
     num_legs: number;
     stats: any | null;  // TODO: Define proper stats type if needed
     supported_genders: string[];
+    nature?: string | null;
 }
 
 export interface RunResponse {

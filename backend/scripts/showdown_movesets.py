@@ -1,4 +1,5 @@
 from pokemendel_core.data.gen3 import PokemonGen3
+from pokemendel_core.data.gen3 import PokemonGen3 as PokemonGen
 
 MOVESETS = {
     1: {
@@ -70,5 +71,15 @@ MOVESETS = {
         PokemonGen3.WEEDLE: ["Poison Sting", "String Shot"],
         PokemonGen3.ZAPDOS: ["Peck", "Thunder Shock"],
         PokemonGen3.ZUBAT: ["Leech Life"],
+    },
+    3: {
+        PokemonGen.CHARMANDER: ["Growl", "Scratch"],
+        PokemonGen.CHIKORITA: ["Growl", "Tackle"],
+        PokemonGen.CYNDAQUIL: ["Leer", "Tackle"],
+        PokemonGen.MUDKIP: ["Growl", "Tackle"],
+        PokemonGen.SQUIRTLE: ["Tackle", "Tail Whip"],
+        PokemonGen.TORCHIC: ["Growl", "Scratch"],
+        PokemonGen.TOTODILE: ["Leer", "Scratch"],
+        PokemonGen.TREECKO: ["Leer", "Pound"],
     }
 }

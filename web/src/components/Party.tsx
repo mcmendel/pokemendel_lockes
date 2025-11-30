@@ -14,11 +14,16 @@ function Party({ pokemons, onPokemonClick }: PartyProps) {
 
   useEffect(() => {
     // Update heights after component mounts and whenever pokemons change
-    const heights = slotRefs.current.map(slot => slot?.offsetHeight ?? 0);
-    setSlotHeights(heights);
-    heights.forEach((height, index) => {
-      console.log(`Slot ${index + 1} height:`, height);
-    });
+    // Use a small delay to ensure all content (including nature displays) is rendered
+    const timeoutId = setTimeout(() => {
+      const heights = slotRefs.current.map(slot => slot?.offsetHeight ?? 0);
+      setSlotHeights(heights);
+      heights.forEach((height, index) => {
+        console.log(`Slot ${index + 1} height:`, height);
+      });
+    }, 0);
+    
+    return () => clearTimeout(timeoutId);
   }, [pokemons]);
 
   return (

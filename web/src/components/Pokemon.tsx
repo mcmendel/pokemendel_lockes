@@ -1,16 +1,78 @@
 import React from 'react';
 import { Box, Button, Typography } from '@mui/material';
+import { ArrowUpward, ArrowDownward, Remove } from '@mui/icons-material';
 import { Pokemon as PokemonType, PokemonMetadata as ApiPokemonMetadata } from '../api/lockeApi';
 import lockeApi from '../api/lockeApi';
 
 interface PokemonProps {
   pokemon: PokemonType;
   onClick: (id: string) => void;
-  height: number;
+  height?: number;
   isEnabled?: boolean;
 }
 
+// Nature stat mapping: [increased stat, decreased stat]
+// Neutral natures return [null, null]
+const getNatureStats = (nature: string | null | undefined): { increased: string | null; decreased: string | null } => {
+  if (!nature) return { increased: null, decreased: null };
+  
+  const natureLower = nature.toLowerCase();
+  
+  // Neutral natures (no stat changes)
+  const neutralNatures = ['hardy', 'docile', 'serious', 'bashful', 'quirky'];
+  if (neutralNatures.includes(natureLower)) {
+    return { increased: null, decreased: null };
+  }
+  
+  // Stat abbreviations
+  const stats: Record<string, string> = {
+    'hp': 'HP',
+    'atk': 'Atk',
+    'def': 'Def',
+    'spa': 'SpA',
+    'spd': 'SpD',
+    'spe': 'Spe'
+  };
+  
+  // Nature to stat mapping
+  const natureMap: Record<string, { increased: string; decreased: string }> = {
+    'lonely': { increased: 'atk', decreased: 'def' },
+    'brave': { increased: 'atk', decreased: 'spe' },
+    'adamant': { increased: 'atk', decreased: 'spa' },
+    'naughty': { increased: 'atk', decreased: 'spd' },
+    'bold': { increased: 'def', decreased: 'atk' },
+    'relaxed': { increased: 'def', decreased: 'spe' },
+    'impish': { increased: 'def', decreased: 'spa' },
+    'lax': { increased: 'def', decreased: 'spd' },
+    'timid': { increased: 'spe', decreased: 'atk' },
+    'hasty': { increased: 'spe', decreased: 'def' },
+    'jolly': { increased: 'spe', decreased: 'spa' },
+    'naive': { increased: 'spe', decreased: 'spd' },
+    'modest': { increased: 'spa', decreased: 'atk' },
+    'mild': { increased: 'spa', decreased: 'def' },
+    'quiet': { increased: 'spa', decreased: 'spe' },
+    'rash': { increased: 'spa', decreased: 'spd' },
+    'calm': { increased: 'spd', decreased: 'atk' },
+    'gentle': { increased: 'spd', decreased: 'def' },
+    'sassy': { increased: 'spd', decreased: 'spe' },
+    'careful': { increased: 'spd', decreased: 'spa' }
+  };
+  
+  const natureEffect = natureMap[natureLower];
+  if (!natureEffect) {
+    return { increased: null, decreased: null };
+  }
+  
+  return {
+    increased: stats[natureEffect.increased] || null,
+    decreased: stats[natureEffect.decreased] || null
+  };
+};
+
 function Pokemon({ pokemon, onClick, height, isEnabled = true }: PokemonProps) {
+  const hasNature = !!pokemon.nature;
+  // Reserve extra space for nature display if present
+  const natureDisplayHeight = hasNature ? 20 : 0;
   const getChessRoleSymbol = (role: string) => {
     switch (role.toLowerCase()) {
       case 'king':
@@ -44,14 +106,18 @@ function Pokemon({ pokemon, onClick, height, isEnabled = true }: PokemonProps) {
 
   const genderSymbol = pokemon.metadata.gender ? getGenderSymbol(pokemon.metadata.gender) : null;
   const chessRoleSymbol = pokemon.metadata.chesslocke_role ? getChessRoleSymbol(pokemon.metadata.chesslocke_role) : null;
+  const natureStats = getNatureStats(pokemon.nature);
 
   return (
     <Box sx={{ 
-      height: `${height}px`, 
+      height: height && height > 0 ? `${height}px` : 'auto',
       display: 'flex', 
       flexDirection: 'column', 
       alignItems: 'center',
-      position: 'relative'
+      position: 'relative',
+      width: '100%',
+      justifyContent: 'flex-start',
+      boxSizing: 'border-box'
     }}>
       {genderSymbol && (
         <Box
@@ -100,7 +166,15 @@ function Pokemon({ pokemon, onClick, height, isEnabled = true }: PokemonProps) {
       <Button 
         onClick={() => onClick(pokemon.metadata.id)}
         disabled={!isEnabled}
-        sx={{ height: '70%', width: 'auto' }}
+        sx={{ 
+          flex: '0 0 auto',
+          height: height && height > 0 
+            ? `${Math.max(height - (pokemon.metadata.nickname ? 30 : 0) - natureDisplayHeight - 8, 50)}px`
+            : 'auto',
+          width: 'auto',
+          minHeight: '50px',
+          padding: '4px'
+        }}
       >
         <img 
           src={lockeApi.getPokemonImageUrl(pokemon.name)}
@@ -117,9 +191,43 @@ function Pokemon({ pokemon, onClick, height, isEnabled = true }: PokemonProps) {
         />
       </Button>
       {pokemon.metadata.nickname && (
-        <Typography variant="subtitle1" sx={{ marginTop: '8px', fontSize: '0.8rem' }}>
+        <Typography variant="subtitle1" sx={{ marginTop: '4px', fontSize: '0.8rem', flexShrink: 0 }}>
           {pokemon.metadata.nickname}
         </Typography>
+      )}
+      {pokemon.nature && (
+        <Box sx={{ 
+          display: 'flex', 
+          alignItems: 'center', 
+          justifyContent: 'center',
+          gap: '4px',
+          marginTop: '2px',
+          fontSize: '0.7rem',
+          flexShrink: 0,
+          height: '18px'
+        }}>
+          {natureStats.increased ? (
+            <Box sx={{ display: 'flex', alignItems: 'center', color: '#2196F3' }}>
+              <ArrowUpward sx={{ fontSize: '0.9rem', marginRight: '2px' }} />
+              <Typography variant="caption" sx={{ color: '#2196F3', fontWeight: 'bold' }}>
+                {natureStats.increased}
+              </Typography>
+            </Box>
+          ) : null}
+          {natureStats.decreased ? (
+            <Box sx={{ display: 'flex', alignItems: 'center', color: '#F44336' }}>
+              <ArrowDownward sx={{ fontSize: '0.9rem', marginRight: '2px' }} />
+              <Typography variant="caption" sx={{ color: '#F44336', fontWeight: 'bold' }}>
+                {natureStats.decreased}
+              </Typography>
+            </Box>
+          ) : null}
+          {!natureStats.increased && !natureStats.decreased && (
+            <Box sx={{ display: 'flex', alignItems: 'center', color: '#9E9E9E' }}>
+              <Remove sx={{ fontSize: '0.9rem' }} />
+            </Box>
+          )}
+        </Box>
       )}
     </Box>
   );
