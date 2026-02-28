@@ -49,6 +49,7 @@ function RunComponent() {
   const [actionInputType, setActionInputType] = useState<string>('');
   const [actionInputOptions, setActionInputOptions] = useState<string[]>([]);
   const [actionInputText, setActionInputText] = useState<string>('');
+  const [actionInputSearchTerm, setActionInputSearchTerm] = useState<string>('');
   const [loadingActionInfo, setLoadingActionInfo] = useState(false);
   const [isBlackoutDialogOpen, setIsBlackoutDialogOpen] = useState(false);
   const [lockeType, setLockeType] = useState<string | null>(null);
@@ -306,6 +307,7 @@ function RunComponent() {
     setActionInputType('');
     setActionInputOptions([]);
     setActionInputText('');
+    setActionInputSearchTerm('');
   };
 
   const handleActionInputSubmit = async () => {
@@ -485,6 +487,7 @@ function RunComponent() {
                 runData={runData}
                 setRunData={setRunData}
                 setSnackbar={setSnackbar}
+                onPokemonClick={handlePokemonClick}
               />
             )}
             <Tabs runId={runId} runData={runData} onPokemonClick={handlePokemonClick} onGymClick={handleGymClick} lockeType={lockeType} />
@@ -634,50 +637,70 @@ function RunComponent() {
               <Typography variant="body2" sx={{ mb: 2 }}>
                 Select a Pokemon:
               </Typography>
+              <TextField
+                autoFocus
+                margin="dense"
+                label="Search by name or nickname"
+                type="text"
+                fullWidth
+                variant="outlined"
+                value={actionInputSearchTerm}
+                onChange={(e) => setActionInputSearchTerm(e.target.value)}
+                sx={{ mb: 2 }}
+              />
               <List>
-                {actionInputOptions.map((pokemonId, index) => {
-                  const pokemon = runData?.pokemons[pokemonId];
-                  return (
-                    <ListItem 
-                      key={index} 
-                      button 
-                      onClick={() => setActionInputText(pokemonId)}
-                      selected={actionInputText === pokemonId}
-                      sx={{ 
-                        border: '1px solid #e0e0e0', 
-                        borderRadius: 1, 
-                        mb: 1,
-                        '&:hover': {
-                          backgroundColor: '#f5f5f5'
-                        },
-                        '&.Mui-selected': {
-                          backgroundColor: '#e3f2fd',
-                          borderColor: '#1976d2'
-                        }
-                      }}
-                    >
-                      <Box sx={{ display: 'flex', alignItems: 'center', gap: 2, width: '100%' }}>
-                        <img 
-                          src={lockeApi.getPokemonImageUrl(pokemon?.name || pokemonId)}
-                          alt={pokemon?.name || pokemonId}
-                          style={{ 
-                            width: '40px', 
-                            height: '40px', 
-                            objectFit: 'contain' 
-                          }}
-                          onError={(e) => {
-                            const target = e.target as HTMLImageElement;
-                            target.src = `https://placehold.co/40x40/1976d2/ffffff?text=${pokemon?.name || pokemonId}`;
-                          }}
-                        />
-                        <ListItemText 
-                          primary={pokemon?.name || pokemonId}
-                          secondary={pokemon?.metadata?.nickname ? `"${pokemon.metadata.nickname}"` : undefined}
-                        />
-                      </Box>
-                    </ListItem>
-                  );
-                })}
+                {actionInputOptions
+                  .filter((pokemonId) => {
+                    if (!actionInputSearchTerm.trim()) return true;
+                    const pokemon = runData?.pokemons[pokemonId];
+                    const searchLower = actionInputSearchTerm.toLowerCase();
+                    const name = (pokemon?.name || pokemonId).toLowerCase();
+                    const nickname = pokemon?.metadata?.nickname?.toLowerCase() || '';
+                    return name.includes(searchLower) || nickname.includes(searchLower);
+                  })
+                  .map((pokemonId, index) => {
+                    const pokemon = runData?.pokemons[pokemonId];
+                    return (
+                      <ListItem 
+                        key={index} 
+                        button 
+                        onClick={() => setActionInputText(pokemonId)}
+                        selected={actionInputText === pokemonId}
+                        sx={{ 
+                          border: '1px solid #e0e0e0', 
+                          borderRadius: 1, 
+                          mb: 1,
+                          '&:hover': {
+                            backgroundColor: '#f5f5f5'
+                          },
+                          '&.Mui-selected': {
+                            backgroundColor: '#e3f2fd',
+                            borderColor: '#1976d2'
+                          }
+                        }}
+                      >
+                        <Box sx={{ display: 'flex', alignItems: 'center', gap: 2, width: '100%' }}>
+                          <img 
+                            src={lockeApi.getPokemonImageUrl(pokemon?.name || pokemonId)}
+                            alt={pokemon?.name || pokemonId}
+                            style={{ 
+                              width: '40px', 
+                              height: '40px', 
+                              objectFit: 'contain' 
+                            }}
+                            onError={(e) => {
+                              const target = e.target as HTMLImageElement;
+                              target.src = `https://placehold.co/40x40/1976d2/ffffff?text=${pokemon?.name || pokemonId}`;
+                            }}
+                          />
+                          <ListItemText 
+                            primary={pokemon?.name || pokemonId}
+                            secondary={pokemon?.metadata?.nickname ? `"${pokemon.metadata.nickname}"` : undefined}
+                          />
+                        </Box>
+                      </ListItem>
+                    );
+                  })}
               </List>
             </Box>
           ) : null}

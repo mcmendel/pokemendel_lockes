@@ -17,6 +17,12 @@ function WedLockeParty({ pokemons, onPokemonClick }: WedLockePartyProps) {
   const slotRefs = useRef<(HTMLDivElement | null)[]>([]);
   const [slotHeights, setSlotHeights] = useState<number[]>([]);
 
+  // Exclude dead pokemons from display
+  const alivePokemons = pokemons.filter(
+    (p): p is PokemonType =>
+      p != null && p.status !== 'dead' && p.status !== 'Dead'
+  );
+
   // Organize pokemons into pairs based on paired metadata
   const organizeIntoPairs = (): PairSlot[] => {
     const pairs: PairSlot[] = [
@@ -29,12 +35,12 @@ function WedLockeParty({ pokemons, onPokemonClick }: WedLockePartyProps) {
     let pairIndex = 0;
 
     // First, handle paired pokemons
-    pokemons.forEach((pokemon) => {
+    alivePokemons.forEach((pokemon) => {
       if (!pokemon || usedPokemonIds.has(pokemon.metadata.id)) return;
       
       if (pokemon.metadata.paired) {
         // Find the partner
-        const partner = pokemons.find(p => p?.metadata.id === pokemon.metadata.paired);
+        const partner = alivePokemons.find(p => p?.metadata.id === pokemon.metadata.paired);
         if (partner && !usedPokemonIds.has(partner.metadata.id)) {
           // Place both pokemons in the same pair
           if (pairIndex < 3) {
@@ -48,7 +54,7 @@ function WedLockeParty({ pokemons, onPokemonClick }: WedLockePartyProps) {
     });
 
     // Then, handle single pokemons
-    pokemons.forEach((pokemon) => {
+    alivePokemons.forEach((pokemon) => {
       if (!pokemon || usedPokemonIds.has(pokemon.metadata.id)) return;
       
       if (!pokemon.metadata.paired) {
@@ -104,7 +110,7 @@ function WedLockeParty({ pokemons, onPokemonClick }: WedLockePartyProps) {
                     height={slotHeights[pairIndex * 2] || 0}
                   />
                   <div className="wedlocke-status">
-                    {pair.pokemon1.metadata.gender === 'male' ? '👨' : pair.pokemon1.metadata.gender === 'female' ? '👩' : '❓'}
+                    {pair.pokemon1.metadata.gender?.toLowerCase() === 'male' ? '👨' : pair.pokemon1.metadata.gender?.toLowerCase() === 'female' ? '👩' : '❓'}
                   </div>
                 </div>
               ) : (
@@ -128,7 +134,7 @@ function WedLockeParty({ pokemons, onPokemonClick }: WedLockePartyProps) {
                     height={slotHeights[pairIndex * 2 + 1] || 0}
                   />
                   <div className="wedlocke-status">
-                    {pair.pokemon2.metadata.gender === 'male' ? '👨' : pair.pokemon2.metadata.gender === 'female' ? '👩' : '❓'}
+                    {pair.pokemon2.metadata.gender?.toLowerCase() === 'male' ? '👨' : pair.pokemon2.metadata.gender?.toLowerCase() === 'female' ? '👩' : '❓'}
                   </div>
                 </div>
               ) : (

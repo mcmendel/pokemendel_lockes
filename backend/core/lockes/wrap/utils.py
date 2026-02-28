@@ -13,7 +13,7 @@ def get_pokemon_max_index(run: Run) -> int:
 
 
 def get_sorted_party(run: Run) -> List[Pokemon]:
-    return sorted(run.party.pokemons, key=lambda x: x.metadata.caught_index)
+    return sorted(run.party.pokemons, key=lambda x: x.metadata.caught_index or 0 )
 
 
 def is_pokemon_in_wrap(run: Run, pokemon: Pokemon) -> bool:
@@ -27,7 +27,7 @@ def is_pokemon_in_wrap(run: Run, pokemon: Pokemon) -> bool:
 
 
 def refresh_pokemons_in_party(run: Run) -> List[Pokemon]:
-    alive_pokemons = sorted(run.box.get_alive_pokemons(), key=lambda x: x.metadata.caught_index)
+    alive_pokemons = sorted(run.box.get_alive_pokemons(), key=lambda x: x.metadata.caught_index or 0)
     party_pokemons = get_sorted_party(run)
     if len(party_pokemons) >= 4:
         _refresh_old_party_pokemons(run, party_pokemons, alive_pokemons, True)

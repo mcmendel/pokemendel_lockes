@@ -5,6 +5,7 @@ import ImportantBattles from './ImportantBattles';
 import Bachelors from './Bachelors';
 import RunBox from './RunBox';
 import ChessLockeBox from './ChessLockeBox';
+import WedLockeBox from './WedLockeBox';
 import Graveyard from './Graveyard';
 import Gyms from './Gyms';
 import './Tabs.css';
@@ -228,6 +229,11 @@ function Tabs({ runId, runData, onPokemonClick, onGymClick, lockeType }: TabsPro
               <ChessLockeBox 
                 pokemons={runData?.run?.box?.map((id: string) => runData.pokemons[id]) || []}
                 onPokemonClick={onPokemonClick || (() => {})} 
+              />
+            ) : lockeType === "WedLocke" ? (
+              <WedLockeBox
+                pokemons={runData?.run?.box?.map((id: string) => runData.pokemons[id]) || []}
+                onPokemonClick={onPokemonClick || (() => {})}
               />
             ) : (
               <RunBox runData={runData} onPokemonClick={onPokemonClick || (() => {})} />

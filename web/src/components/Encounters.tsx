@@ -2,6 +2,7 @@ import React, { useState, useEffect } from 'react';
 import { Table, TableBody, TableCell, TableContainer, TableHead, TableRow, Paper, Dialog, DialogTitle, DialogContent, DialogActions, Button, Typography, Grid, CircularProgress, Box, TextField, InputAdornment, List, ListItem, ListItemButton, ListItemText } from '@mui/material';
 import SearchIcon from '@mui/icons-material/Search';
 import lockeApi, { RunResponse, Pokemon } from '../api/lockeApi';
+import PokemonComponent from './Pokemon';
 import './Encounters.css';
 
 interface Encounter {
@@ -16,9 +17,10 @@ interface EncountersProps {
   runData?: RunResponse;
   setRunData?: (data: RunResponse) => void;
   setSnackbar?: (snackbar: { open: boolean; message: string; severity: 'success' | 'error' }) => void;
+  onPokemonClick?: (id: string) => void;
 }
 
-function Encounters({ encounters, runId, runData, setRunData, setSnackbar }: EncountersProps) {
+function Encounters({ encounters, runId, runData, setRunData, setSnackbar, onPokemonClick }: EncountersProps) {
   const [selectedEncounter, setSelectedEncounter] = useState<Encounter | null>(null);
   const [isDialogOpen, setIsDialogOpen] = useState(false);
   const [encounterPokemons, setEncounterPokemons] = useState<string[]>([]);
@@ -79,14 +81,16 @@ function Encounters({ encounters, runId, runData, setRunData, setSnackbar }: Enc
     }
   };
 
-  const handlePokemonClick = (encounter: Encounter) => {
-    // Only handle clicks for "Met" encounters with a pokemon
-    if (encounter.status === 'Met' && encounter.pokemon) {
+  const handleEncounterRowClick = (encounter: Encounter) => {
+    // For "Caught" encounters, click is handled by the Pokemon component
+    if (encounter.status === 'Caught') return;
+    // Only handle row clicks for empty slot (open picker) or "Met" (open status dialog)
+    if (!encounter.pokemon) {
+      handleEncounterClick(encounter);
+    } else if (encounter.status === 'Met') {
       setSelectedPokemonForStatus({ pokemon: encounter.pokemon, route: encounter.route });
       setIsStatusDialogOpen(true);
     }
-    // For "Caught" encounters, we could add different functionality if needed
-    // For now, no action for "Caught", "Killed", "Ran" encounters
   };
 
   const handleStatusSelection = async (status: string) => {
@@ -195,75 +199,78 @@ function Encounters({ encounters, runId, runData, setRunData, setSnackbar }: Enc
                   cellStyle = { color: 'white', borderBottom: '1px solid #666' };
                 }
                 
+                const pokemonInfo = getPokemonDisplayInfo(encounter);
+                const isCaught = encounter.status === 'Caught' && pokemonInfo.pokemonData;
+
                 return (
                   <TableRow 
                     key={index} 
                     sx={{ 
                       '&:hover': { backgroundColor: encounter.status === 'Met' ? '#616161' : 'rgba(0,0,0,0.03)' },
-                      cursor: !encounter.pokemon ? 'pointer' : (encounter.status === 'Met' ? 'pointer' : 'default'),
+                      cursor: isCaught ? 'default' : (!encounter.pokemon ? 'pointer' : (encounter.status === 'Met' ? 'pointer' : 'default')),
                       ...rowStyle
                     }}
-                    onClick={!encounter.pokemon ? () => handleEncounterClick(encounter) : (encounter.status === 'Met' ? () => handlePokemonClick(encounter) : undefined)}
+                    onClick={isCaught ? undefined : () => handleEncounterRowClick(encounter)}
                   >
                     <TableCell sx={cellStyle}>
                       {encounter.route}
                     </TableCell>
-                    <TableCell sx={cellStyle}>
-                      {(() => {
-                        const pokemonInfo = getPokemonDisplayInfo(encounter);
-                        if (pokemonInfo.name && pokemonInfo.imageUrl) {
-                          return (
-                            <img 
-                              src={pokemonInfo.imageUrl}
-                              alt={pokemonInfo.name}
-                              style={{ 
-                                width: '40px', 
-                                height: '40px', 
-                                objectFit: 'contain',
-                                borderRadius: '4px'
-                              }}
-                              onError={(e) => {
-                                const target = e.target as HTMLImageElement;
-                                target.src = `https://placehold.co/40x40/1976d2/ffffff?text=${pokemonInfo.name}`;
-                              }}
-                            />
-                          );
-                        } else if (pokemonInfo.name) {
-                          return (
-                            <div style={{ 
-                              width: '40px', 
-                              height: '40px', 
-                              backgroundColor: '#f0f0f0',
-                              borderRadius: '4px',
-                              display: 'flex',
-                              alignItems: 'center',
-                              justifyContent: 'center',
-                              color: '#888',
-                              fontSize: '10px',
-                              textAlign: 'center',
-                              padding: '2px'
-                            }}>
-                              {pokemonInfo.name}
-                            </div>
-                          );
-                        } else {
-                          return (
-                            <div style={{ 
-                              width: '40px', 
-                              height: '40px', 
-                              backgroundColor: encounter.status === 'Met' ? '#666' : '#f0f0f0',
-                              borderRadius: '4px',
-                              display: 'flex',
-                              alignItems: 'center',
-                              justifyContent: 'center',
-                              color: encounter.status === 'Met' ? 'white' : '#888',
-                              fontSize: '12px'
-                            }}>
-                              ?
-                            </div>
-                          );
-                        }
-                      })()}
+                    <TableCell sx={cellStyle} onClick={isCaught ? (e) => e.stopPropagation() : undefined}>
+                      {isCaught && pokemonInfo.pokemonData ? (
+                        <Box sx={{ display: 'inline-flex', verticalAlign: 'middle' }}>
+                          <PokemonComponent
+                            pokemon={pokemonInfo.pokemonData}
+                            onClick={(id) => onPokemonClick?.(id)}
+                            height={80}
+                            isEnabled={!!onPokemonClick && pokemonInfo.pokemonData.status !== 'dead' && pokemonInfo.pokemonData.status !== 'Dead'}
+                          />
+                        </Box>
+                      ) : pokemonInfo.name && pokemonInfo.imageUrl ? (
+                        <img 
+                          src={pokemonInfo.imageUrl}
+                          alt={pokemonInfo.name}
+                          style={{ 
+                            width: '40px', 
+                            height: '40px', 
+                            objectFit: 'contain',
+                            borderRadius: '4px'
+                          }}
+                          onError={(e) => {
+                            const target = e.target as HTMLImageElement;
+                            target.src = `https://placehold.co/40x40/1976d2/ffffff?text=${pokemonInfo.name}`;
+                          }}
+                        />
+                      ) : pokemonInfo.name ? (
+                        <div style={{ 
+                          width: '40px', 
+                          height: '40px', 
+                          backgroundColor: '#f0f0f0',
+                          borderRadius: '4px',
+                          display: 'flex',
+                          alignItems: 'center',
+                          justifyContent: 'center',
+                          color: '#888',
+                          fontSize: '10px',
+                          textAlign: 'center',
+                          padding: '2px'
+                        }}>
+                          {pokemonInfo.name}
+                        </div>
+                      ) : (
+                        <div style={{ 
+                          width: '40px', 
+                          height: '40px', 
+                          backgroundColor: encounter.status === 'Met' ? '#666' : '#f0f0f0',
+                          borderRadius: '4px',
+                          display: 'flex',
+                          alignItems: 'center',
+                          justifyContent: 'center',
+                          color: encounter.status === 'Met' ? 'white' : '#888',
+                          fontSize: '12px'
+                        }}>
+                          ?
+                        </div>
+                      )}
                     </TableCell>
                   </TableRow>
                 );
