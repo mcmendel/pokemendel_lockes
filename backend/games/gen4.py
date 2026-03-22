@@ -9,7 +9,7 @@ _GENERATION = 4
 
 
 @dataclass
-class _BaseRSGame(Game):
+class _BaseGen4Game(Game):
     def __init__(self, **kwargs):
         assert 'name' in kwargs
         for override_field, default_value in [
@@ -252,7 +252,7 @@ PokemonGen4.RIOLU,
         super().__init__(**kwargs)
 
 
-DIAMOND = _BaseRSGame(
+DIAMOND = _BaseGen4Game(
     name="Diamond",
     encounters={
         "Twinleaf Town": {
@@ -1033,7 +1033,7 @@ PokemonGen4.ABRA,
 )
 
 
-PEARL = _BaseRSGame(
+PEARL = _BaseGen4Game(
     name="Pearl",
     encounters={
         "Twinleaf Town": {
@@ -1815,6 +1815,206 @@ PokemonGen4.ABRA,},
 
 PLATINUM = _BaseRSGame(
     name="Platinum",
+    gyms=[
+        GymTrainer(
+            leader="Roark",
+            type=Types.ROCK,
+            pokemons=[
+                TrainerPokemon(PokemonGen4.GEODUDE, 12),
+                TrainerPokemon(PokemonGen4.ONIX, 12),
+                TrainerPokemon(PokemonGen4.CRANIDOS, 14),
+            ],
+            location="Oreburgh City",
+            badge="Coal Badge"
+        ),
+        GymTrainer(
+            leader="Gardenia",
+            type=Types.GRASS,
+            pokemons=[
+                TrainerPokemon(PokemonGen4.CHERRIM, 20),
+                TrainerPokemon(PokemonGen4.TURTWIG, 20),
+                TrainerPokemon(PokemonGen4.ROSERADE, 22),
+            ],
+            location="Eterna City",
+            badge="Forest Badge"
+        ),
+        GymTrainer(
+            leader="Maylene",
+            type=Types.FIGHTING,
+            pokemons=[
+                TrainerPokemon(PokemonGen4.MEDITITE, 28),
+                TrainerPokemon(PokemonGen4.MACHOKE, 29),
+                TrainerPokemon(PokemonGen4.LUCARIO, 32),
+            ],
+            location="Veilstone City",
+            badge="Cobal Badge"
+        ),
+        GymTrainer(
+            leader="Crasher Wake",
+            type=Types.WATER,
+            pokemons=[
+                TrainerPokemon(PokemonGen4.GYARADOS, 33),
+                TrainerPokemon(PokemonGen4.QUAGSIRE, 34),
+                TrainerPokemon(PokemonGen4.FLOATZEL, 37),
+            ],
+            location="Pastoria City",
+            badge="Fen Badge"
+        ),
+        GymTrainer(
+            leader="Fantina",
+            type=Types.GHOST,
+            pokemons=[
+                TrainerPokemon(PokemonGen4.DUSKULL, 24),
+                TrainerPokemon(PokemonGen4.HAUNTER, 24),
+                TrainerPokemon(PokemonGen4.MISMAGIUS, 26),
+            ],
+            location="Hearthome City",
+            badge="Relic Badge"
+        ),
+        GymTrainer(
+            leader="Byron",
+            type=Types.STEEL,
+            pokemons=[
+                TrainerPokemon(PokemonGen4.MAGNETON, 37),
+                TrainerPokemon(PokemonGen4.STEELIX, 38),
+                TrainerPokemon(PokemonGen4.BASTIODON, 41),
+            ],
+            location="Canalave City",
+            badge="Mine Badge"
+        ),
+        GymTrainer(
+            leader="Candice",
+            type=Types.ICE,
+            pokemons=[
+                TrainerPokemon(PokemonGen4.PILOSWINE, 40),
+                TrainerPokemon(PokemonGen4.SNEASEL, 40),
+                TrainerPokemon(PokemonGen4.FROSLAS, 44),
+                TrainerPokemon(PokemonGen4.ABOMASNOW, 42),
+            ],
+            location="Snowpoint City",
+            badge="Icicle Badge"
+        ),
+        GymTrainer(
+            leader="Volkner",
+            type=Types.ELECTRIC,
+            pokemons=[
+                TrainerPokemon(PokemonGen4.RAICHU, 46),
+                TrainerPokemon(PokemonGen4.JOLTEON, 46),
+                TrainerPokemon(PokemonGen4.ELECTIVIRE, 50),
+                TrainerPokemon(PokemonGen4.LUXRAY, 48),
+            ],
+            location="Sunyshore City",
+            badge="Beacon Badge"
+        ),
+    ],
+    elite4=[
+        EliteTrainer(
+            leader="Aaron", type=Types.BUG, pokemons=[
+                TrainerPokemon(PokemonGen4.YANMEGA, 49),
+                TrainerPokemon(PokemonGen4.SCIZOR, 49),
+                TrainerPokemon(PokemonGen4.HERACROSS, 51),
+                TrainerPokemon(PokemonGen4.VESPIQUEN, 50),
+                TrainerPokemon(PokemonGen4.DRAPION, 53),
+            ]
+        ),
+        EliteTrainer(
+            leader="Bertha", type=Types.GROUND, pokemons=[
+                TrainerPokemon(PokemonGen4.GLISCOR, 53),
+                TrainerPokemon(PokemonGen4.WHISCASH, 50),
+                TrainerPokemon(PokemonGen4.GOLEM, 52),
+                TrainerPokemon(PokemonGen4.RHYPERIOR, 52),
+                TrainerPokemon(PokemonGen4.HIPPOWDON, 55),
+            ]
+        ),
+        EliteTrainer(
+            leader="Flint", type=Types.FIRE, pokemons=[
+                TrainerPokemon(PokemonGen4.HOUNDOOM, 52),
+                TrainerPokemon(PokemonGen4.FLAREON, 55),
+                TrainerPokemon(PokemonGen4.RAPIDASH, 53),
+                TrainerPokemon(PokemonGen4.INFERNAPE, 55),
+                TrainerPokemon(PokemonGen4.MAGMORTAR, 57),
+            ]
+        ),
+        EliteTrainer(
+            leader="Lucian", type=Types.PSYCHIC, pokemons=[
+                TrainerPokemon(PokemonGen4.MR_MIME, 53),
+                TrainerPokemon(PokemonGen4.ESPEON, 55),
+                TrainerPokemon(PokemonGen4.BRONZONG, 54),
+                TrainerPokemon(PokemonGen4.ALAKAZAM, 56),
+                TrainerPokemon(PokemonGen4.GALLADE, 59),
+            ]
+        ),
+    ],
+    routes=[
+        "TWinleaf Town",
+        "Lake Verity",
+        "Verity Lakefront",
+        "Sandgem Town",
+        "Jubilife City",
+        "Oreburgh Gate",
+        "Oreburgh City",
+        "Oreburgh Mine",
+        "Ravaged Path",
+        "Floaroma Town",
+        "Floaroma Meadow",
+        "Valley Windworks",
+        "Eterna Forest",
+        "Eterna City",
+        "Team Galactic Eterna Building",
+        "Old Chateau",
+        "Wayward Cave",
+        "Mt. Coronet",
+        "Amity Square",
+        "Hearthome City",
+        "Solaceon Town",
+        "Solaceon Ruins",
+        "Café Cabin",
+        "Lost Tower",
+        "Veilstone City",
+        "Maniac Tunnel",
+        "Valor Lakefront",
+        "Pastoria City",
+        "Pokemon Mansion",
+        "Celestic Town",
+        "Fuego Ironworks",
+        "Canalave City",
+        "Iron Island",
+        "Acuity Lakefront",
+        "Snowpoint City",
+        "Lake Acuity",
+        "Lake Valor",
+        "Galactic Warehouse",
+        "Team Galactic HQ",
+        "Spear Pillar",
+        "Distortion World",
+        "Sendoff Spring",
+        "Sunnyshore City",
+        "Pokemon League",
+        "Victory Road",
+        "Route 201",
+        "Route 202",
+        "Route 203",
+        "Route 204",
+        "Route 205",
+        "Route 206",
+        "Route 207",
+        "Route 208",
+        "Route 209",
+        "Route 210",
+        "Route 211",
+        "Route 212",
+        "Route 213",
+        "Route 214",
+        "Route 215",
+        "Route 216",
+        "Route 217",
+        "Route 218",
+        "Route 219",
+        "Route 220",
+        "Route 221",
+        "Route 222",
+        "Route 223",
+    ],
     encounters={
         "Twinleaf Town": {
             PokemonGen4.PSYDUCK, 
@@ -2115,6 +2315,27 @@ PokemonGen4.ABRA,
     PokemonGen4.MAGIKARP,
     PokemonGen4.WOBBUFFET,
     PokemonGen4.AZELF,
+},
+"Fuego Ironworks": {
+    PokemonGen4.MAGNEMITE,
+    PokemonGen4.MAGMAR,
+    PokemonGen4.FLOATZEL,
+    PokemonGen4.GASTRODON,
+    PokemonGen4.TENTACOOL,
+    PokemonGen4.SHELLOS,
+    PokemonGen4.GYARADOS,
+    PokemonGen4.LUMINEON,
+    PokemonGen4.SHELLDER,
+    PokemonGen4.MAGIKARP,
+    PokemonGen4.FINNEON,
+    PokemonGen4.ARON,
+    PokemonGen4.WURMPLE,
+    PokemonGen4.MUNCHLAX,
+    PokemonGen4.HERACROSS,
+    PokemonGen4.AIPOM,
+    PokemonGen4.BURMY,
+    PokemonGen4.COMBEE,
+    PokemonGen4.CHERUBI,
 },
 "Valor Cavern": {},
 "Acuity Lakefront": {
@@ -2578,7 +2799,32 @@ PokemonGen4.ABRA,
     PokemonGen4.MAGIKARP,
     PokemonGen4.REMORAID,
 },
-    }
+    },
+    important_battles=[
+        "Route 203 - Rival (9)",
+        "Oreburgh City - GymTrainer (14)",
+        "Jubilife City - Rival (13)",
+        "Valley Windworks - Boss (17)",
+        "Eterna City - GymTrainer (22)",
+        "Eterna City - Boss (23)",
+        "Hearthome City - GymTrainer (26)",
+        "Route 209 - Rival (29)",
+        "Veilstone City - GymTrainer (32)",
+        "Veilstone City - Rival (27)",
+        "Pastoria City - Rival (36)",
+        "Pastoria City - GymTrainer (37)",
+        "Celestic Town - Boss (36)",
+        "Canalave City - Rival (38)",
+        "Canalave City - GymTrainer (41)",
+        "Lake Valor - Boss (40)",
+        "Lake Verity - Boss (40)",
+        "Snowpoint City - GymTrainer (44)",
+        "Veilstone City - Boss (44)",
+        "Spear Pillar - Boss (46)",
+        "Distortion World - Boss (48)",
+        "Sunnyshore City - Boss (50)",
+        "Pokémon League - Rival (51)",
+    ]
 )
 
 
