@@ -1,7 +1,7 @@
 from .gen1 import Game, BLUE, RED, YELLOW
 from .gen2 import GOLD, SILVER, CRYSTAL
 from .gen3 import RUBY, SAPPHIRE, EMERALD, LEAF_GREEN, FIRE_RED
-from .gen4 import DIAMOND, PEARL, PLATINUM
+from .gen4 import DIAMOND, PEARL, PLATINUM, SOUL_SILVER
 from typing import List
 GAMES = [
     BLUE, RED, YELLOW,
@@ -9,6 +9,7 @@ GAMES = [
     RUBY, SAPPHIRE, EMERALD,
     LEAF_GREEN, FIRE_RED,
     DIAMOND, PEARL, PLATINUM,
+    SOUL_SILVER,
 ]
 
 
