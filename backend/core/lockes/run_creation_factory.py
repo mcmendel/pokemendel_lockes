@@ -25,6 +25,8 @@ from core.lockes.deoxys.run_creator import DeoxysRunCreator
 from core.lockes.deoxys.deoxys_locke import DeoxysLocke
 from core.lockes.starter.starter_locke import StarterLocke
 from core.lockes.starter.run_creator import StarterRunCreator
+from core.lockes.rottom.rottom_locke import RottomLocke
+from core.lockes.rottom.run_creator import RottomRunCreator
 from core.lockes.genlocke.gen_locke import GenLocke
 
 
@@ -62,6 +64,8 @@ def get_run_creator_class(locke_name: str) -> Type[RunCreator]:
         return DeoxysRunCreator
     if locke_name == StarterLocke.name:
         return StarterRunCreator
+    if locke_name == RottomLocke.name:
+        return RottomRunCreator
     if locke_name == GenLocke.name:
         return GenRunCreator
     return RunCreator 
