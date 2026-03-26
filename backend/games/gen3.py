@@ -99,7 +99,7 @@ class _BaseRSGame(Game):
                 TrainerPokemon(PokemonGen3.WHISCASH, 42),
                 TrainerPokemon(PokemonGen3.SEALEO, 40),
                 TrainerPokemon(PokemonGen3.SEAKING, 42),
-                TrainerPokemon(PokemonGen3.MILTOIC, 43),
+                TrainerPokemon(PokemonGen3.MILOTIC, 43),
             ],
             location="Sootopolis City",
             badge="Rain Badge"
@@ -607,7 +607,7 @@ EMERALD = _BaseRSGame(
                 TrainerPokemon(PokemonGen3.WHISCASH, 56),
                 TrainerPokemon(PokemonGen3.LUDICOLO, 56),
                 TrainerPokemon(PokemonGen3.GYARADOS, 56),
-                TrainerPokemon(PokemonGen3.MILTOIC, 58),
+                TrainerPokemon(PokemonGen3.MILOTIC, 58),
             ]
         ),
     ],

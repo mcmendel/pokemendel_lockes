@@ -267,7 +267,7 @@ DIAMOND = _BaseGen4Game(
 "Jubilife City": {},
 "Oreburgh Gate": {
     PokemonGen4.GEODUDE,
-    PokemonGen4.ZUBAT.
+    PokemonGen4.ZUBAT,
     PokemonGen4.PSYDUCK,
     PokemonGen4.GOLBAT,
     PokemonGen4.GOLDUCK,
@@ -288,7 +288,7 @@ PokemonGen4.ABRA,
 },
 "Oreburgh Mine": {
     PokemonGen4.GEODUDE,
-    PokemonGen4.ZUBAT.
+    PokemonGen4.ZUBAT,
     PokemonGen4.ONIX,
 },
 "Ravaged Path": {
@@ -1049,7 +1049,7 @@ PEARL = _BaseGen4Game(
 "Jubilife City": {},
 "Oreburgh Gate": {
     PokemonGen4.GEODUDE,
-    PokemonGen4.ZUBAT.
+    PokemonGen4.ZUBAT,
     PokemonGen4.PSYDUCK,
     PokemonGen4.GOLBAT,
     PokemonGen4.GOLDUCK,
@@ -1069,7 +1069,7 @@ PokemonGen4.SHIELDON,
 PokemonGen4.ABRA,},
 "Oreburgh Mine": {
     PokemonGen4.GEODUDE,
-    PokemonGen4.ZUBAT.
+    PokemonGen4.ZUBAT,
     PokemonGen4.ONIX,
 },
 "Ravaged Path": {
@@ -2029,7 +2029,7 @@ PLATINUM = _BaseGen4Game(
 "Jubilife City": {},
 "Oreburgh Gate": {
     PokemonGen4.GEODUDE,
-    PokemonGen4.ZUBAT.
+    PokemonGen4.ZUBAT,
     PokemonGen4.PSYDUCK,
     PokemonGen4.GOLBAT,
     PokemonGen4.GOLDUCK,
@@ -2050,7 +2050,7 @@ PokemonGen4.ABRA,
 },
 "Oreburgh Mine": {
     PokemonGen4.GEODUDE,
-    PokemonGen4.ZUBAT.
+    PokemonGen4.ZUBAT,
     PokemonGen4.ONIX,
 },
 "Ravaged Path": {
@@ -3563,7 +3563,7 @@ HEART_GOLD = _BaseGSGame(
 },
 "Route 44": {
     PokemonGen4.WEEPINBELL,
-    PokemonGen4.TANGENTA,
+    PokemonGen4.TANGELA,
     PokemonGen4.BELLSPROUT,
     PokemonGen4.LICKITUNG,
     PokemonGen4.LINOONE,
@@ -3696,7 +3696,7 @@ SOUL_SILVER = _BaseGSGame(
 "Ruins of Alph": {
     PokemonGen4.UNOWN,
     PokemonGen4.NATU,
-    PokemonGen4.SMEEGLE,
+    PokemonGen4.SMEARGLE,
     PokemonGen4.LINOONE,
     PokemonGen4.WHISMUR,
     PokemonGen4.BIDOOF,
@@ -3830,7 +3830,7 @@ SOUL_SILVER = _BaseGSGame(
     PokemonGen4.SPINDA,
     PokemonGen4.MEDITITE,
     PokemonGen4.CHATOT,
-    PokemonGen4.HO_HO,
+    PokemonGen4.HO_OH,
 },
 "Olivine City": {
     PokemonGen4.TENTACOOL,
@@ -4165,7 +4165,7 @@ SOUL_SILVER = _BaseGSGame(
 },
 "Route 44": {
     PokemonGen4.WEEPINBELL,
-    PokemonGen4.TANGENTA,
+    PokemonGen4.TANGELA,
     PokemonGen4.BELLSPROUT,
     PokemonGen4.LICKITUNG,
     PokemonGen4.LINOONE,
