@@ -28,6 +28,8 @@ from apis.run import (
     finish_run,
 )
 from core.lockes import list_all_lockes
+from scripts.generate_pokemon_showdown import generate_showdown_format
+from scripts.showdown_movesets import MOVESETS
 from functools import wraps
 import traceback
 
@@ -449,6 +451,32 @@ def execute_action_api(run_id, pokemon_id):
         }), 400
     execute_action(run_id, pokemon_id, data['action'], data['value'])
     return jsonify({'status': 'success'})
+
+
+@locke_route('showdown/generations', methods=['GET'])
+def get_showdown_generations():
+    return jsonify(sorted(MOVESETS.keys()))
+
+
+@locke_route('showdown/pokemons/<int:gen>', methods=['GET'])
+def get_showdown_pokemons(gen):
+    if gen not in MOVESETS:
+        return jsonify({"status": "error", "message": f"Generation {gen} not supported"}), 400
+    return jsonify(sorted(MOVESETS[gen].keys()))
+
+
+@locke_route('showdown/generate', methods=['POST'])
+def generate_showdown():
+    data = request.get_json()
+    if not data or 'gen' not in data or 'pokemon_name' not in data:
+        return jsonify({"status": "error", "message": "Missing required fields: gen, pokemon_name"}), 400
+    result = generate_showdown_format(
+        gen=data['gen'],
+        name=data['pokemon_name'],
+        nickname=data.get('nickname'),
+        item=data.get('item'),
+    )
+    return jsonify({"showdown": result})
 
 
 @locke_route('run/<run_id>/battle/<leader>', methods=['POST'])

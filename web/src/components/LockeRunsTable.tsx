@@ -122,6 +122,9 @@ export const LockeRunsTable: React.FC<Props> = ({ runs, onDelete, onRowClick, on
           <button className="action-button load">
             <span>Load</span>
           </button>
+          <button className="action-button showdown" onClick={() => navigate('/locke_manager/showdown')}>
+            <span>Showdown</span>
+          </button>
         </div>
         <div className="filter-checkbox">
           <input

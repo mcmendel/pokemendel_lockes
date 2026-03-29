@@ -399,6 +399,26 @@ const lockeApi = {
         return data;
     },
 
+    async getShowdownGenerations(): Promise<number[]> {
+        const response = await axios.get<number[]>(`${API_BASE_URL}/showdown/generations`);
+        return response.data;
+    },
+
+    async getShowdownPokemons(gen: number): Promise<string[]> {
+        const response = await axios.get<string[]>(`${API_BASE_URL}/showdown/pokemons/${gen}`);
+        return response.data;
+    },
+
+    async generateShowdown(gen: number, pokemonName: string, nickname?: string, item?: string): Promise<string> {
+        const response = await axios.post<{ showdown: string }>(`${API_BASE_URL}/showdown/generate`, {
+            gen,
+            pokemon_name: pokemonName,
+            nickname: nickname || undefined,
+            item: item || undefined,
+        });
+        return response.data.showdown;
+    },
+
     async executePokemonAction(runId: string, pokemonId: string, action: string, value: string): Promise<StatusResponse> {
         const response = await fetch(`${API_BASE_URL}/run/${runId}/pokemon/${pokemonId}/action`, {
             method: 'POST',

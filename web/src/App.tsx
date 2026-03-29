@@ -6,6 +6,7 @@ import RunConfiguration from './components/RunConfiguration';
 import ContinueRun from './components/ContinueRun';
 import Run from './components/Run';
 import Celebration from './components/Celebration';
+import ShowdownGeneration from './components/ShowdownGeneration';
 import Layout from './components/Layout';
 import './App.css';
 
@@ -20,6 +21,7 @@ function App() {
           <Route path="/locke_manager/continue/:runId" element={<ContinueRun />} />
           <Route path="/locke_manager/run/:runId" element={<Run />} />
           <Route path="/locke_manager/celebration/:runId" element={<Celebration />} />
+          <Route path="/locke_manager/showdown" element={<ShowdownGeneration />} />
           <Route path="*" element={<Navigate to="/locke_manager" replace />} />
         </Routes>
       </Layout>
