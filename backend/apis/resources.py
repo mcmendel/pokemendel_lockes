@@ -1,9 +1,15 @@
-from typing import Optional
+from typing import Optional, Tuple
 import os
 from pokemendel_core.utils.download_images import (
     download_pokemon_from_google_search,
     download_gym_from_google_search,
     download_pokemon_type_from_google_search
+)
+from pokemendel_core.data import (
+    GEN1_NAME_TO_POKEMON,
+    GEN2_NAME_TO_POKEMON,
+    GEN3_NAME_TO_POKEMON,
+    GEN4_NAME_TO_POKEMON,
 )
 from core.r2 import (
     check_file_exists,
@@ -12,6 +18,17 @@ from core.r2 import (
     is_s3_path,
     extract_base_name_and_extension
 )
+
+_ALL_POKEMON_DICTS = [GEN1_NAME_TO_POKEMON, GEN2_NAME_TO_POKEMON, GEN3_NAME_TO_POKEMON, GEN4_NAME_TO_POKEMON]
+
+
+def _lookup_pokemon_form(pokemon_name: str) -> Tuple[Optional[str], Optional[str]]:
+    """Look up a pokemon's form and base_name from core data."""
+    for pokemon_dict in _ALL_POKEMON_DICTS:
+        if pokemon_name in pokemon_dict:
+            pokemon = pokemon_dict[pokemon_name]
+            return pokemon.form, pokemon.base_name
+    return None, None
 
 def get_pokemon_info(pokemon_name: str) -> Optional[str]:
     """
@@ -32,7 +49,9 @@ def get_pokemon_info(pokemon_name: str) -> Optional[str]:
     
     # Image doesn't exist in R2, download it locally
     resources_path = os.path.join(os.path.dirname(os.path.dirname(os.path.abspath(__file__))), 'resources')
-    local_path = download_pokemon_from_google_search(pokemon_name, resources_path)
+    form, pokemon_base_name = _lookup_pokemon_form(pokemon_name)
+    download_name = pokemon_base_name or pokemon_name
+    local_path = download_pokemon_from_google_search(download_name, resources_path, form=form)
     
     if local_path is None:
         return None

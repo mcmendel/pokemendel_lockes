@@ -111,7 +111,7 @@ def _verify_run_created(client_fixture, run_id):
         run_response['pokemons'][pokemon_id]['name']
         for pokemon_id in run_response['pokemons'].keys()
     }
-    assert all_pokemons == {PokemonGen3.CASTFORM}
+    assert all_pokemons == {PokemonGen3.CASTFORM, PokemonGen3.CASTFORM_SUNNY, PokemonGen3.CASTFORM_RAINY, PokemonGen3.CASTFORM_SNOWY}
     return castform_id
 
 

@@ -36,13 +36,15 @@ def _create_pokemon_document(run_id: str, pokemon: Pokemon) -> Dict:
     # Handle both enum and string types robustly
     pokemon_doc["types"] = [t.value if hasattr(t, 'value') else t for t in pokemon.types]
     pokemon_doc["status"] = pokemon.status
+    pokemon_doc["form"] = pokemon.form
+    pokemon_doc["base_name"] = pokemon.base_name
     return pokemon_doc
 
 def _db_dict_to_pokemon(data: dict) -> Pokemon:
     """Convert a database dict (created by _create_pokemon_document) back to a Pokemon definition.
     (This helper is used by fetch_pokemon and list_pokemon_by_run.)"""
     # (1) "Flatten" (or "merge") metadata (using asdict) so that "_id" is renamed "id" (and "nickname" is included).
-    metadata_dict = {k: v for k, v in data.items() if k not in ["_id", "run_id", "status", "name", "gen", "types", "nature"]}
+    metadata_dict = {k: v for k, v in data.items() if k not in ["_id", "run_id", "status", "name", "gen", "types", "nature", "form", "base_name"]}
     metadata_dict["id"] = data["_id"]
     metadata = PokemonMetadata(**metadata_dict)
     # (2) "Overwrite" (or "add") "name", "gen", "types" (and "status") from the database dict.
@@ -68,6 +70,8 @@ def _db_dict_to_pokemon(data: dict) -> Pokemon:
         num_legs=core_pokemon.num_legs,
         nature=data.get("nature"),
         supported_abilities=core_pokemon.supported_abilities,
+        form=core_pokemon.form,
+        base_name=core_pokemon.base_name,
     )
 
 def save_pokemon(pokemon: Pokemon, run_id: str, collections: List[str] = None) -> None:
