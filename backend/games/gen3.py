@@ -174,6 +174,7 @@ class _BaseRSGame(Game):
     "Desert Underpass",
     "New Mauville",
     "Abandoned Ship",
+    "Weather Institute",
     "Fortree City",
     "Scorched Slab",
     "Safari Zone",
@@ -621,11 +622,11 @@ EMERALD = _BaseRSGame(
         "Mt. Chimney - Boss (25)",
         "Lavaridge City - GymTrainer (29)",
         "Petalburg City - GymTrainer (31)",
-        "Weather Institute - Boss (28)"
+        "Weather Institute - Boss (28)",
         "Route 119 - Rival (31)",
         "Fortree Town - GymTrainer (33)",
         "Lilycove City - Rival (34)",
-        "Jagged Pass - Boss (39)"
+        "Jagged Pass - Boss (39)",
         "Team X Hideout - Boss (34)",
         "Mossdeep City - GymTrainer (42)",
         "Space Center - Boss (40)",

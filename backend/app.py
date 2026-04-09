@@ -406,7 +406,7 @@ def get_run_potential_encounters_api(run_id):
     return jsonify(potential_encounters)
 
 
-@locke_route('run/<run_id>/encounter/<route>', methods=['PUT'])
+@locke_route('run/<run_id>/encounter/<path:route>', methods=['PUT'])
 def encounter_pokemon_api(run_id, route):
     data = request.get_json()
     if not data or 'pokemon_name' not in data:
@@ -417,7 +417,7 @@ def encounter_pokemon_api(run_id, route):
     return jsonify({'status': 'success'})
 
 
-@locke_route('run/<run_id>/encounter/<route>', methods=['POST'])
+@locke_route('run/<run_id>/encounter/<path:route>', methods=['POST'])
 def update_encounter_api(run_id, route):
     data = request.get_json()
     if not data or 'encounter_status' not in data:
@@ -475,6 +475,7 @@ def generate_showdown():
         name=data['pokemon_name'],
         nickname=data.get('nickname'),
         item=data.get('item'),
+        gender=data.get('gender'),
     )
     return jsonify({"showdown": result})
 
