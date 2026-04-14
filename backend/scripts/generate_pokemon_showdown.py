@@ -33,7 +33,16 @@ def get_random_nature() -> str:
     return random.choice(Natures.list_all())
 
 
-def generate_showdown_format(gen, name, nickname=None, item=None, set_gender=True):
+def gender_to_showdown(gender: str) -> str:
+    gender_map = {
+        Genders.MALE: "(M)",
+        Genders.FEMALE: "(F)",
+        Genders.GENDERLESS: "",
+    }
+    return gender_map.get(gender, "")
+
+
+def generate_showdown_format(gen, name, nickname=None, item=None, set_gender=True, gender=None):
     moves = get_moveset(gen, name)
 
     pokemon = fetch_pokemon(name, gen)
@@ -43,7 +52,10 @@ def generate_showdown_format(gen, name, nickname=None, item=None, set_gender=Tru
 
     # Default values (can be expanded based on user input)
     item = f"@ {item}" if item else ""
-    gender = choose_gender(pokemon) if gen > 1 else ""
+    if gender:
+        gender = gender_to_showdown(gender)
+    else:
+        gender = choose_gender(pokemon) if gen > 1 else ""
     ability = ""  # "Ability: Unknown"
     level = "Level: 5"  # Default level
     evs = "EVs: 0 HP / 0 Atk / 0 Def / 0 SpA / 0 SpD / 1 Spe"

@@ -409,12 +409,13 @@ const lockeApi = {
         return response.data;
     },
 
-    async generateShowdown(gen: number, pokemonName: string, nickname?: string, item?: string): Promise<string> {
+    async generateShowdown(gen: number, pokemonName: string, nickname?: string, item?: string, gender?: string): Promise<string> {
         const response = await axios.post<{ showdown: string }>(`${API_BASE_URL}/showdown/generate`, {
             gen,
             pokemon_name: pokemonName,
             nickname: nickname || undefined,
             item: item || undefined,
+            gender: gender || undefined,
         });
         return response.data.showdown;
     },

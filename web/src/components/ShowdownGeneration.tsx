@@ -9,6 +9,7 @@ const ShowdownGeneration: React.FC = () => {
   const [pokemonName, setPokemonName] = useState('');
   const [nickname, setNickname] = useState('');
   const [item, setItem] = useState('');
+  const [gender, setGender] = useState('');
   const [result, setResult] = useState('');
   const [error, setError] = useState<string | null>(null);
   const [loading, setLoading] = useState(false);
@@ -37,7 +38,7 @@ const ShowdownGeneration: React.FC = () => {
     setError(null);
     setLoading(true);
     try {
-      const showdown = await lockeApi.generateShowdown(gen, pokemonName, nickname, item);
+      const showdown = await lockeApi.generateShowdown(gen, pokemonName, nickname, item, gender);
       setResult(showdown);
     } catch (err) {
       setError('Failed to generate Showdown format');
@@ -106,6 +107,20 @@ const ShowdownGeneration: React.FC = () => {
             onChange={(e) => setItem(e.target.value)}
             placeholder="e.g. Fire Stone"
           />
+        </div>
+
+        <div className="form-group">
+          <label htmlFor="gender">Gender (optional)</label>
+          <select
+            id="gender"
+            value={gender}
+            onChange={(e) => setGender(e.target.value)}
+          >
+            <option value="">Random</option>
+            <option value="Male">Male</option>
+            <option value="Female">Female</option>
+            <option value="Genderless">Genderless</option>
+          </select>
         </div>
 
         <button
