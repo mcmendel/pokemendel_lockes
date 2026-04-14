@@ -30,28 +30,30 @@ def _lookup_pokemon_form(pokemon_name: str) -> Tuple[Optional[str], Optional[str
             return pokemon.form, pokemon.base_name
     return None, None
 
-def get_pokemon_info(pokemon_name: str) -> Optional[str]:
+def get_pokemon_info(pokemon_name: str, force: bool = False) -> Optional[str]:
     """
     Get Pokemon image path from R2, downloading and uploading if necessary.
     
     Args:
         pokemon_name: The name of the Pokemon to look up
+        force: If True, re-download even if image already exists
         
     Returns:
         S3 key path to the Pokemon image in R2 or None if not found
     """
     # Check if image exists in R2 with common extensions
     pokemon_name_lower = pokemon_name.lower()
-    for ext in ['.jpeg', '.jpg', '.png']:
-        s3_key = f"pokemendel/resources/pokemons/{pokemon_name_lower}{ext}"
-        if check_file_exists(s3_key):
-            return s3_key
+    if not force:
+        for ext in ['.jpeg', '.jpg', '.png']:
+            s3_key = f"pokemendel/resources/pokemons/{pokemon_name_lower}{ext}"
+            if check_file_exists(s3_key):
+                return s3_key
     
-    # Image doesn't exist in R2, download it locally
+    # Image doesn't exist in R2 (or force re-download), download it locally
     resources_path = os.path.join(os.path.dirname(os.path.dirname(os.path.abspath(__file__))), 'resources')
     form, pokemon_base_name = _lookup_pokemon_form(pokemon_name)
     download_name = pokemon_base_name or pokemon_name
-    local_path = download_pokemon_from_google_search(download_name, resources_path, form=form)
+    local_path = download_pokemon_from_google_search(download_name, resources_path, form=form, force=force)
     
     if local_path is None:
         return None
@@ -76,13 +78,14 @@ def get_pokemon_info(pokemon_name: str) -> Optional[str]:
         print(f"DEBUG: Falling back to local path: {local_path}")
         return local_path
 
-def get_gym_leader_info(game_name: str, gym_name: str) -> Optional[str]:
+def get_gym_leader_info(game_name: str, gym_name: str, force: bool = False) -> Optional[str]:
     """
     Get gym leader image path from R2, downloading and uploading if necessary.
     
     Args:
         game_name: The name of the game (e.g., 'red', 'blue', 'gold', etc.)
         gym_name: The name of the gym leader
+        force: If True, re-download even if image already exists
         
     Returns:
         S3 key path to the gym leader image in R2 or None if not found
@@ -90,18 +93,20 @@ def get_gym_leader_info(game_name: str, gym_name: str) -> Optional[str]:
     # Check if image exists in R2 with common extensions
     game_name_lower = game_name.lower()
     gym_name_lower = gym_name.lower()
-    for ext in ['.jpeg', '.jpg', '.png']:
-        s3_key = f"pokemendel/resources/gyms/{game_name_lower}/{gym_name_lower}{ext}"
-        if check_file_exists(s3_key):
-            return s3_key
+    if not force:
+        for ext in ['.jpeg', '.jpg', '.png']:
+            s3_key = f"pokemendel/resources/gyms/{game_name_lower}/{gym_name_lower}{ext}"
+            if check_file_exists(s3_key):
+                return s3_key
     
-    # Image doesn't exist in R2, download it locally
+    # Image doesn't exist in R2 (or force re-download), download it locally
     resources_path = os.path.join(os.path.dirname(os.path.dirname(os.path.abspath(__file__))), 'resources')
     local_path = download_gym_from_google_search(
         gym_name=gym_name,
-        badge_name=gym_name,  # Use gym name as badge name
-        location=game_name,   # Use game name as location
-        resources_path=resources_path
+        badge_name=gym_name,
+        location=game_name,
+        resources_path=resources_path,
+        force=force,
     )
     
     if local_path is None:
@@ -122,26 +127,28 @@ def get_gym_leader_info(game_name: str, gym_name: str) -> Optional[str]:
         # Fallback to local path if upload fails
         return local_path
 
-def get_type_info(type_name: str) -> Optional[str]:
+def get_type_info(type_name: str, force: bool = False) -> Optional[str]:
     """
     Get Pokemon type image path from R2, downloading and uploading if necessary.
     
     Args:
         type_name: The name of the Pokemon type (e.g., 'fire', 'water', etc.)
+        force: If True, re-download even if image already exists
         
     Returns:
         S3 key path to the type image in R2 or None if not found
     """
     # Check if image exists in R2 with common extensions
     type_name_lower = type_name.lower()
-    for ext in ['.jpeg', '.jpg', '.png']:
-        s3_key = f"pokemendel/resources/types/{type_name_lower}{ext}"
-        if check_file_exists(s3_key):
-            return s3_key
+    if not force:
+        for ext in ['.jpeg', '.jpg', '.png']:
+            s3_key = f"pokemendel/resources/types/{type_name_lower}{ext}"
+            if check_file_exists(s3_key):
+                return s3_key
     
-    # Image doesn't exist in R2, download it locally
+    # Image doesn't exist in R2 (or force re-download), download it locally
     resources_path = os.path.join(os.path.dirname(os.path.dirname(os.path.abspath(__file__))), 'resources')
-    local_path = download_pokemon_type_from_google_search(type_name, resources_path)
+    local_path = download_pokemon_type_from_google_search(type_name, resources_path, force=force)
     
     if local_path is None:
         return None

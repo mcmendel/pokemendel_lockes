@@ -102,7 +102,8 @@ def get_pokemon_resource(pokemon_name):
     Returns:
         The Pokemon image file or error message if not found
     """
-    image_path = get_pokemon_info(pokemon_name)
+    force = request.args.get('force', 'false').lower() == 'true'
+    image_path = get_pokemon_info(pokemon_name, force=force)
     if image_path is None:
         return jsonify({
             "status": "error",
@@ -141,7 +142,8 @@ def get_gym_leader_resource(game_name, gym_name):
     Returns:
         The gym leader image file or error message if not found
     """
-    image_path = get_gym_leader_info(game_name, gym_name)
+    force = request.args.get('force', 'false').lower() == 'true'
+    image_path = get_gym_leader_info(game_name, gym_name, force=force)
     if image_path is None:
         return jsonify({
             "status": "error",
@@ -179,7 +181,8 @@ def get_type_resource(type_name):
     Returns:
         The type image file or error message if not found
     """
-    image_path = get_type_info(type_name)
+    force = request.args.get('force', 'false').lower() == 'true'
+    image_path = get_type_info(type_name, force=force)
     if image_path is None:
         return jsonify({
             "status": "error",
